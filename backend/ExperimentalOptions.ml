@@ -6,7 +6,7 @@ let known_flags = ["small-inline"; "loop-spill"; "trace-layout";
                    "rtl-unroll2"; "rtl-unroll4"; "memory-cleanup";
                    "schedule-pure"; "hoist-constant"; "load-forward";
                    "arm64-combine"; "loop-unswitch"; "store-elim";
-                   "neon-packed"; "licm-pure"; "strength-reduce"; "loop-peel"; "auto-neon"; "licm-preheader"]
+                   "neon-packed"; "licm-pure"; "strength-reduce"; "loop-peel"; "auto-neon"; "licm-preheader"; "memory-vector"; "loop-fusion"; "loop-interchange"; "loop-tile"; "loop-tile2d"]
 
 let getenv name = try Sys.getenv name with Not_found -> ""
 
@@ -125,3 +125,8 @@ let licm_enabled () = enabled "licm-pure"
 let strength_enabled () = enabled "strength-reduce"
 let peel_enabled () = enabled "loop-peel"
 let preheader_enabled () = enabled "licm-preheader"
+let memvector_enabled () = enabled "memory-vector"
+let fusion_enabled () = enabled "loop-fusion"
+let interchange_enabled () = enabled "loop-interchange"
+let tile_enabled () = enabled "loop-tile"
+let tile2d_enabled () = enabled "loop-tile2d"

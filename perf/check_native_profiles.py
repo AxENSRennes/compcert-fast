@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the upstream native/ABI/PIC suite in three compiler configurations."""
+"""Run the upstream native/ABI/PIC suite with defaults and every frozen profile."""
 import argparse
 import hashlib
 import json

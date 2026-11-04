@@ -207,6 +207,11 @@ BACKEND=\
   ConstpropOp.v Constprop.v ConstpropOpproof.v Constpropproof.v \
   CSEdomain.v CombineOp.v CSE.v CombineOpproof.v CSEproof.v \
   NeedDomain.v NeedOp.v Deadcode.v Deadcodeproof.v \
+  LoopFusion.v LoopFusionproof.v \
+  LoopInterchange.v LoopInterchangeproof.v \
+  LoopTile.v LoopTileproof.v \
+  LoopTile2D.v LoopTile2Dproof.v MemVector.v MemVectorproof.v \
+  PeelTwo.v PeelTwoproof.v \
   LowerLong.v LowerLongproof.v PreheaderLICM.v PreheaderLICMproof.v \
   Vectorize.v Vectorizeproof.v \
   LICM.v LICMproof.v \

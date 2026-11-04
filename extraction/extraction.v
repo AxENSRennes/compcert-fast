@@ -85,6 +85,11 @@ Extract Constant SimplExpr.first_unused_ident => "Camlcoq.first_unused_ident".
 Extraction Inline SimplExpr.ret SimplExpr.error SimplExpr.bind SimplExpr.bind2.
 
 (* Compopts *)
+Extract Constant Compopts.experimental_fusion => "ExperimentalOptions.fusion_enabled".
+Extract Constant Compopts.experimental_interchange => "ExperimentalOptions.interchange_enabled".
+Extract Constant Compopts.experimental_tile => "ExperimentalOptions.tile_enabled".
+Extract Constant Compopts.experimental_tile2d => "ExperimentalOptions.tile2d_enabled".
+Extract Constant Compopts.experimental_memvector => "ExperimentalOptions.memvector_enabled".
 Extract Constant Compopts.experimental_preheader => "ExperimentalOptions.preheader_enabled".
 Extract Constant Compopts.experimental_vectorize => "ExperimentalOptions.vectorize_enabled".
 Extract Constant Compopts.experimental_licm => "ExperimentalOptions.licm_enabled".

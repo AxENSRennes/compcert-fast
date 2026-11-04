@@ -44,6 +44,14 @@ jobs:
             perf/artifacts/packed-neon/
             perf/artifacts/loop-optimizations/
             perf/artifacts/assembly-comparison/
+            perf/artifacts/memory-assembly/
+            perf/artifacts/memory-loops/
+            perf/artifacts/memvector/
+            perf/artifacts/peeltwo/
+            perf/artifacts/loopfusion/
+            perf/artifacts/loopinterchange/
+            perf/artifacts/looptile/
+            perf/artifacts/looptile2d/
             perf/artifacts/vectorize/
             perf/artifacts/preheader_licm/
             perf/artifacts/lowerlong/

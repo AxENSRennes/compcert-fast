@@ -5,7 +5,8 @@
     "scalar2": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup",
     "scalar4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup",
     "loops2": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader",
-    "loops4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader"
+    "loops4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader",
+    "memory-loops": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d"
   },
   "limits": {
     "hoist-constant": "One integer literal per function with at most 512 RTL instructions, cached in a fresh register. Cycle preference examines at most 32 literals and 128 work items per literal. Larger functions remain unchanged. No general LICM or induction-variable analysis.",
@@ -22,11 +23,16 @@
     "strength-reduce": "One 32-bit modular induction recurrence per function: fixed-step updates, invariant or literal-reset factor; literal resets of either input are maintained. Other mutations rejected. <=512 nodes.",
     "loop-peel": "Validated first-traversal/stable CFG copies; postorder backedge hint, not arbitrary loop fusion/interchange/tiling. <=512 nodes.",
     "auto-neon": "Automatic same-input adjacent uint32 add-immediate pair packing into existing NEON builtin; Vundef/pointer cases proved for ARM64. One pair/function <=512 nodes; not general memory-loop vectorization.",
-    "licm-preheader": "One invariant expression per function. Eager caching after a retained entry prefix supports computed/loaded/call-returned operands; a validated closed-suffix fallback caches at first actual use, including branching preheaders and partial pure operations (division/conversions). Memory-dependent operations and operand mutations in the selected suffix are rejected. <=512 nodes; bounded search."
+    "licm-preheader": "One invariant expression per function. Eager caching after a retained entry prefix supports computed/loaded/call-returned operands; a validated closed-suffix fallback caches at first actual use, including branching preheaders and partial pure operations (division/conversions). Memory-dependent operations and operand mutations in the selected suffix are rejected. <=512 nodes; bounded search.",
+    "memory-vector": "Peel the first two CFG traversals with the proved projection validator, clean up and renumber, then coalesce one correlated adjacent Mint32 store pair to Mint64 per function. The indirect rule retains an executed global-address producer at offset zero and allows only a checked transparent chain to offset four. Exact bytes for all Val tags; <=512 nodes and <=32 chain steps. Mandatory scalar pack lowering; not a general memory SIMD vectorizer.",
+    "loop-fusion": "Propose fusion of two adjacent counted pure loops (shared or distinct counters). A proved whole-function symbolic validator accepts only finite, memory-independent total operations, known branch conditions and identical return expressions for all Val tags. 128 execution steps and 128 expression nodes; proposal <=96 RTL nodes, chain/prefix <=24. No dynamic or memory-dependent fusion.",
+    "loop-interchange": "Swap the two loop levels of a fixed rectangular pure nest; support pretested and rotated/posttested CFG shapes. Uses the same 128-step symbolic validator. Tested positive example: 2x3 independent reductions. Dependences that change the symbolic result are rejected; no memory reordering.",
+    "loop-tile": "Order-preserving strip mining with four-iteration tile boundaries, retaining the original exit test every iteration and exact effects/tails/wrap behavior. <=512 nodes, cycle hint <=128 steps. Adds control overhead; it is a control-flow foundation, not a locality or speed claim.",
+    "loop-tile2d": "Genuine 2x2 tiling of a fixed 2x3 pure rectangle with a partial final column, through five fresh CFG nodes and two fresh registers. Both pretested and rotated/posttested forms are proposed; same unmodified 128-step symbolic validator. Dynamic bounds and memory bodies are refused."
   },
   "not_implemented": [
     "general alias-dependent load/store motion and speculative memory LICM",
-    "loop fusion, interchange and tiling",
+    "general fusion/interchange/tiling of dynamic or memory-dependent loop nests",
     "general cross-iteration memory-loop vectorization with alias checks, vector loads/stores and scalar tails",
     "128-bit vector register state and ABI in Asm.v",
     "Arm/Sail refinement and proof of assembly encoding"

@@ -77,7 +77,7 @@ Coq kernel.
 
 ### Default-disabled experiments
 
-This branch is `experiment/loops-vectorization`; it has not been promoted to `fast`.
+This branch is `experiment/memory-loops`; it has not been promoted to `fast`.
 No speed improvement is claimed. The full option list, combined profiles and
 precise limits are in `perf/experiment-profiles.json`. For example:
 
@@ -86,6 +86,7 @@ COMPCERT_EXPERIMENTS=rtl-unroll2,memory-cleanup ./ccomp -stdlib runtime program.
 COMPCERT_EXPERIMENTS=loop-spill,trace-layout COMPCERT_EXPERIMENT_TRACE=/tmp/compcert-trace.jsonl ./ccomp -stdlib runtime program.c
 make -f Makefile.fast test-experiments
 make -f Makefile.fast test-loops
+make -f Makefile.fast test-memory-loops
 make -f Makefile.fast compare-assembly
 make -f Makefile.fast test-neon
 make -f Makefile.fast verify
@@ -146,14 +147,41 @@ The experiments currently implement:
 * Two additional rounds of existing constant propagation, CSE and dead-code
   cleanup. Analysis failure still returns a compiler error; this experiment
   does not claim a new proved rollback for those existing partial passes.
+* `memory-vector` exposes the first two loop traversals using a proved CFG
+  projection validator, performs existing cleanup and removes unreachable
+  nodes, then widens one correlated pair of ordinary 32-bit stores to a
+  single 64-bit store. An executed global-address producer and checked
+  transparent chain establish offsets zero/four; the indirect output retains
+  native register addressing. Exact memory bytes are proved for every value
+  tag. Ordinary C tests require the wide store in actual RTL and assembly,
+  check surrounding cells and overlapping copies, and reject unsupported
+  unrelated values, volatile accesses and arbitrary pointer bases. This is
+  scalar memory widening across iterations, not general memory SIMD.
+* `loop-fusion` proposes interleaving two adjacent pure counted loops, with
+  shared or separate counters. A reusable proved symbolic validator checks
+  both whole functions: only total, memory-independent operations and known
+  branches are executed, and their return expressions must match for all
+  value tags. The budgets are 128 execution steps and 128 expression nodes.
+  Failed validation retains the original function.
+* `loop-interchange` rewires a rectangular pure loop nest, including the
+  rotated form emitted for ordinary C. `loop-tile2d` constructs genuine
+  2x2 tiles of a fixed 2x3 rectangle, including its partial final column.
+  Both use the same symbolic validator and reject dependencies that change
+  the result. Native checks assert the actual changed iteration order.
+  Their current scope is small, fixed pure nests, without memory reordering.
+* `loop-tile` inserts four-iteration tile boundaries while retaining the
+  source exit test and exact effect order on every iteration. Its simulation
+  covers memory, calls and faults, including tails and counter wrap. This
+  order-preserving strip-mining foundation adds control overhead and makes
+  no locality or profitability claim.
 
 `test-experiments` exercises production extracted transformations, malformed
 candidate refusal, real memory operations, defined C programs with separate
 translation units, each independent option and combined profiles, and the
 fixed public suite without timing series. `verify` additionally runs the
 original native regression suite, ABI/PIC checks and the NEON comparisons.
-The upstream suite is rebuilt and run with default options and both combined
-scalar and loop/vector profiles. The GitHub `Verified correctness` workflow contains no speed
+The upstream suite is rebuilt and run with default options and all combined
+profiles, including `memory-loops`. The GitHub `Verified correctness` workflow contains no speed
 benchmark.
 Initial performance-baseline capture still requires the unchanged compiler at
 `befa8484ea29fe73a90785983541fb45745c26a0` on an idle Mac.
@@ -166,6 +194,10 @@ No generated program is executed. These observations guide future proved
 transformations; instruction-site counts are not speed measurements or
 profitability evidence. Custom source units/functions/profiles are supported
 by `python3 perf/compare_assembly.py --help`.
+It also compares the new ordinary-C memory/fusion/rectangle fixtures against
+clang with each new option independently, archiving assembly and static
+metrics in `perf/results/memory-assembly.json`. Reproduce that portion with
+`python3 perf/compare_memory_loops.py`.
 
 ### NEON scope and trust
 
@@ -194,7 +226,8 @@ are not required. This is correlated-lane SLP, not general vector loads/stores
 or vectorization across loop iterations.
 
 Alias-dependent memory LICM, general nested-region invariant motion,
-fusion/interchange/tiling, cross-iteration memory-loop vectorization with
+fusion/interchange/tiling of dynamic or memory-dependent nests, general
+cross-iteration memory-loop vectorization with
 remainder handling, 128-bit vector state/ABI and Arm/Sail refinement remain
 unimplemented. The prototype
 passes above do not constitute all optimizations found in a production

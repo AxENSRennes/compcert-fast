@@ -61,3 +61,8 @@ Parameter experimental_licm: unit -> bool.
 Parameter experimental_strength: unit -> bool.
 Parameter experimental_peel: unit -> bool.
 Parameter experimental_preheader: unit -> bool.
+Parameter experimental_memvector: unit -> bool.
+Parameter experimental_fusion: unit -> bool.
+Parameter experimental_interchange: unit -> bool.
+Parameter experimental_tile: unit -> bool.
+Parameter experimental_tile2d: unit -> bool.

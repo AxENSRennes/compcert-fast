@@ -225,6 +225,8 @@ def main():
     parser.add_argument('--source',type=Path,help='C unit; defaults to the ordinary-C loop-correctness fixture')
     parser.add_argument('--function',action='append',default=[],help='source C function name to include; repeatable')
     parser.add_argument('--profile',action='append',help='CompCert experiment profile; repeatable, default loops4')
+    parser.add_argument('--experiments',action='append',default=[],metavar='NAME=FLAGS',
+                        help='named explicit experiment selection; repeatable')
     parser.add_argument('--clang',default='clang')
     parser.add_argument('--output',type=Path,default=ROOT/'perf/results/assembly-comparison.json')
     parser.add_argument('--artifacts',type=Path,default=ROOT/'perf/artifacts/assembly-comparison')
@@ -262,11 +264,19 @@ def main():
         if not (ROOT/'ccomp').is_file():raise RuntimeError('Build ccomp before comparing assembly')
         run(['python3',ROOT/'perf/guard.py'],'source-guard')
         catalog=json.loads((ROOT/'perf/experiment-profiles.json').read_text())['profiles']
-        profiles=list(dict.fromkeys(args.profile or ['loops4']))
+        profiles=list(dict.fromkeys(args.profile or ([] if args.experiments else ['loops4'])))
         unknown=set(profiles)-set(catalog)
         if unknown:raise ValueError('Unknown experiment profiles: '+','.join(sorted(unknown)))
         if any(not re.fullmatch(r'[a-z][a-z0-9_-]*',name) for name in profiles):
             raise ValueError('Profile names must be simple identifiers')
+        selections=[(name,catalog[name]) for name in profiles]
+        for item in args.experiments:
+            name,separator,flags=item.partition('=')
+            if not separator or not flags or not re.fullmatch(r'[a-z][a-z0-9_-]*',name):
+                raise ValueError('Explicit experiments require NAME=FLAGS with a simple name')
+            if name=='default' or any(name==existing for existing,_ in selections):
+                raise ValueError('Repeated or reserved experiment name: '+name)
+            selections.append((name,flags))
         if args.source is None:
             from check_loop_optimizations import SOURCE
             source=artifacts/'source.c';source.write_text(SOURCE)
@@ -287,7 +297,7 @@ def main():
             ['perf/compare_assembly.py','perf/check_loop_optimizations.py','perf/experiment-profiles.json']}
         report['configuration_sha256']={name:sha(ROOT/name) for name in ['Makefile.config','compcert.ini']}
         variants=[('compcert-default','',ROOT/'ccomp',['-O','-fno-inline','-stdlib',ROOT/'runtime'])]
-        variants += [('compcert-'+name,catalog[name],ROOT/'ccomp',['-O','-fno-inline','-stdlib',ROOT/'runtime']) for name in profiles]
+        variants += [('compcert-'+name,flags,ROOT/'ccomp',['-O','-fno-inline','-stdlib',ROOT/'runtime']) for name,flags in selections]
         variants += [('clang-O2','',args.clang,['-O2','-fno-inline','-arch','arm64'])]
         parsed={}
         for name,flags,compiler,options in variants:

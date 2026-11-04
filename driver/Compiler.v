@@ -41,8 +41,14 @@ Require Renumber.
 Require Constprop.
 Require CSE.
 Require Deadcode.
+Require PeelTwo.
 Require LowerLong.
 Require PreheaderLICM.
+Require LoopFusion.
+Require LoopTile2D.
+Require MemVector.
+Require LoopInterchange.
+Require LoopTile.
 Require Vectorize.
 Require LICM.
 Require StrengthReduce.
@@ -75,8 +81,14 @@ Require Renumberproof.
 Require Constpropproof.
 Require CSEproof.
 Require Deadcodeproof.
+Require PeelTwoproof.
 Require LowerLongproof.
 Require PreheaderLICMproof.
+Require LoopFusionproof.
+Require LoopTile2Dproof.
+Require MemVectorproof.
+Require LoopInterchangeproof.
+Require LoopTileproof.
 Require Vectorizeproof.
 Require LICMproof.
 Require StrengthReduceproof.
@@ -161,6 +173,14 @@ Definition transf_rtl_program (f: RTL.program) : res Asm.program :=
   @@@ partial_if Compopts.optim_redundancy (time "Redundancy elimination" Deadcode.transf_program)
    @@ print (print_RTL 7)
    @@ print (print_RTL 50)
+   @@ total_if Compopts.experimental_fusion (time "Experimental LoopFusion" LoopFusion.transf_program)
+   @@ print (print_RTL 71)
+   @@ total_if Compopts.experimental_tile2d (time "Experimental LoopTile2D" LoopTile2D.transf_program)
+   @@ print (print_RTL 75)
+   @@ total_if Compopts.experimental_interchange (time "Experimental LoopInterchange" LoopInterchange.transf_program)
+   @@ print (print_RTL 72)
+   @@ total_if Compopts.experimental_tile (time "Experimental LoopTile" LoopTile.transf_program)
+   @@ print (print_RTL 73)
    @@ total_if Compopts.experimental_vectorize
         (time "Experimental Vectorize" Vectorize.transf_program)
    @@ print (print_RTL 60)
@@ -203,6 +223,15 @@ Definition transf_rtl_program (f: RTL.program) : res Asm.program :=
   @@@ partial_if Compopts.experimental_cleanup
         (time "Experimental cleanup" ExtraCleanup.transf_program)
    @@ print (print_RTL 57)
+   @@ total_if Compopts.experimental_memvector (time "Memory peeling renumber" Renumber.transf_program)
+   @@ total_if Compopts.experimental_memvector (time "Two-iteration peeling" PeelTwo.transf_program)
+  @@@ partial_if Compopts.experimental_memvector (time "Peeled memory cleanup" ExtraCleanup.transf_program)
+   @@ total_if Compopts.experimental_memvector (time "Peeled memory renumber" Renumber.transf_program)
+   @@ print (print_RTL 70)
+   @@ total_if Compopts.experimental_memvector (time "Direct memory widening" MemVector.transf_program)
+   @@ total_if Compopts.experimental_memvector (time "Producer-backed memory widening" MemVector.Indirect.transf_program)
+   @@ total_if Compopts.experimental_memvector (time "Memory packing lowering" LowerLong.transf_program)
+   @@ print (print_RTL 74)
   @@@ time "Unused globals" Unusedglob.transform_program
    @@ print (print_RTL 8)
   @@@ time "Register allocation" Allocation.transf_program
@@ -311,6 +340,10 @@ Definition CompCert's_passes :=
   ::: mkpass (match_if Compopts.optim_constprop Renumberproof.match_prog)
   ::: mkpass (match_if Compopts.optim_CSE CSEproof.match_prog)
   ::: mkpass (match_if Compopts.optim_redundancy Deadcodeproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_fusion LoopFusionproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_tile2d LoopTile2Dproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_interchange LoopInterchangeproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_tile LoopTileproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_vectorize Vectorizeproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_vectorize LowerLongproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_licm LICMproof.match_prog)
@@ -326,6 +359,13 @@ Definition CompCert's_passes :=
   ::: mkpass (match_if Compopts.experimental_scalar
         (Experimentalproof.match_prog (Compopts.experimental_unroll4 tt)))
   ::: mkpass (match_if Compopts.experimental_cleanup ExtraCleanupproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memvector Renumberproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memvector PeelTwoproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memvector ExtraCleanupproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memvector Renumberproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memvector MemVectorproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memvector MemVectorproof.IndirectProof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memvector LowerLongproof.match_prog)
   ::: mkpass Unusedglobproof.match_prog
   ::: mkpass Allocproof.match_prog
   ::: mkpass Tunnelingproof.match_prog
@@ -370,7 +410,11 @@ Proof.
   set (p11 := total_if optim_constprop Renumber.transf_program p10) in *.
   destruct (partial_if optim_CSE CSE.transf_program p11) as [p12|e] eqn:P12; cbn [apply_total apply_partial] in T; try discriminate.
   destruct (partial_if optim_redundancy Deadcode.transf_program p12) as [p13|e] eqn:P13; simpl in T; try discriminate.
-  set (p13v := total_if experimental_vectorize Vectorize.transf_program p13) in *.
+  set (p13f := total_if experimental_fusion LoopFusion.transf_program p13) in *.
+  set (p13z := total_if experimental_tile2d LoopTile2D.transf_program p13f) in *.
+  set (p13x := total_if experimental_interchange LoopInterchange.transf_program p13z) in *.
+  set (p13t := total_if experimental_tile LoopTile.transf_program p13x) in *.
+  set (p13v := total_if experimental_vectorize Vectorize.transf_program p13t) in *.
   set (p13w := total_if experimental_vectorize LowerLong.transf_program p13v) in *.
   set (p13i := total_if experimental_licm LICM.transf_program p13w) in *.
   set (p13q := total_if experimental_preheader PreheaderLICM.transf_program p13i) in *.
@@ -386,7 +430,15 @@ Proof.
     (Experimental.transf_program (experimental_unroll4 tt)) p13u) in *.
   destruct (partial_if experimental_cleanup ExtraCleanup.transf_program p13a)
     as [p13b|e] eqn:P13b; simpl in T; try discriminate.
-  destruct (Unusedglob.transform_program p13b) as [p14|e] eqn:P14; simpl in T; try discriminate.
+  set (p13mn := total_if experimental_memvector Renumber.transf_program p13b) in *.
+  set (p13mp := total_if experimental_memvector PeelTwo.transf_program p13mn) in *.
+  destruct (partial_if experimental_memvector ExtraCleanup.transf_program p13mp)
+    as [p13mc|e] eqn:P13mc; simpl in T; try discriminate.
+  set (p13mr := total_if experimental_memvector Renumber.transf_program p13mc) in *.
+  set (p13mv := total_if experimental_memvector MemVector.transf_program p13mr) in *.
+  set (p13mi := total_if experimental_memvector MemVector.Indirect.transf_program p13mv) in *.
+  set (p13ml := total_if experimental_memvector LowerLong.transf_program p13mi) in *.
+  destruct (Unusedglob.transform_program p13ml) as [p14|e] eqn:P14; simpl in T; try discriminate.
   destruct (Allocation.transf_program p14) as [p15|e] eqn:P15; simpl in T; try discriminate.
   set (p16 := Tunneling.tunnel_program p15) in *.
   destruct (Linearize.transf_program p16) as [p17|e] eqn:P17; simpl in T; try discriminate.
@@ -407,6 +459,10 @@ Proof.
   exists p11; split. apply total_if_match. apply Renumberproof.transf_program_match.
   exists p12; split. eapply partial_if_match; eauto. apply CSEproof.transf_program_match.
   exists p13; split. eapply partial_if_match; eauto. apply Deadcodeproof.transf_program_match.
+  exists p13f; split. apply total_if_match. apply LoopFusionproof.transf_program_match.
+  exists p13z; split. apply total_if_match. apply LoopTile2Dproof.transf_program_match.
+  exists p13x; split. apply total_if_match. apply LoopInterchangeproof.transf_program_match.
+  exists p13t; split. apply total_if_match. apply LoopTileproof.transf_program_match.
   exists p13v; split. apply total_if_match. apply Vectorizeproof.transf_program_match.
   exists p13w; split. apply total_if_match. apply LowerLongproof.transf_program_match.
   exists p13i; split. apply total_if_match. apply LICMproof.transf_program_match.
@@ -421,6 +477,13 @@ Proof.
   exists p13u; split. apply total_if_match. apply Unswitchproof.transf_program_match.
   exists p13a; split. apply total_if_match. apply Experimentalproof.transf_program_match.
   exists p13b; split. eapply partial_if_match; eauto. apply ExtraCleanupproof.transf_program_match.
+  exists p13mn; split. apply total_if_match. apply Renumberproof.transf_program_match.
+  exists p13mp; split. apply total_if_match. apply PeelTwoproof.transf_program_match.
+  exists p13mc; split. eapply partial_if_match; eauto. apply ExtraCleanupproof.transf_program_match.
+  exists p13mr; split. apply total_if_match. apply Renumberproof.transf_program_match.
+  exists p13mv; split. apply total_if_match. apply MemVectorproof.transf_program_match.
+  exists p13mi; split. apply total_if_match. apply MemVectorproof.IndirectProof.transf_program_match.
+  exists p13ml; split. apply total_if_match. apply LowerLongproof.transf_program_match.
   exists p14; split. apply Unusedglobproof.transf_program_match; auto.
   exists p15; split. apply Allocproof.transf_program_match; auto.
   exists p16; split. apply Tunnelingproof.transf_program_match.
@@ -479,7 +542,7 @@ Ltac DestructM :=
       destruct H as (p & M & MM)
   end.
   repeat DestructM. subst tp.
-  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p35)).
+  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p46)).
   {
   eapply compose_forward_simulations.
     eapply SimplExprproof.transl_program_correct; eassumption.
@@ -506,6 +569,14 @@ Ltac DestructM :=
     eapply match_if_simulation. eassumption. exact CSEproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact Deadcodeproof.transf_program_correct; eassumption.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LoopFusionproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LoopTile2Dproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LoopInterchangeproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LoopTileproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact Vectorizeproof.transf_program_correct.
   eapply compose_forward_simulations.
@@ -535,6 +606,20 @@ Ltac DestructM :=
     exact (Experimentalproof.transf_program_correct (experimental_unroll4 tt)).
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact ExtraCleanupproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact Renumberproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact PeelTwoproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact ExtraCleanupproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact Renumberproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact MemVectorproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact MemVectorproof.IndirectProof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LowerLongproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply Unusedglobproof.transf_program_correct; eassumption.
   eapply compose_forward_simulations.

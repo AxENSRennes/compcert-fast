@@ -2,7 +2,7 @@
 PYTHON ?= python3
 JOBS ?= 4
 .NOTPARALLEL:
-.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators test-experiments test-neon test-loops compare-assembly
+.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators test-experiments test-neon test-loops test-memory-loops compare-assembly
 help:
 	@echo 'make -f Makefile.fast baseline  # bootstrap, full + incremental proofs, build, benchmark'
 	@echo 'make -f Makefile.fast bench     # two independent measurement blocks + noise gate'
@@ -11,6 +11,7 @@ help:
 	@echo 'make -f Makefile.fast test-experiments # proved experimental passes, independent and combined'
 	@echo 'make -f Makefile.fast compare-assembly # ARM64 static comparison with clang -O2; no executable runs'
 	@echo 'make -f Makefile.fast test-loops # LICM, induction, peeling, automatic NEON correctness'
+	@echo 'make -f Makefile.fast test-memory-loops # memory widening, fusion, interchange and tiling correctness'
 	@echo 'make -f Makefile.fast test-neon # integer model against native NEON, no speed series'
 bootstrap:
 	./perf/bootstrap.sh
@@ -33,7 +34,15 @@ test-loops: compiler
 	$(PYTHON) perf/check_peel.py
 	$(PYTHON) perf/check_vectorize.py
 	$(PYTHON) perf/check_loop_optimizations.py
-test-experiments: compiler test-loops
+test-memory-loops: compiler
+	$(PYTHON) perf/check_peeltwo.py
+	$(PYTHON) perf/check_memvector.py
+	$(PYTHON) perf/check_loopfusion.py
+	$(PYTHON) perf/check_loopinterchange.py
+	$(PYTHON) perf/check_looptile.py
+	$(PYTHON) perf/check_looptile2d.py
+	$(PYTHON) perf/check_memory_loops.py
+test-experiments: compiler test-loops test-memory-loops
 	$(PYTHON) perf/check_heuristics.py
 	$(PYTHON) perf/check_select.py
 	$(PYTHON) perf/check_scalar.py
@@ -46,6 +55,7 @@ test-experiments: compiler test-loops
 	$(PYTHON) perf/check_experiments.py
 compare-assembly: compiler
 	$(PYTHON) perf/compare_assembly.py
+	$(PYTHON) perf/compare_memory_loops.py
 test-neon: guard
 	$(PYTHON) perf/check_neon.py
 bench: compiler
