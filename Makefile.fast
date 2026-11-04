@@ -23,6 +23,7 @@ bench: compiler
 correctness: compiler
 	$(PYTHON) perf/bench.py --correctness-only --output perf/results/correctness.json
 verify: guard test-harness compiler correctness
+	./perf/in-env $(MAKE) -C test clean
 	./perf/in-env $(MAKE) -C test -j$(JOBS) all
 	./perf/in-env $(MAKE) -C test test
 baseline: bootstrap test-harness proofs compiler
