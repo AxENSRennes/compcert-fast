@@ -39,6 +39,7 @@ on the running macOS. It does not alter shell startup files.
 make -f Makefile.fast bootstrap
 make -f Makefile.fast proofs       # clean proofs, coqchk, one-file rebuild timing
 make -f Makefile.fast verify       # build, reference outputs, native tests, ABI, PIC
+make -f Makefile.fast test-validators # malformed candidates against extracted validators
 make -f Makefile.fast baseline     # first performance reference, on an idle Mac
 make -f Makefile.fast bench        # subsequent measurements against that reference
 ```
@@ -60,7 +61,32 @@ macOS QoS requests favor performance cores but do not enforce or verify
 exclusive placement on them. A rejected timing series is not a valid baseline
 or evidence of an optimization gain.
 
-`perf/guard.py` freezes the upstream formal sources and license byte for byte.
+`perf/guard.py` anchors the original formal source and license hashes to the
+fixed upstream Git objects. On `proof/validated-fallback`, only
+`backend/Linearize.v` and `backend/Linearizeproof.v` have reviewed changes,
+recorded separately in `perf/proved-changes.json`. Existing lemma statements
+remain identical. The principal theorem files, axioms, semantics, extraction
+mappings and trusted build recipes remain frozen. A full proof check also
+compares both principal theorems' assumptions with the original checked
+baseline; it invalidates an old success report before starting. This source
+gate is a regression check, not a replacement for the Coq kernel.
+
+The proved linearization fallback retains a heuristic order when its
+uniqueness and reachable-block checks pass. A rejected returned order is
+replaced by every defined block in deterministic finite-map order, proved
+complete and free of duplicates. This handles validator rejection, not an
+exception or nontermination inside the OCaml heuristic. The native validator
+tests link the production extracted modules, exercise malformed allocations
+and layouts, and check that accepted layouts retain their order.
+
+`make -f Makefile.fast verify` regenerates extracted OCaml from the unchanged
+extraction mappings and rebuilds native tests before running them. The
+`Verified correctness` GitHub workflow runs the frozen ARM64 macOS toolchain,
+full proofs, independent `coqchk`, assumptions comparison and native tests;
+it contains no speed benchmark. Initial speed-baseline capture still requires
+the unchanged compiler on `fast` (the original tooling checkpoint is
+`befa8484ea29fe73a90785983541fb45745c26a0`).
+
 The main correctness theorem, its hypotheses, and `Asm.v` remain unchanged.
 Scalar heuristic experiments live on separate `experiment/*` branches and
 require passing correctness and noise checks, with a smaller measured gap,

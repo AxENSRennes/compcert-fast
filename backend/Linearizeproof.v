@@ -186,6 +186,59 @@ Proof.
   apply PTree.elements_correct. eauto.
 Qed.
 
+Lemma fallback_enumeration_complete:
+  forall f pc i,
+  f.(LTL.fn_code)!pc = Some i ->
+  In pc (fallback_enumeration f).
+Proof.
+  intros. unfold fallback_enumeration.
+  change (In (fst (pc, i)) (List.map (@fst node LTL.bblock) (PTree.elements f.(LTL.fn_code)))).
+  apply in_map. apply PTree.elements_correct. auto.
+Qed.
+
+Lemma fallback_enumeration_norepet:
+  forall f, list_norepet (fallback_enumeration f).
+Proof.
+  intros. apply PTree.elements_keys_norepet.
+Qed.
+
+Lemma enumerate_with_preserves_valid:
+  forall f reach candidate s,
+  nodeset_of_list candidate Nodeset.empty = OK s ->
+  check_reachable f reach s = true ->
+  enumerate_with f reach candidate = candidate.
+Proof.
+  intros. unfold enumerate_with. rewrite H, H0. reflexivity.
+Qed.
+
+Lemma enumerate_with_complete:
+  forall f reach candidate pc i,
+  f.(LTL.fn_code)!pc = Some i ->
+  reach!!pc = true ->
+  In pc (enumerate_with f reach candidate).
+Proof.
+  intros. unfold enumerate_with.
+  destruct (nodeset_of_list candidate Nodeset.empty) as [s|] eqn:SET.
+  destruct (check_reachable f reach s) eqn:REACH.
+  - exploit check_reachable_correct; eauto. intro IN.
+    exploit nodeset_of_list_correct; eauto. intros [A [B C]].
+    rewrite B in IN. destruct IN. elim (Nodeset.empty_1 H1). auto.
+  - eapply fallback_enumeration_complete; eauto.
+  - eapply fallback_enumeration_complete; eauto.
+Qed.
+
+Lemma enumerate_with_norepet:
+  forall f reach candidate,
+  list_norepet (enumerate_with f reach candidate).
+Proof.
+  intros. unfold enumerate_with.
+  destruct (nodeset_of_list candidate Nodeset.empty) as [s|] eqn:SET.
+  destruct (check_reachable f reach s).
+  - exploit nodeset_of_list_correct; eauto. tauto.
+  - apply fallback_enumeration_norepet.
+  - apply fallback_enumeration_norepet.
+Qed.
+
 Lemma enumerate_complete:
   forall f enum pc i,
   enumerate f = OK enum ->
@@ -193,13 +246,8 @@ Lemma enumerate_complete:
   (reachable f)!!pc = true ->
   In pc enum.
 Proof.
-  intros until i. unfold enumerate.
-  set (reach := reachable f).
-  intros. monadInv H.
-  generalize EQ0; clear EQ0. caseEq (check_reachable f reach x); intros; inv EQ0.
-  exploit check_reachable_correct; eauto. intro.
-  exploit nodeset_of_list_correct; eauto. intros [A [B C]].
-  rewrite B in H2. destruct H2. elim (Nodeset.empty_1 H2). auto.
+  unfold enumerate; intros. inv H.
+  eapply enumerate_with_complete; eauto.
 Qed.
 
 Lemma enumerate_norepet:
@@ -207,12 +255,17 @@ Lemma enumerate_norepet:
   enumerate f = OK enum ->
   list_norepet enum.
 Proof.
-  intros until enum. unfold enumerate.
-  set (reach := reachable f).
-  intros. monadInv H.
-  generalize EQ0; clear EQ0. caseEq (check_reachable f reach x); intros; inv EQ0.
-  exploit nodeset_of_list_correct; eauto. intros [A [B C]]. auto.
+  unfold enumerate; intros. inv H. apply enumerate_with_norepet.
 Qed.
+
+Lemma enumerate_total:
+  forall f, exists enum, enumerate f = OK enum.
+Proof.
+  intros. unfold enumerate. eexists; reflexivity.
+Qed.
+
+(* Preserve the abstraction of enumeration in the simulation proof below. *)
+Local Opaque enumerate.
 
 (** * Properties related to labels *)
 

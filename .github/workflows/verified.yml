@@ -1,0 +1,42 @@
+name: Verified correctness
+
+on:
+  push:
+    branches: [fast, 'proof/**', 'experiment/**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  aarch64-macos:
+    runs-on: macos-15
+    timeout-minutes: 40
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+    steps:
+      - name: Checkout complete proof baseline and test sources
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          submodules: true
+          persist-credentials: false
+      - name: System dependencies
+        run: brew install gmp pkgconf
+      - name: Frozen local toolchain
+        run: make -f Makefile.fast bootstrap
+      - name: Full proofs, independent kernel check and unchanged principal assumptions
+        run: make -f Makefile.fast proofs
+      - name: Native validators, reference outputs, regression tests, ABI and PIC
+        run: make -f Makefile.fast verify
+      - name: Preserve results and failure diagnostics
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: verified-correctness-aarch64-macos
+          path: |
+            perf/results/
+            perf/artifacts/proofs/
+            perf/artifacts/validators/
+          retention-days: 14

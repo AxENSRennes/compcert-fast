@@ -1,25 +1,39 @@
 #!/usr/bin/env python3
-"""Phase-2 gate: all upstream Coq specifications, proofs and license stay byte-identical.
+"""Freeze theorem/semantics/trust sources; gate two reviewed proof changes.
 
-This deliberately conservative source gate complements (never replaces) coqchk.
-Oracle heuristics may change; extracting the compiler still uses the unchanged
-proved allocation validator. A later proved pass needs an explicit gate revision.
+This regression check complements, never replaces, coqchk and the comparison
+of both principal theorems' assumptions. Original hashes are anchored to Git
+objects; editing a manifest alone cannot change the trusted baseline.
 """
 import hashlib
 import json
 from pathlib import Path
 import subprocess
+from integrity import UPSTREAM, REVIEWED_FORMAL, ORACLES, upstream_sources, sha, reviewed_change_safe
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
     lock = json.loads((ROOT / "perf/trust-lock.json").read_text())
+    original = upstream_sources(ROOT)
+    expected_lock = {name: sha(data) for name, data in original.items()
+                     if name.endswith((".v", ".vp")) or name == "LICENSE"}
+    if lock.get("upstream_commit") != UPSTREAM or lock.get("files") != expected_lock:
+        raise SystemExit("Original trust manifest differs from fixed upstream Git objects")
+    reviewed = json.loads((ROOT / "perf/proved-changes.json").read_text())
+    if set(reviewed) - REVIEWED_FORMAL:
+        raise SystemExit("Unapproved formal change path")
     failures = []
-    for name, expected in lock["files"].items():
+    for name, data in original.items():
+        if name in ORACLES:
+            continue
         path = ROOT / name
+        expected = reviewed.get(name, sha(data))
         if not path.is_file() or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             failures.append(name)
+        elif name in reviewed and not reviewed_change_safe(data.decode(), path.read_text()):
+            failures.append(name + " (existing statement, assumptions, imports or unchecked commands changed)")
     # Catch newly tracked proof sources that the frozen corpus doesn't contain.
     tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
     failures.extend(name for name in tracked if name.endswith((".v", ".vp"))
@@ -35,7 +49,9 @@ def main():
                 failures.append(name)
     if failures:
         raise SystemExit("Formal source gate failed: " + ", ".join(failures))
-    print(f"Unchanged: {len(lock['files'])} upstream formal/license files; base {lock['upstream_commit']}")
+    print(f"Anchored upstream formal/license files: {len(lock['files'])}; "
+          f"reviewed changes: {', '.join(sorted(reviewed)) or 'none'}; "
+          "main theorems, semantics, axioms and extraction mappings unchanged")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
-# Research tooling; compiler sources and their licenses remain unchanged.
+# Research tooling; preserve principal theorem statements and trusted semantics.
 PYTHON ?= python3
 JOBS ?= 4
 .NOTPARALLEL:
-.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify
+.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators
 help:
 	@echo 'make -f Makefile.fast baseline  # bootstrap, full + incremental proofs, build, benchmark'
 	@echo 'make -f Makefile.fast bench     # two independent measurement blocks + noise gate'
@@ -14,15 +14,18 @@ guard:
 	$(PYTHON) perf/guard.py
 test-harness:
 	$(PYTHON) -m unittest discover -s perf -p 'test_*.py'
-proofs: guard
+proofs:
 	./perf/in-env $(PYTHON) perf/proofs.py --jobs $(JOBS)
-compiler:
+compiler: guard
+	./perf/in-env $(PYTHON) -c 'from pathlib import Path; Path("extraction/STAMP").unlink(missing_ok=True)'
 	./perf/in-env $(MAKE) -j$(JOBS) all
+test-validators: compiler
+	$(PYTHON) perf/check_validators.py
 bench: compiler
 	$(PYTHON) perf/bench.py --output perf/results/latest.json
 correctness: compiler
 	$(PYTHON) perf/bench.py --correctness-only --output perf/results/correctness.json
-verify: guard test-harness compiler correctness
+verify: guard test-harness compiler correctness test-validators
 	./perf/in-env $(MAKE) -C test clean
 	./perf/in-env $(MAKE) -C test -j$(JOBS) all
 	./perf/in-env $(MAKE) -C test test

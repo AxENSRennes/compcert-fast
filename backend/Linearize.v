@@ -122,13 +122,26 @@ Definition check_reachable
      (f: LTL.function) (reach: PMap.t bool) (s: Nodeset.t) : bool :=
   PTree.fold (check_reachable_aux reach s) f.(LTL.fn_code) true.
 
+(** If the heuristic proposes an invalid enumeration, retain every defined
+  block in the deterministic order provided by the finite map.  Unlike the
+  heuristic order, this fallback needs no assumption about reachability. *)
+
+Definition fallback_enumeration (f: LTL.function) : list node :=
+  List.map (@fst node LTL.bblock) (PTree.elements f.(LTL.fn_code)).
+
+Definition enumerate_with (f: LTL.function) (reach: PMap.t bool)
+                          (candidate: list node) : list node :=
+  match nodeset_of_list candidate Nodeset.empty with
+  | Error _ => fallback_enumeration f
+  | OK s =>
+      if check_reachable f reach s
+      then candidate
+      else fallback_enumeration f
+  end.
+
 Definition enumerate (f: LTL.function) : res (list node) :=
   let reach := reachable f in
-  let enum := enumerate_aux f reach in
-  do s <- nodeset_of_list enum Nodeset.empty;
-  if check_reachable f reach s
-  then OK enum
-  else Error (msg "Linearize: wrong enumeration").
+  OK (enumerate_with f reach (enumerate_aux f reach)).
 
 (** * Translation from LTL to Linear *)
 

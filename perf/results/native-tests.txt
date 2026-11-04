@@ -1,6 +1,6 @@
 Command: make -f Makefile.fast verify
 Exit status: 0
-Compiler SHA256: cb48e42c05f91bfde282ea66b60cf746978d83fae2bf9f1f34aef7e3300af370
+Compiler SHA256: 16da5512bd943c0894c4947915c236d0448a877aa5b5c96b44d7d896d5b47a48
 
 fib: passed
 integr: passed
