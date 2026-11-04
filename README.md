@@ -86,6 +86,7 @@ COMPCERT_EXPERIMENTS=rtl-unroll2,memory-cleanup ./ccomp -stdlib runtime program.
 COMPCERT_EXPERIMENTS=loop-spill,trace-layout COMPCERT_EXPERIMENT_TRACE=/tmp/compcert-trace.jsonl ./ccomp -stdlib runtime program.c
 make -f Makefile.fast test-experiments
 make -f Makefile.fast test-loops
+make -f Makefile.fast compare-assembly
 make -f Makefile.fast test-neon
 make -f Makefile.fast verify
 ```
@@ -156,6 +157,15 @@ scalar and loop/vector profiles. The GitHub `Verified correctness` workflow cont
 benchmark.
 Initial performance-baseline capture still requires the unchanged compiler at
 `befa8484ea29fe73a90785983541fb45745c26a0` on an idle Mac.
+
+`compare-assembly` compiles the same ordinary C functions with baseline
+CompCert, the `loops4` profile and clang `-O2`, using macOS ARM64 and disabled
+inlining in both compilers. It records assembly and static instruction,
+load/store, branch/call, register and packed-lane counts in a JSON report.
+No generated program is executed. These observations guide future proved
+transformations; instruction-site counts are not speed measurements or
+profitability evidence. Custom source units/functions/profiles are supported
+by `python3 perf/compare_assembly.py --help`.
 
 ### NEON scope and trust
 

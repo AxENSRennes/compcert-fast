@@ -43,6 +43,7 @@ jobs:
             perf/artifacts/neon/
             perf/artifacts/packed-neon/
             perf/artifacts/loop-optimizations/
+            perf/artifacts/assembly-comparison/
             perf/artifacts/vectorize/
             perf/artifacts/preheader_licm/
             perf/artifacts/lowerlong/
