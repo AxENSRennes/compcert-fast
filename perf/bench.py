@@ -102,6 +102,14 @@ def main():
     baseline = ROOT / "perf/results/baseline.json"
     if args.correctness_only and output == baseline.resolve():
         raise RuntimeError("Correctness-only output must not replace the performance baseline")
+    if output == baseline.resolve():
+        upstream = json.loads((ROOT / "perf/trust-lock.json").read_text())["upstream_commit"]
+        comparison = subprocess.run(
+            ["git", "diff", "--quiet", upstream, "--", ":(glob)**/*.ml", ":(glob)**/*.mli",
+             ":(glob)**/*.v", ":(glob)**/*.vp", "configure", "Makefile", "Makefile.extr", "runtime"],
+            cwd=ROOT)
+        if comparison.returncode:
+            raise RuntimeError("Capture the initial baseline from the unchanged compiler on branch fast")
     if output == baseline.resolve() and output.exists():
         previous = json.loads(output.read_text())
         if previous.get("noise_pass") and previous.get("correctness_pass"):

@@ -18,9 +18,9 @@ proofs: guard
 	./perf/in-env $(PYTHON) perf/proofs.py --jobs $(JOBS)
 compiler:
 	./perf/in-env $(MAKE) -j$(JOBS) all
-bench:
+bench: compiler
 	$(PYTHON) perf/bench.py --output perf/results/latest.json
-correctness:
+correctness: compiler
 	$(PYTHON) perf/bench.py --correctness-only --output perf/results/correctness.json
 verify: guard test-harness compiler correctness
 	./perf/in-env $(MAKE) -C test -j$(JOBS) all
