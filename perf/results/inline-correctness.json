@@ -1,0 +1,450 @@
+{
+  "schema_version": 1,
+  "mode": "correctness",
+  "created_utc": "2026-11-04T18:31:48.745458+00:00",
+  "suite_sha256": "610d36f8c304769184e9182982d10b8928cd0c31748e31747ce231b6d3a38f5d",
+  "revision": "60767cf38b560c2deb213fb2ee55928b232d663c",
+  "tracked_changes": "Makefile.fast          |  5 ++++-\n backend/Inliningaux.ml | 21 +++++++++++++++++++--\n 2 files changed, 23 insertions(+), 3 deletions(-)",
+  "machine": {
+    "cpu": "Apple M5",
+    "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
+    "power": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23527523)\t28%; charging; 4:40 remaining present: true",
+    "p_cores": "4",
+    "scheduling": "QOS_CLASS_USER_INTERACTIVE; advisory, P-core placement NOT verified"
+  },
+  "compiler": {
+    "compcert": "The CompCert C verified compiler, version 3.17",
+    "compcert_sha256": "afd0d7950f5df564eff75be504ccfcaedc3b8dce75df41dccb0a35378845b864",
+    "clang": "Apple clang version 21.0.0 (clang-2100.4.1.1)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
+  },
+  "protocol": {
+    "samples_per_block": 9,
+    "blocks": 2,
+    "min_sample_seconds": 0.25,
+    "max_relative_mad": 0.05,
+    "max_block_drift": 0.03,
+    "target_gap_fraction": 0.75
+  },
+  "benchmarks": {
+    "fft": {
+      "stdout_sha256": "57c8ddaa21df4bc07a23b03b76e152216f7650843d6870c98e87e650da0a4286",
+      "correctness_pass": true
+    },
+    "nbody": {
+      "stdout_sha256": "3fb938822f2b87322baee13eea59620bab076cca553f7e01214dbc674bd09387",
+      "correctness_pass": true
+    },
+    "qsort": {
+      "stdout_sha256": "a12b7cb43c9d9134b5bb1b35e9096b66775d9e92e7611d1cc92b02edd6782a87",
+      "correctness_pass": true
+    },
+    "spectral": {
+      "stdout_sha256": "ab9143969dccdc1ca1f49d5e60c4fc40b4299e9fd2841f8d358a0cde47f78427",
+      "correctness_pass": true
+    },
+    "nsieve": {
+      "stdout_sha256": "4053ed86223d706063af25e9f1d54ed8a79741264c82fc05210ce18be55f6aaf",
+      "correctness_pass": true
+    },
+    "fannkuch": {
+      "stdout_sha256": "434a247ac82639ee127b5cdf37b15404cb095c6009f2fcc8f29e67f90555ea33",
+      "correctness_pass": true
+    },
+    "binarytrees": {
+      "stdout_sha256": "a5814ed8f8e2a878b707e810b46e0979cfbcc369cc1960d51d5b2efa70d375f4",
+      "correctness_pass": true
+    },
+    "integr": {
+      "stdout_sha256": "2640d73d6d3fdf358c5afca575b4d255f3077bbd509f3a3af5b0315bc37eb9d8",
+      "correctness_pass": true
+    },
+    "perlin": {
+      "stdout_sha256": "5291442145f98dd0544caa762520d9a5ad359fdb89e5ccbd8a91dabe24fd848f",
+      "correctness_pass": true
+    },
+    "lists": {
+      "stdout_sha256": "3df37de95de2d6178e7c17a0bcb38f78927088befb99aeaa7e6aa7df2f9b8a33",
+      "correctness_pass": true
+    }
+  },
+  "block_load_average": [],
+  "correctness_pass": true,
+  "noise_pass": false,
+  "compile_commands": [
+    [
+      "clang",
+      "-O2",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/runner.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/fft.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fft.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fft.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fft.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/fft.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fft.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fft.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fft.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/nbody.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nbody.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nbody.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nbody.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/nbody.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nbody.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nbody.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nbody.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/qsort.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/qsort.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/qsort.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/qsort.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/qsort.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/qsort.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/qsort.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/qsort.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/spectral.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/spectral.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/spectral.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/spectral.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/spectral.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/spectral.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/spectral.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/spectral.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/nsieve.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nsieve.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nsieve.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nsieve.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/nsieve.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nsieve.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nsieve.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/nsieve.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/fannkuch.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fannkuch.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fannkuch.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fannkuch.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/fannkuch.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fannkuch.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fannkuch.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/fannkuch.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/binarytrees.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/binarytrees.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/binarytrees.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/binarytrees.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/binarytrees.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/binarytrees.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/binarytrees.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/binarytrees.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/integr.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/integr.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/integr.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/integr.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/integr.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/integr.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/integr.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/integr.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/perlin.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/perlin.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/perlin.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/perlin.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/perlin.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/perlin.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/perlin.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/perlin.clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-O",
+      "-stdlib",
+      "runtime",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/lists.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/lists.compcert.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/lists.compcert.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/lists.compcert"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Dmain=benchmark_main",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/test/c/lists.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/lists.clang.o"
+    ],
+    [
+      "clang",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/lists.clang.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/runner.o",
+      "-lm",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/bench/lists.clang"
+    ]
+  ],
+  "performance_measured": false,
+  "experiment": {
+    "status": "correctness verified; performance pending a quiet machine",
+    "source_sha256": {
+      "backend/Inliningaux.ml": "ebb50099fb026084a7c4d478512dbd524531c62a18db5daf80f5adad8b0d9c9a"
+    }
+  }
+}

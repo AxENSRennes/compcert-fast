@@ -1,0 +1,26 @@
+{
+  "compiler_sha256": "afd0d7950f5df564eff75be504ccfcaedc3b8dce75df41dccb0a35378845b864",
+  "success": true,
+  "checks": [
+    {
+      "mode": "default",
+      "call_retained": false,
+      "outputs_pass": true
+    },
+    {
+      "mode": "disabled",
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    {
+      "mode": "size",
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    {
+      "mode": "attribute",
+      "call_retained": true,
+      "outputs_pass": true
+    }
+  ]
+}

@@ -83,13 +83,30 @@ let static_called_once id io =
   else
     false
 
-(* To be considered: heuristics based on size of function? *)
+(* Small leaf functions are cheap to duplicate and expose operations to the
+   already verified constant propagation, CSE and register allocation passes.
+   Count real RTL instructions, and exclude calls (including tail calls) so
+   this additional heuristic cannot expand recursive call chains.  Decisions
+   remain arbitrary inputs to the unchanged, proved inlining transformation. *)
+
+let small_leaf_function (f: coq_function) =
+  let size, leaf = PTree.fold
+    (fun (size, leaf) _ instr ->
+      match instr with
+      | Inop _ -> (size, leaf)
+      | Ibuiltin ((EF_debug _ | EF_annot _), _, _, _) -> (size, leaf)
+      | Icall _ | Itailcall _ -> (size + 1, false)
+      | _ -> (size + 1, leaf))
+    f.fn_code (0, true) in
+  leaf && size <= 32
 
 let should_inline (io: inlining_info) (id: ident) (f: coq_function) =
   if !Clflags.option_finline then begin
     match C2C.atom_inline id with
     | C2C.Inline -> true
     | C2C.Noinline -> false
-    | C2C.No_specifier -> static_called_once id io
+    | C2C.No_specifier ->
+        static_called_once id io ||
+        (not !Clflags.option_Osize && small_leaf_function f)
   end else
     false

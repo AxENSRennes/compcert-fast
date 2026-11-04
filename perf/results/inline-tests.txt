@@ -1,0 +1,251 @@
+python3 perf/guard.py
+Unchanged: 271 upstream formal/license files; base 14d616046360a0b2611ebdfc2f98368af402e1f7
+python3 -m unittest discover -s perf -p 'test_*.py'
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
+./perf/in-env /Applications/Xcode.app/Contents/Developer/usr/bin/make -j4 all
+/Applications/Xcode.app/Contents/Developer/usr/bin/make proof
+make[2]: Nothing to be done for `proof'.
+/Applications/Xcode.app/Contents/Developer/usr/bin/make extraction
+make[2]: Nothing to be done for `extraction'.
+/Applications/Xcode.app/Contents/Developer/usr/bin/make ccomp
+/Applications/Xcode.app/Contents/Developer/usr/bin/make -f Makefile.extr ccomp
+make[3]: `ccomp' is up to date.
+/Applications/Xcode.app/Contents/Developer/usr/bin/make runtime
+/Applications/Xcode.app/Contents/Developer/usr/bin/make -C runtime
+make[3]: Nothing to be done for `all'.
+python3 perf/bench.py --correctness-only --output perf/results/correctness.json
+Unchanged: 271 upstream formal/license files; base 14d616046360a0b2611ebdfc2f98368af402e1f7
+fft: both compilers match the reference
+nbody: both compilers match the reference
+qsort: both compilers match the reference
+spectral: both compilers match the reference
+nsieve: both compilers match the reference
+fannkuch: both compilers match the reference
+binarytrees: both compilers match the reference
+integr: both compilers match the reference
+perlin: both compilers match the reference
+lists: both compilers match the reference
+python3 perf/check_inline.py
+{
+  "compiler_sha256": "afd0d7950f5df564eff75be504ccfcaedc3b8dce75df41dccb0a35378845b864",
+  "success": true,
+  "checks": [
+    {
+      "mode": "default",
+      "call_retained": false,
+      "outputs_pass": true
+    },
+    {
+      "mode": "disabled",
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    {
+      "mode": "size",
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    {
+      "mode": "attribute",
+      "call_retained": true,
+      "outputs_pass": true
+    }
+  ]
+}
+./perf/in-env /Applications/Xcode.app/Contents/Developer/usr/bin/make -C test -j4 all
+set -e; for i in c compression raytracer spass regression abi pic; do /Applications/Xcode.app/Contents/Developer/usr/bin/make CCOMPOPTS='' -C $i all; done
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+make[2]: Nothing to be done for `all'.
+../../ccomp  -stdlib ../../runtime -fpic -L. -o main main.c -l2 -l1
+./perf/in-env /Applications/Xcode.app/Contents/Developer/usr/bin/make -C test test
+set -e; for i in c compression raytracer spass regression abi pic; do /Applications/Xcode.app/Contents/Developer/usr/bin/make SIMU='' -C $i test; done
+fib: passed
+integr: passed
+qsort: passed
+fft: passed
+fftsp: passed
+fftw: passed
+sha1: passed
+sha3: passed
+aes: passed
+almabench: passed
+lists: passed
+binarytrees: passed
+fannkuch: passed
+knucleotide: passed
+mandelbrot: passed
+nbody: passed
+nsieve: passed
+nsievebits: passed
+spectral: passed
+vmach: passed
+bisect: passed
+chomp: passed
+perlin: passed
+siphash24: passed
+Test data: /usr/share/dict/words
+arcode: compression...
+arcode: decompression...
+arcode: passed
+lzw: compression...
+lzw: decompression...
+lzw: passed
+lzss: compression...
+lzss: decompression...
+lzss: passed
+./render < kal.gml
+raytracer: passed
+./spass small_problem.dfg | grep 'Proof found'
+SPASS beiseite: Proof found.
+----------- Compiled tests -------------
+int32: passed
+int64: passed
+floats: passed
+floats-basics: passed
+floats-lit: passed
+expr1: passed
+expr6: passed
+funptr2: passed
+initializers: passed
+initializers2: passed
+initializers3: passed
+volatile1: passed
+volatile2: passed
+volatile3: passed
+volatile4: passed
+funct3: passed
+expr5: passed
+struct7: passed
+struct8: passed
+struct11: passed
+struct12: passed
+casts1: passed
+casts2: passed
+char1: passed
+sizeof1: passed
+sizeof2: passed
+binops: passed
+bool: passed
+for1: passed
+for2: passed
+switch: passed
+switch2: passed
+compound: passed
+decl1: passed
+decl2: passed
+bitfields9: passed
+ptrs3: passed
+telescopes: passed
+parsing: passed
+krfun: passed
+ifconv: passed
+generic: passed
+dollars: passed
+consteval: passed
+stringlit: passed
+charlit: passed
+attribs1: passed
+bitfields1: passed
+bitfields2: passed
+bitfields3: passed
+bitfields4: passed
+bitfields5: passed
+bitfields6: passed
+bitfields7: passed
+bitfields8: passed
+bitfields_uint_t: passed
+bitfields10: passed
+builtins-common: passed
+builtins-aarch64: passed
+packedstruct1: passed
+packedstruct2: passed
+alignas: passed
+varargs1: passed
+varargs2: passed
+varargs3: passed
+sections: passed
+alias: passed
+aligned: passed
+switch3: passed
+extern2: passed
+alignglob: passed
+----------- Interpreted tests -------------
+int32: passed
+int64: passed
+floats: passed
+floats-basics: passed
+floats-lit: passed
+expr1: passed
+expr6: passed
+funptr2: passed (failed as expected)
+initializers.c:52: warning: initializer string for array of chars x20 is too long
+initializers.c:73: warning: initializer string for array of wide chars x28 is too long
+initializers: passed
+initializers2: passed
+initializers3.c:60: warning: initializer string for array of chars x20 is too long
+initializers3: passed
+volatile1: passed
+volatile2: passed
+volatile3: passed
+volatile4: passed
+funct3: passed
+expr5: passed
+struct7: passed
+struct8: passed
+struct11: passed
+struct12: passed
+casts1: passed
+casts2: passed
+char1: passed
+sizeof1: passed
+sizeof2: passed
+binops: passed
+bool: passed
+for1: passed
+for2: passed
+switch: passed
+switch2: passed
+compound: passed
+decl1: passed
+decl2: passed
+bitfields9: passed
+ptrs3: passed
+telescopes: passed
+parsing.c:105: warning: control reaches end of non-void function [-Wreturn-type]
+parsing: passed
+krfun.c:23: warning: type of 'a' defaults to 'int' [-Wimplicit-int]
+krfun.c:23: warning: type of 'c' defaults to 'int' [-Wimplicit-int]
+krfun: passed
+ifconv: passed
+generic: passed
+dollars: passed
+consteval: passed
+stringlit: passed
+charlit.c:15: warning: overflow in character constant, changes value from 254 to -2 [-Wconstant-conversion]
+charlit.c:20: warning: overflow in character constant, changes value from 4660 to 52 [-Wconstant-conversion]
+charlit.c:25: warning: overflow in character constant, changes value from 233 to -23 [-Wconstant-conversion]
+charlit.c:30: warning: overflow in character constant, changes value from 29483 to 43 [-Wconstant-conversion]
+charlit.c:35: warning: overflow in character constant, changes value from 127820 to 76 [-Wconstant-conversion]
+charlit.c:36: warning: overflow in character constant, changes value from 127820 to 62284 [-Wconstant-conversion]
+charlit: passed
+NaNs: compiler and interpreter agree
+fixed.compcert: passed
+fixed.cc2compcert: passed
+fixed.compcert2cc: passed
+vararg.compcert: passed
+vararg.cc2compcert: passed
+vararg.compcert2cc: passed
+struct.compcert: passed
+struct.cc2compcert: skipped
+struct.compcert2cc: skipped
+layout: CompCert and C agree
+staticlayout: CompCert and C agree
+pic: passed
