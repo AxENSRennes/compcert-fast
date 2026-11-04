@@ -42,4 +42,9 @@ jobs:
             perf/artifacts/experiments/
             perf/artifacts/neon/
             perf/artifacts/packed-neon/
+            perf/artifacts/loop-optimizations/
+            perf/artifacts/vectorize/
+            perf/artifacts/preheader_licm/
+            perf/artifacts/lowerlong/
+            perf/artifacts/native-experiments/
           retention-days: 14

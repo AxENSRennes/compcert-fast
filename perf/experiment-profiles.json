@@ -3,7 +3,9 @@
   "promotion_allowed_without_performance_result": false,
   "profiles": {
     "scalar2": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup",
-    "scalar4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup"
+    "scalar4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup",
+    "loops2": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader",
+    "loops4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader"
   },
   "limits": {
     "hoist-constant": "One integer literal per function with at most 512 RTL instructions, cached in a fresh register. Cycle preference examines at most 32 literals and 128 work items per literal. Larger functions remain unchanged. No general LICM or induction-variable analysis.",
@@ -15,13 +17,17 @@
     "rtl-unroll4": "Validated four-phase CFG covering. Not general trip-count based loop unrolling.",
     "memory-cleanup": "Two existing Constprop/CSE/Deadcode rounds. Analysis failure returns a compiler error; no new rollback proof.",
     "arm64-combine": "Alternative 32/64-bit multiply-negate combination using existing modeled operations; no speed claim.",
-    "neon-packed": "Explicit two-lane uint32 packed add/sub/mul intrinsics. Trusted hardware expansion, no automatic C-loop vectorization."
+    "neon-packed": "Explicit two-lane uint32 packed add/sub/mul intrinsics. Trusted hardware expansion, no automatic C-loop vectorization.",
+    "licm-pure": "One memory-independent, total nonconstant operation with globally immutable operands is cached at function entry. Arity and totality are proved for all value tags. <=512 nodes; bounded candidate/cycle discovery.",
+    "strength-reduce": "One 32-bit modular induction recurrence per function: fixed-step updates, invariant or literal-reset factor; literal resets of either input are maintained. Other mutations rejected. <=512 nodes.",
+    "loop-peel": "Validated first-traversal/stable CFG copies; postorder backedge hint, not arbitrary loop fusion/interchange/tiling. <=512 nodes.",
+    "auto-neon": "Automatic same-input adjacent uint32 add-immediate pair packing into existing NEON builtin; Vundef/pointer cases proved for ARM64. One pair/function <=512 nodes; not general memory-loop vectorization.",
+    "licm-preheader": "One invariant expression per function. Eager caching after a retained entry prefix supports computed/loaded/call-returned operands; a validated closed-suffix fallback caches at first actual use, including branching preheaders and partial pure operations (division/conversions). Memory-dependent operations and operand mutations in the selected suffix are rejected. <=512 nodes; bounded search."
   },
   "not_implemented": [
-    "general induction-variable simplification and strength reduction beyond stock CompCert",
-    "general LICM and speculative memory motion",
+    "general alias-dependent load/store motion and speculative memory LICM",
     "loop fusion, interchange and tiling",
-    "automatic NEON vectorization of ordinary C loops",
+    "general cross-iteration memory-loop vectorization with alias checks, vector loads/stores and scalar tails",
     "128-bit vector register state and ABI in Asm.v",
     "Arm/Sail refinement and proof of assembly encoding"
   ]

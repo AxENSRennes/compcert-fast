@@ -41,6 +41,12 @@ Require Renumber.
 Require Constprop.
 Require CSE.
 Require Deadcode.
+Require LowerLong.
+Require PreheaderLICM.
+Require Vectorize.
+Require LICM.
+Require StrengthReduce.
+Require LoopPeel.
 Require HoistConst.
 Require Schedule.
 Require LoadForward.
@@ -69,6 +75,12 @@ Require Renumberproof.
 Require Constpropproof.
 Require CSEproof.
 Require Deadcodeproof.
+Require LowerLongproof.
+Require PreheaderLICMproof.
+Require Vectorizeproof.
+Require LICMproof.
+Require StrengthReduceproof.
+Require LoopPeelproof.
 Require HoistConstproof.
 Require Scheduleproof.
 Require LoadForwardproof.
@@ -149,6 +161,26 @@ Definition transf_rtl_program (f: RTL.program) : res Asm.program :=
   @@@ partial_if Compopts.optim_redundancy (time "Redundancy elimination" Deadcode.transf_program)
    @@ print (print_RTL 7)
    @@ print (print_RTL 50)
+   @@ total_if Compopts.experimental_vectorize
+        (time "Experimental Vectorize" Vectorize.transf_program)
+   @@ print (print_RTL 60)
+   @@ total_if Compopts.experimental_vectorize
+        (time "Experimental vector packing lowering" LowerLong.transf_program)
+   @@ print (print_RTL 65)
+   @@ total_if Compopts.experimental_licm
+        (time "Experimental LICM" LICM.transf_program)
+   @@ print (print_RTL 61)
+   @@ total_if Compopts.experimental_preheader
+        (time "Experimental preheader LICM" PreheaderLICM.transf_program)
+   @@ print (print_RTL 64)
+   @@ total_if Compopts.experimental_strength
+        (time "Experimental StrengthReduce" StrengthReduce.transf_program)
+   @@ print (print_RTL 62)
+   @@ total_if Compopts.experimental_peel (time "Experimental peeling renumber" Renumber.transf_program)
+   @@ print (print_RTL 66)
+   @@ total_if Compopts.experimental_peel
+        (time "Experimental LoopPeel" LoopPeel.transf_program)
+   @@ print (print_RTL 63)
    @@ total_if Compopts.experimental_hoist
         (time "Experimental integer constant hoisting" HoistConst.transf_program)
    @@ print (print_RTL 51)
@@ -279,6 +311,13 @@ Definition CompCert's_passes :=
   ::: mkpass (match_if Compopts.optim_constprop Renumberproof.match_prog)
   ::: mkpass (match_if Compopts.optim_CSE CSEproof.match_prog)
   ::: mkpass (match_if Compopts.optim_redundancy Deadcodeproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_vectorize Vectorizeproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_vectorize LowerLongproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_licm LICMproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_preheader PreheaderLICMproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_strength StrengthReduceproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_peel Renumberproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_peel LoopPeelproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_hoist HoistConstproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_schedule Scheduleproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_loadforward LoadForwardproof.match_prog)
@@ -331,7 +370,14 @@ Proof.
   set (p11 := total_if optim_constprop Renumber.transf_program p10) in *.
   destruct (partial_if optim_CSE CSE.transf_program p11) as [p12|e] eqn:P12; simpl in T; try discriminate.
   destruct (partial_if optim_redundancy Deadcode.transf_program p12) as [p13|e] eqn:P13; simpl in T; try discriminate.
-  set (p13h := total_if experimental_hoist HoistConst.transf_program p13) in *.
+  set (p13v := total_if experimental_vectorize Vectorize.transf_program p13) in *.
+  set (p13w := total_if experimental_vectorize LowerLong.transf_program p13v) in *.
+  set (p13i := total_if experimental_licm LICM.transf_program p13w) in *.
+  set (p13q := total_if experimental_preheader PreheaderLICM.transf_program p13i) in *.
+  set (p13r := total_if experimental_strength StrengthReduce.transf_program p13q) in *.
+  set (p13n := total_if experimental_peel Renumber.transf_program p13r) in *.
+  set (p13p := total_if experimental_peel LoopPeel.transf_program p13n) in *.
+  set (p13h := total_if experimental_hoist HoistConst.transf_program p13p) in *.
   set (p13s := total_if experimental_schedule Schedule.transf_program p13h) in *.
   set (p13l := total_if experimental_loadforward LoadForward.transf_program p13s) in *.
   set (p13d := total_if experimental_storeelim StoreElim.transf_program p13l) in *.
@@ -361,6 +407,13 @@ Proof.
   exists p11; split. apply total_if_match. apply Renumberproof.transf_program_match.
   exists p12; split. eapply partial_if_match; eauto. apply CSEproof.transf_program_match.
   exists p13; split. eapply partial_if_match; eauto. apply Deadcodeproof.transf_program_match.
+  exists p13v; split. apply total_if_match. apply Vectorizeproof.transf_program_match.
+  exists p13w; split. apply total_if_match. apply LowerLongproof.transf_program_match.
+  exists p13i; split. apply total_if_match. apply LICMproof.transf_program_match.
+  exists p13q; split. apply total_if_match. apply PreheaderLICMproof.transf_program_match.
+  exists p13r; split. apply total_if_match. apply StrengthReduceproof.transf_program_match.
+  exists p13n; split. apply total_if_match. apply Renumberproof.transf_program_match.
+  exists p13p; split. apply total_if_match. apply LoopPeelproof.transf_program_match.
   exists p13h; split. apply total_if_match. apply HoistConstproof.transf_program_match.
   exists p13s; split. apply total_if_match. apply Scheduleproof.transf_program_match.
   exists p13l; split. apply total_if_match. apply LoadForwardproof.transf_program_match.
@@ -426,7 +479,7 @@ Ltac DestructM :=
       destruct H as (p & M & MM)
   end.
   repeat DestructM. subst tp.
-  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p28)).
+  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p35)).
   {
   eapply compose_forward_simulations.
     eapply SimplExprproof.transl_program_correct; eassumption.
@@ -453,6 +506,20 @@ Ltac DestructM :=
     eapply match_if_simulation. eassumption. exact CSEproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact Deadcodeproof.transf_program_correct; eassumption.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact Vectorizeproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LowerLongproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LICMproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact PreheaderLICMproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact StrengthReduceproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact Renumberproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LoopPeelproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact HoistConstproof.transf_program_correct.
   eapply compose_forward_simulations.

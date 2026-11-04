@@ -2,13 +2,14 @@
 PYTHON ?= python3
 JOBS ?= 4
 .NOTPARALLEL:
-.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators test-experiments test-neon
+.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators test-experiments test-neon test-loops
 help:
 	@echo 'make -f Makefile.fast baseline  # bootstrap, full + incremental proofs, build, benchmark'
 	@echo 'make -f Makefile.fast bench     # two independent measurement blocks + noise gate'
 	@echo 'make -f Makefile.fast proofs    # full kernel check + one-file rebuild timing'
 	@echo 'make -f Makefile.fast verify    # correctness suite, native regressions, ABI and PIC'
 	@echo 'make -f Makefile.fast test-experiments # proved experimental passes, independent and combined'
+	@echo 'make -f Makefile.fast test-loops # LICM, induction, peeling, automatic NEON correctness'
 	@echo 'make -f Makefile.fast test-neon # integer model against native NEON, no speed series'
 bootstrap:
 	./perf/bootstrap.sh
@@ -23,7 +24,15 @@ compiler: guard
 	./perf/in-env $(MAKE) -j$(JOBS) all
 test-validators: compiler
 	$(PYTHON) perf/check_validators.py
-test-experiments: compiler
+test-loops: compiler
+	$(PYTHON) perf/check_lowerlong.py
+	$(PYTHON) perf/check_licm.py
+	$(PYTHON) perf/check_preheader_licm.py
+	$(PYTHON) perf/check_strengthreduce.py
+	$(PYTHON) perf/check_peel.py
+	$(PYTHON) perf/check_vectorize.py
+	$(PYTHON) perf/check_loop_optimizations.py
+test-experiments: compiler test-loops
 	$(PYTHON) perf/check_heuristics.py
 	$(PYTHON) perf/check_select.py
 	$(PYTHON) perf/check_scalar.py

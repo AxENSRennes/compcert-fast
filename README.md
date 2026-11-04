@@ -77,7 +77,7 @@ Coq kernel.
 
 ### Default-disabled experiments
 
-This branch is `experiment/seven-stage`; it has not been promoted to `fast`.
+This branch is `experiment/loops-vectorization`; it has not been promoted to `fast`.
 No speed improvement is claimed. The full option list, combined profiles and
 precise limits are in `perf/experiment-profiles.json`. For example:
 
@@ -85,6 +85,7 @@ precise limits are in `perf/experiment-profiles.json`. For example:
 COMPCERT_EXPERIMENTS=rtl-unroll2,memory-cleanup ./ccomp -stdlib runtime program.c
 COMPCERT_EXPERIMENTS=loop-spill,trace-layout COMPCERT_EXPERIMENT_TRACE=/tmp/compcert-trace.jsonl ./ccomp -stdlib runtime program.c
 make -f Makefile.fast test-experiments
+make -f Makefile.fast test-loops
 make -f Makefile.fast test-neon
 make -f Makefile.fast verify
 ```
@@ -118,6 +119,29 @@ The experiments currently implement:
 * Delayed specialization of an immutable-register comparison: its original
   first execution is retained, then subsequent executions use specialized CFG
   copies. This preserves zero-iteration behavior.
+* `licm-pure` eagerly caches a total, memory-independent nonconstant operation
+  with immutable operands. `licm-preheader` also handles operands computed,
+  loaded or returned by calls before a loop: original prefix effects retain
+  their order. A checked closed-suffix fallback handles branching preheaders
+  and caches at first actual use. This safely supports partial operations such
+  as integer division and float-to-integer conversions without executing them
+  on zero-trip paths. Each pass selects one expression in functions of at
+  most 512 RTL instructions; candidate and reachability searches are bounded.
+  Loads themselves and memory-dependent operations are not moved.
+* `strength-reduce` tracks a 32-bit modular induction product in a fresh
+  accumulator, replacing repeated multiplication with addition. Literal resets
+  of the induction or factor maintain the accumulator; other mutations are
+  rejected. The whole-program simulation covers all value tags and zero trips.
+* `loop-peel` separates the initial traversal from a stable CFG copy after a
+  postorder backedge. The compiler renumbers first; the existing CFG projection
+  checker validates all operations and successors, with fallback on refusal.
+  This is first-traversal peeling, not fusion, interchange or tiling.
+* `auto-neon` recognizes adjacent uint32 add-immediate expressions sharing
+  their input, automatically emits an existing packed NEON builtin and lowers
+  its packing/unpacking through supported scalar ARM64 operations. The proof
+  covers undefined/noninteger inputs and rejects unrelated lanes, whose
+  different definedness cannot safely be packed by this representation.
+  One pair is considered per function, with a 512-instruction size guard.
 * Two additional rounds of existing constant propagation, CSE and dead-code
   cleanup. Analysis failure still returns a compiler error; this experiment
   does not claim a new proved rollback for those existing partial passes.
@@ -128,7 +152,7 @@ translation units, each independent option and combined profiles, and the
 fixed public suite without timing series. `verify` additionally runs the
 original native regression suite, ABI/PIC checks and the NEON comparisons.
 The upstream suite is rebuilt and run with default options and both combined
-scalar profiles. The GitHub `Verified correctness` workflow contains no speed
+scalar and loop/vector profiles. The GitHub `Verified correctness` workflow contains no speed
 benchmark.
 Initial performance-baseline capture still requires the unchanged compiler at
 `befa8484ea29fe73a90785983541fb45745c26a0` on an idle Mac.
@@ -152,9 +176,17 @@ The hand-written expansion into hardware NEON instructions is an additional
 trusted platform specification/expansion surface, tested against scalar
 references. These tests do not prove hardware equivalence.
 
-`Asm.v` remains unchanged. General induction-variable optimization, general
-LICM, fusion/interchange/tiling, automatic C-loop vectorization, 128-bit vector
-state/ABI, and an Arm/Sail refinement remain unimplemented. The prototype
+`Asm.v` and the packed builtin specifications/expansions are unchanged by the
+new automatic vectorizer. Its RTL vectorization and mandatory scalar packing
+lowering each have a whole-program correctness proof. Native tests inspect
+NEON inside both ordinary C functions and ordinary C loops; source intrinsics
+are not required. This is correlated-lane SLP, not general vector loads/stores
+or vectorization across loop iterations.
+
+Alias-dependent memory LICM, general nested-region invariant motion,
+fusion/interchange/tiling, cross-iteration memory-loop vectorization with
+remainder handling, 128-bit vector state/ABI and Arm/Sail refinement remain
+unimplemented. The prototype
 passes above do not constitute all optimizations found in a production
 optimizing compiler. Promotion still requires correctness checks and reliable
 measurements showing a smaller gap with clang `-O2`.

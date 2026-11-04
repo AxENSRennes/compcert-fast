@@ -56,3 +56,8 @@ Parameter experimental_hoist: unit -> bool.
 Parameter experimental_schedule: unit -> bool.
 Parameter experimental_loadforward: unit -> bool.
 Parameter experimental_storeelim: unit -> bool.
+Parameter experimental_vectorize: unit -> bool.
+Parameter experimental_licm: unit -> bool.
+Parameter experimental_strength: unit -> bool.
+Parameter experimental_peel: unit -> bool.
+Parameter experimental_preheader: unit -> bool.

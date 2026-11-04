@@ -6,7 +6,7 @@ let known_flags = ["small-inline"; "loop-spill"; "trace-layout";
                    "rtl-unroll2"; "rtl-unroll4"; "memory-cleanup";
                    "schedule-pure"; "hoist-constant"; "load-forward";
                    "arm64-combine"; "loop-unswitch"; "store-elim";
-                   "neon-packed"]
+                   "neon-packed"; "licm-pure"; "strength-reduce"; "loop-peel"; "auto-neon"; "licm-preheader"]
 
 let getenv name = try Sys.getenv name with Not_found -> ""
 
@@ -119,3 +119,9 @@ let cyclic_nodes graph =
       | nodes -> cyclic := nodes @ !cyclic
     end) !order;
   List.sort_uniq compare !cyclic
+
+let vectorize_enabled () = enabled "auto-neon"
+let licm_enabled () = enabled "licm-pure"
+let strength_enabled () = enabled "strength-reduce"
+let peel_enabled () = enabled "loop-peel"
+let preheader_enabled () = enabled "licm-preheader"
