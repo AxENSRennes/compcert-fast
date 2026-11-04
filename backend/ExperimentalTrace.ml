@@ -41,7 +41,12 @@ let record pass before after =
       match List.assoc_opt id new_functions with
       | None -> ()
       | Some current ->
-          if old=current then incr retained else incr changed;
+          (* Mandatory LowerLong also renumbers unchanged functions. For the
+             memory pass, count actual widening, not that renumbering. *)
+          let transformed = if pass="memory-vector" then
+            wide_stores current > wide_stores old && narrow_stores current < narrow_stores old
+            else old<>current in
+          if transformed then incr changed else incr retained;
           old_nodes:= !old_nodes + nodes old; new_nodes:= !new_nodes + nodes current;
           old_loads:= !old_loads + loads old; new_loads:= !new_loads + loads current;
           old_stores:= !old_stores + stores old; new_stores:= !new_stores + stores current;

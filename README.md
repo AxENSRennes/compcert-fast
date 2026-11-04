@@ -149,8 +149,9 @@ The experiments currently implement:
   does not claim a new proved rollback for those existing partial passes.
 * `memory-vector` exposes the first two loop traversals using a proved CFG
   projection validator, performs existing cleanup and removes unreachable
-  nodes, then widens one correlated pair of ordinary 32-bit stores to a
-  single 64-bit store. An executed global-address producer and checked
+  nodes, then widens correlated pairs of ordinary 32-bit stores to
+  single 64-bit stores (at most one pair per widening rule per function).
+  An executed global-address producer and checked
   transparent chain establish offsets zero/four; the indirect output retains
   native register addressing. Exact memory bytes are proved for every value
   tag. Ordinary C tests require the wide store in actual RTL and assembly,
