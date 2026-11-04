@@ -16,7 +16,7 @@
   "backend/Experimentalproof.v": "f5c95791220daa541cd0478ac3bc3535b26871bb3a0cb832fa57c0e3399ea36f",
   "backend/ExtraCleanup.v": "6c3edc6d7220ab94bb3b720828818c444e377dc6cc3ece501f392b1fcf41c1c7",
   "backend/ExtraCleanupproof.v": "78bd1db96422c787896d33c4641ef3bdf7a1995dd2c22a2543d387665b80bdd2",
-  "backend/HoistConst.v": "e09f315fb33266bd9ce5f82a2f9c817e9814c26b774fe96f8b95e0c1fa11e9d2",
+  "backend/HoistConst.v": "e0313cf7457451a15fb692a3f72ac815727adfb5aa675848240f457119f7562d",
   "backend/HoistConstproof.v": "0f6ab15de701bd7f6e99645c7aec6089a6e17c7ff2f4c27d44b82d26071eceba",
   "backend/Linearize.v": "c262fb8d84c121519cecdef4819535f48f1b23c367cd3a4817ef0518b0078b66",
   "backend/Linearizeproof.v": "d9d2eb3c663ea0b4b87091e902083463176fe3ab43877a18df59f3cb935b3a4b",

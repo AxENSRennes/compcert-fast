@@ -6,7 +6,7 @@
     "scalar4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup"
   },
   "limits": {
-    "hoist-constant": "One integer literal per function, cached in a fresh register. No general LICM or induction-variable analysis.",
+    "hoist-constant": "One integer literal per function with at most 512 RTL instructions, cached in a fresh register. Cycle preference examines at most 32 literals and 128 work items per literal. Larger functions remain unchanged. No general LICM or induction-variable analysis.",
     "schedule-pure": "One independent adjacent operation pair per function, validated structurally. No latency model or memory reordering.",
     "load-forward": "One adjacent identical ordinary load pair with a unique predecessor. No new general alias analysis.",
     "store-elim": "One adjacent ordinary store pair with identical chunk and address. No volatile or atomic reordering.",

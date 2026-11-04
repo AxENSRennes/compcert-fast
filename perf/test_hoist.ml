@@ -103,6 +103,15 @@ let () =
     (HoistConst.chosen acyclic=Some(int 42));
   check "acyclic fallback retains its result"
     (fst(execute acyclic zero_values)=fst(execute (HoistConst.transf_function acyclic)zero_values));
+  let oversized={f with RTL.fn_code=tree(List.init 600 (fun index ->
+    let pc=index+1 in pc,
+      if pc=1 then RTL.Iop(Ointconst(int 42),[],result,p 2)
+      else if pc=600 then RTL.Ireturn(Some result)
+      else RTL.Inop(p(pc+1))))} in
+  check "function exceeding the 512-node compilability budget is not selected"
+    (HoistConst.chosen oversized=None);
+  check "oversized function containing a literal is retained exactly"
+    (HoistConst.transf_function oversized=oversized);
   let tprog=HoistConst.transf_program(program f) in
   check "whole-program wrapper actually transforms the internal function"
     (match List.assoc(p 1)tprog.prog_defs with Gfun(Internal actual)->actual=tf | _->false);

@@ -48,17 +48,21 @@ def main():
         # This large constant-heavy function exposed repeated candidate
         # discovery inside the executable instruction map. A generous compile
         # timeout guards that regression; generated-code speed is not timed.
-        command=[str(ROOT/'ccomp'),'-stdlib',str(ROOT/'runtime'),'-fstruct-passing',
-                 '-c',str(ROOT/'test/spass/flags.c'),'-o',str(ARTIFACTS/'flags.o')]
         environment=os.environ.copy()
         environment['COMPCERT_EXPERIMENTS']='hoist-constant'
         environment['COMPCERT_CONFIG']=str(ROOT/'compcert.ini')
         environment.pop('COMPCERT_EXPERIMENT_TRACE',None)
-        result['commands'].append(command)
-        with (ARTIFACTS/'large-function.log').open('w') as log:
-            subprocess.run(command,cwd=ROOT,env=environment,stdout=log,stderr=subprocess.STDOUT,
-                           check=True,timeout=60)
+        large_functions=['test/spass/flags.c','test/abi/layout.c']
+        for source in large_functions:
+            stem=Path(source).stem
+            command=[str(ROOT/'ccomp'),'-stdlib',str(ROOT/'runtime'),'-fstruct-passing',
+                     '-c',str(ROOT/source),'-o',str(ARTIFACTS/(stem+'.o'))]
+            result['commands'].append(command)
+            with (ARTIFACTS/(stem+'-compile.log')).open('w') as log:
+                subprocess.run(command,cwd=ROOT,env=environment,stdout=log,stderr=subprocess.STDOUT,
+                               check=True,timeout=60)
         result['large_constant_function_compiles']=True
+        result['large_function_regressions']=large_functions
         result['source_sha256']={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in
                                 ['backend/HoistConst.v','backend/HoistConstproof.v',
                                  'perf/test_hoist.ml','perf/check_hoist.py']}

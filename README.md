@@ -109,7 +109,10 @@ The experiments currently implement:
   general trip-count analysis or a proof of profitable loop unrolling.
 * One integer constant cached in a fresh register, one independent adjacent
   operation swap, one adjacent identical-load forwarding, and one adjacent
-  overwritten-store elimination per function. Their whole-program simulations
+  overwritten-store elimination per function. Constant selection caches its
+  results and bounds the cycle-search hint to 32 literals and 128 work items
+  per literal, then safely falls back to the first literal. Functions exceeding
+  512 RTL instructions are retained to bound compilation cost. Their whole-program simulations
   cover calls and memory. No new general alias analysis or speculative load
   motion is introduced.
 * Delayed specialization of an immutable-register comparison: its original
