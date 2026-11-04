@@ -1,0 +1,168 @@
+{
+  "success": true,
+  "performance_measured": false,
+  "integrated_into_compcert_backend": false,
+  "scope": "integer lane semantics and a checked contiguous elementwise-loop vector/tail plan",
+  "hardware_equivalence_proved": false,
+  "remaining": [
+    "Asm.v vector state/instructions",
+    "vector Values and memory semantics",
+    "ABI/register allocation integration",
+    "general C-loop recognition and alias proofs",
+    "floating-point vectorization",
+    "formal Arm/Sail refinement"
+  ],
+  "stage": "complete",
+  "commands": [
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "coqc",
+      "-Q",
+      "aarch64",
+      "compcert.aarch64",
+      "aarch64/Neon.v"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "coqchk",
+      "-Q",
+      "aarch64",
+      "compcert.aarch64",
+      "compcert.aarch64.Neon"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "coqtop",
+      "-q",
+      "-batch",
+      "-Q",
+      "aarch64",
+      "compcert.aarch64",
+      "-l",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/assumptions.v"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "coqc",
+      "-Q",
+      "aarch64",
+      "compcert.aarch64",
+      "perf/neon/Extract.v"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "ocamlfind",
+      "ocamlopt",
+      "-package",
+      "zarith",
+      "-linkpkg",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/neon_model.mli"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "ocamlfind",
+      "ocamlopt",
+      "-package",
+      "zarith",
+      "-linkpkg",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/neon_model.ml"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "ocamlfind",
+      "ocamlopt",
+      "-package",
+      "zarith",
+      "-linkpkg",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/neon/check.ml",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/check.cmx"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/_opam/lib/ocaml",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/neon/hardware.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/hardware.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "ocamlfind",
+      "ocamlopt",
+      "-package",
+      "zarith",
+      "-linkpkg",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/neon_model.cmx",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/check.cmx",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/hardware.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/check"
+    ],
+    [
+      "otool",
+      "-tv",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/hardware.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/neon/check",
+      "50000"
+    ]
+  ],
+  "sha256": {
+    "aarch64/Neon.v": "2e996b9e335b20a89667138ef8fa7089a5faf273d5243fe9ef28a70b08c3e3ea",
+    "perf/neon/Extract.v": "57671dac176b52fd47b7200ea177e9370ddae02de05068060df606ee5d962a8d",
+    "perf/neon/hardware.c": "6c0660d0e16be9bdbea25d3b86ed61129b6e592aba6fabb870b74fd29d835468",
+    "perf/neon/check.ml": "641635e5ac00ae962a3d2beef745f79616d6fcc68fc07ee2778b1f9225ee09e6",
+    "perf/check_neon.py": "fbe1b1aff0dcb7c53f7d0422e05480a19772b196d032a5ad739e3c571fc470e0"
+  },
+  "kernel_checked": true,
+  "model_proofs_closed": true,
+  "model_proof_count": 5,
+  "inspected_neon_instructions": [
+    "add.16b",
+    "add.8h",
+    "add.4s",
+    "add.2d",
+    "sub.16b",
+    "sub.8h",
+    "sub.4s",
+    "sub.2d",
+    "mul.16b",
+    "mul.8h",
+    "mul.4s",
+    "and.16b",
+    "orr.16b",
+    "eor.16b"
+  ],
+  "random_rounds_per_configuration": 50000,
+  "random_vector_cases": 1150000,
+  "boundary_vector_cases": 1127,
+  "tail_loop_cases": 787,
+  "scalar_fallback_cases": 30,
+  "lane_comparisons": 8951213,
+  "plan_checks": 4722,
+  "negative_hardware_api_checks": 3,
+  "seed": "4d595df4d0f33173",
+  "unsupported": [
+    "ordinary 64-bit lane vector multiplication"
+  ],
+  "generated_model_sha256": "d82f1810063ce0bbacadfc5f45f406b03edcdb30ec963fc314951b0f6e91f0da",
+  "cpu": "Apple M5"
+}

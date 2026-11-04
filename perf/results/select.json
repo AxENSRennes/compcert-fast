@@ -1,0 +1,53 @@
+{
+  "success": true,
+  "performance_measured": false,
+  "checks": [
+    "reference covers all 81 edge-input pairs",
+    "default production constructor checks",
+    "default gate state",
+    "default generated fused-family gate",
+    "default exact defined unsigned outputs",
+    "enabled production constructor checks",
+    "enabled gate state",
+    "enabled generated fused-family gate",
+    "enabled exact defined unsigned outputs"
+  ],
+  "scope": "alternate 32/64-bit multiply-negate combinations; no cost claim",
+  "native": {
+    "default": {
+      "success": true,
+      "enabled": false,
+      "checks": [
+        "32-bit product negation uses the selected gated constructor",
+        "64-bit product negation uses the selected gated constructor",
+        "constant folding remains unchanged",
+        "non-product integer expressions retain the ordinary negation",
+        "non-product long expressions retain the ordinary negation",
+        "nonmatching argument arity does not fuse"
+      ]
+    },
+    "enabled": {
+      "success": true,
+      "enabled": true,
+      "checks": [
+        "32-bit product negation uses the selected gated constructor",
+        "64-bit product negation uses the selected gated constructor",
+        "constant folding remains unchanged",
+        "non-product integer expressions retain the ordinary negation",
+        "non-product long expressions retain the ordinary negation",
+        "nonmatching argument arity does not fuse"
+      ]
+    }
+  },
+  "source_sha256": {
+    "aarch64/SelectOp.vp": "a865c21dfd06507e147e4bc70a293bca6e023068ed3b1b18ce24b5f282a4d2a7",
+    "aarch64/SelectOpproof.v": "aae7aa3f689ace1002832725f49c92a14c7a63f54b2072d181724b7f5534d7cb",
+    "aarch64/SelectLong.vp": "b203ada0c02353edcf0c9f6e647b04012f3345ba7ae7b506b65a96354bc29dc9",
+    "aarch64/SelectLongproof.v": "bc20666913e3dcb44c9f7db0434de7604b973c045ae0f0ff2bdb79630576780d",
+    "extraction/SelectOp.ml": "8f5cd989f315961b811a8e74b746689f6c5dc5031d3367a39847fadbb4a5ff1a",
+    "extraction/SelectLong.ml": "e5652adac597bfceee3ed3eb60b7102e7d8d89e6abc4a676398efa57a0334643",
+    "perf/check_select.py": "dc1c992db924ede6b05e6ac4cf8c4f2687b46cab463c551f52f12704bd4ac91b",
+    "perf/test_select.ml": "76d43a7122438275cbff82b1c180879d60654301d956f2884938b09b5a17814f"
+  },
+  "compiler_sha256": "1acee6ae0d78d466f176b970a2e7f4d93d917ee1b32e9658eec552d104a68a25"
+}

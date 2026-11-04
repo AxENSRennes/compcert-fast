@@ -15,6 +15,7 @@ ClassicalDedekindReals.sig_forall_dec :
   {n : nat | ~ P n} + {forall n : nat, P n}
 Inlining.should_inline :
   Inlining.inlining_info -> AST.ident -> RTL.function -> bool
+Allocation.regalloc_baseline : RTL.function -> Errors.res LTL.function
 Allocation.regalloc : RTL.function -> Errors.res LTL.function
 Compopts.propagate_float_constants : unit -> bool
 Axioms.proof_irr : ClassicalFacts.proof_irrelevance
@@ -51,6 +52,15 @@ Events.external_functions_sem :
 Events.external_functions_properties :
   forall (id : String.string) (sg : AST.signature),
   Events.extcall_properties (Events.external_functions_sem id sg) sg
+Compopts.experimental_unswitch : unit -> bool
+Compopts.experimental_unroll4 : unit -> bool
+Compopts.experimental_storeelim : unit -> bool
+Compopts.experimental_select : unit -> bool
+Compopts.experimental_schedule : unit -> bool
+Compopts.experimental_scalar : unit -> bool
+Compopts.experimental_loadforward : unit -> bool
+Compopts.experimental_hoist : unit -> bool
+Compopts.experimental_cleanup : unit -> bool
 Eqdep.Eq_rect_eq.eq_rect_eq :
   forall (U : Type) (p : U) (Q : U -> Type) (x : Q p) (h : p = p),
   x = eq_rect p Q x p h
@@ -77,6 +87,7 @@ ClassicalDedekindReals.sig_forall_dec :
   {n : nat | ~ P n} + {forall n : nat, P n}
 Inlining.should_inline :
   Inlining.inlining_info -> AST.ident -> RTL.function -> bool
+Allocation.regalloc_baseline : RTL.function -> Errors.res LTL.function
 Allocation.regalloc : RTL.function -> Errors.res LTL.function
 Compopts.propagate_float_constants : unit -> bool
 Axioms.proof_irr : ClassicalFacts.proof_irrelevance
@@ -113,6 +124,15 @@ Events.external_functions_sem :
 Events.external_functions_properties :
   forall (id : String.string) (sg : AST.signature),
   Events.extcall_properties (Events.external_functions_sem id sg) sg
+Compopts.experimental_unswitch : unit -> bool
+Compopts.experimental_unroll4 : unit -> bool
+Compopts.experimental_storeelim : unit -> bool
+Compopts.experimental_select : unit -> bool
+Compopts.experimental_schedule : unit -> bool
+Compopts.experimental_scalar : unit -> bool
+Compopts.experimental_loadforward : unit -> bool
+Compopts.experimental_hoist : unit -> bool
+Compopts.experimental_cleanup : unit -> bool
 Eqdep.Eq_rect_eq.eq_rect_eq :
   forall (U : Type) (p : U) (Q : U -> Type) (x : Q p) (h : p = p),
   x = eq_rect p Q x p h

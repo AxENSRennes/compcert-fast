@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
   "mode": "correctness",
-  "created_utc": "2026-11-04T18:50:45.859945+00:00",
+  "created_utc": "2026-11-04T21:18:09.228890+00:00",
   "suite_sha256": "610d36f8c304769184e9182982d10b8928cd0c31748e31747ce231b6d3a38f5d",
-  "revision": "befa8484ea29fe73a90785983541fb45745c26a0",
-  "tracked_changes": "Makefile.fast            |  11 +-\n README.md                |  28 ++++-\n backend/Linearize.v      |  23 +++-\n backend/Linearizeproof.v |  77 +++++++++++--\n perf/guard.py            |  28 ++++-\n perf/proofs.py           | 104 +++++++++++------\n perf/results/proofs.json | 291 +++++++++++++++++++++++++++++++++++++++++++++--\n 7 files changed, 491 insertions(+), 71 deletions(-)",
+  "revision": "52aa3e47791b1937c9f65b1feeec019d1645fb65",
+  "tracked_changes": "perf/results/assumptions.txt  | 20 +++++++++++++\n perf/results/correctness.json | 10 +++----\n perf/results/proofs.json      | 70 ++++++++++++++++++++++++++++++++-----------\n perf/results/validators.json  | 48 ++++++++++++++++++-----------\n 4 files changed, 107 insertions(+), 41 deletions(-)",
   "machine": {
     "cpu": "Apple M5",
     "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
-    "power": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23527523)\t21%; charging; (no estimate) present: true",
+    "power": "Now drawing from 'Battery Power'\n -InternalBattery-0 (id=23527523)\t23%; discharging; 2:30 remaining present: true",
     "p_cores": "4",
     "scheduling": "QOS_CLASS_USER_INTERACTIVE; advisory, P-core placement NOT verified"
   },
   "compiler": {
     "compcert": "The CompCert C verified compiler, version 3.17",
-    "compcert_sha256": "16da5512bd943c0894c4947915c236d0448a877aa5b5c96b44d7d896d5b47a48",
+    "compcert_sha256": "1acee6ae0d78d466f176b970a2e7f4d93d917ee1b32e9658eec552d104a68a25",
     "clang": "Apple clang version 21.0.0 (clang-2100.4.1.1)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
   },
   "protocol": {

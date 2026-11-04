@@ -1,0 +1,1840 @@
+{
+  "success": true,
+  "performance_measured": false,
+  "profiles": {
+    "default": {
+      "flags": "",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {}
+    },
+    "small-inline": {
+      "flags": "small-inline",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "small-inline:enabled": 3,
+        "small-inline:selected": 3
+      }
+    },
+    "loop-spill": {
+      "flags": "loop-spill",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "loop-spill:enabled": 3,
+        "loop-spill:cyclic-blocks": 71
+      }
+    },
+    "trace-layout": {
+      "flags": "trace-layout",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "trace-layout:enabled": 3,
+        "trace-layout:candidate": 6,
+        "trace-layout:changed-order": 2
+      }
+    },
+    "arm64-combine": {
+      "flags": "arm64-combine",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "arm64-combine:enabled": 3
+      }
+    },
+    "hoist-constant": {
+      "flags": "hoist-constant",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "hoist-constant:enabled": 3,
+        "hoist-constant:changed-functions": 4,
+        "hoist-constant:retained-functions": 2,
+        "hoist-constant:nodes-before": 135,
+        "hoist-constant:nodes-after": 139,
+        "hoist-constant:loads-removed": 0,
+        "hoist-constant:stores-removed": 0
+      }
+    },
+    "schedule-pure": {
+      "flags": "schedule-pure",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "schedule-pure:enabled": 3,
+        "schedule-pure:changed-functions": 3,
+        "schedule-pure:retained-functions": 3,
+        "schedule-pure:nodes-before": 135,
+        "schedule-pure:nodes-after": 135,
+        "schedule-pure:loads-removed": 0,
+        "schedule-pure:stores-removed": 0
+      }
+    },
+    "load-forward": {
+      "flags": "load-forward",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "load-forward:enabled": 3,
+        "load-forward:changed-functions": 0,
+        "load-forward:retained-functions": 6,
+        "load-forward:nodes-before": 135,
+        "load-forward:nodes-after": 135,
+        "load-forward:loads-removed": 0,
+        "load-forward:stores-removed": 0
+      }
+    },
+    "store-elim": {
+      "flags": "store-elim",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "store-elim:enabled": 3,
+        "store-elim:changed-functions": 1,
+        "store-elim:retained-functions": 5,
+        "store-elim:nodes-before": 135,
+        "store-elim:nodes-after": 135,
+        "store-elim:loads-removed": 0,
+        "store-elim:stores-removed": 1
+      }
+    },
+    "loop-unswitch": {
+      "flags": "loop-unswitch",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "loop-unswitch:enabled": 3,
+        "loop-unswitch:changed-functions": 1,
+        "loop-unswitch:retained-functions": 5,
+        "loop-unswitch:nodes-before": 135,
+        "loop-unswitch:nodes-after": 179,
+        "loop-unswitch:loads-removed": 0,
+        "loop-unswitch:stores-removed": 0
+      }
+    },
+    "rtl-unroll2": {
+      "flags": "rtl-unroll2",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "rtl-unroll2:enabled": 3,
+        "rtl-unroll2:changed-functions": 6,
+        "rtl-unroll2:retained-functions": 0,
+        "rtl-unroll2:nodes-before": 135,
+        "rtl-unroll2:nodes-after": 270,
+        "rtl-unroll2:loads-removed": 0,
+        "rtl-unroll2:stores-removed": 0,
+        "rtl-unroll2:candidate-accepted": 6,
+        "rtl-unroll2:candidate-rejected-fallback": 0
+      }
+    },
+    "memory-cleanup": {
+      "flags": "memory-cleanup",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "memory-cleanup:enabled": 3,
+        "memory-cleanup:changed-functions": 0,
+        "memory-cleanup:retained-functions": 6,
+        "memory-cleanup:nodes-before": 135,
+        "memory-cleanup:nodes-after": 135,
+        "memory-cleanup:loads-removed": 0,
+        "memory-cleanup:stores-removed": 0
+      }
+    },
+    "rtl-unroll4": {
+      "flags": "rtl-unroll4",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "rtl-unroll4:enabled": 3,
+        "rtl-unroll4:changed-functions": 6,
+        "rtl-unroll4:retained-functions": 0,
+        "rtl-unroll4:nodes-before": 135,
+        "rtl-unroll4:nodes-after": 540,
+        "rtl-unroll4:loads-removed": 0,
+        "rtl-unroll4:stores-removed": 0,
+        "rtl-unroll4:candidate-accepted": 6,
+        "rtl-unroll4:candidate-rejected-fallback": 0
+      }
+    },
+    "scalar2": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "arm64-combine:enabled": 3,
+        "hoist-constant:enabled": 3,
+        "load-forward:enabled": 3,
+        "loop-spill:enabled": 3,
+        "loop-unswitch:enabled": 3,
+        "memory-cleanup:enabled": 3,
+        "rtl-unroll2:enabled": 3,
+        "schedule-pure:enabled": 3,
+        "small-inline:enabled": 3,
+        "store-elim:enabled": 3,
+        "trace-layout:enabled": 3,
+        "small-inline:selected": 3,
+        "hoist-constant:changed-functions": 4,
+        "hoist-constant:retained-functions": 2,
+        "hoist-constant:nodes-before": 145,
+        "hoist-constant:nodes-after": 149,
+        "hoist-constant:loads-removed": 0,
+        "hoist-constant:stores-removed": 0,
+        "schedule-pure:changed-functions": 3,
+        "schedule-pure:retained-functions": 3,
+        "schedule-pure:nodes-before": 149,
+        "schedule-pure:nodes-after": 149,
+        "schedule-pure:loads-removed": 0,
+        "schedule-pure:stores-removed": 0,
+        "load-forward:changed-functions": 0,
+        "load-forward:retained-functions": 6,
+        "load-forward:nodes-before": 149,
+        "load-forward:nodes-after": 149,
+        "load-forward:loads-removed": 0,
+        "load-forward:stores-removed": 0,
+        "store-elim:changed-functions": 1,
+        "store-elim:retained-functions": 5,
+        "store-elim:nodes-before": 149,
+        "store-elim:nodes-after": 149,
+        "store-elim:loads-removed": 0,
+        "store-elim:stores-removed": 1,
+        "loop-unswitch:changed-functions": 1,
+        "loop-unswitch:retained-functions": 5,
+        "loop-unswitch:nodes-before": 149,
+        "loop-unswitch:nodes-after": 195,
+        "loop-unswitch:loads-removed": 0,
+        "loop-unswitch:stores-removed": 0,
+        "rtl-unroll2:changed-functions": 6,
+        "rtl-unroll2:retained-functions": 0,
+        "rtl-unroll2:nodes-before": 195,
+        "rtl-unroll2:nodes-after": 390,
+        "rtl-unroll2:loads-removed": 0,
+        "rtl-unroll2:stores-removed": 0,
+        "rtl-unroll2:candidate-accepted": 6,
+        "rtl-unroll2:candidate-rejected-fallback": 0,
+        "memory-cleanup:changed-functions": 3,
+        "memory-cleanup:retained-functions": 3,
+        "memory-cleanup:nodes-before": 390,
+        "memory-cleanup:nodes-after": 390,
+        "memory-cleanup:loads-removed": 0,
+        "memory-cleanup:stores-removed": 0,
+        "loop-spill:cyclic-blocks": 174,
+        "trace-layout:candidate": 6,
+        "trace-layout:changed-order": 3
+      }
+    },
+    "scalar4": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup",
+      "options": [],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "arm64-combine:enabled": 3,
+        "hoist-constant:enabled": 3,
+        "load-forward:enabled": 3,
+        "loop-spill:enabled": 3,
+        "loop-unswitch:enabled": 3,
+        "memory-cleanup:enabled": 3,
+        "rtl-unroll4:enabled": 3,
+        "schedule-pure:enabled": 3,
+        "small-inline:enabled": 3,
+        "store-elim:enabled": 3,
+        "trace-layout:enabled": 3,
+        "small-inline:selected": 3,
+        "hoist-constant:changed-functions": 4,
+        "hoist-constant:retained-functions": 2,
+        "hoist-constant:nodes-before": 145,
+        "hoist-constant:nodes-after": 149,
+        "hoist-constant:loads-removed": 0,
+        "hoist-constant:stores-removed": 0,
+        "schedule-pure:changed-functions": 3,
+        "schedule-pure:retained-functions": 3,
+        "schedule-pure:nodes-before": 149,
+        "schedule-pure:nodes-after": 149,
+        "schedule-pure:loads-removed": 0,
+        "schedule-pure:stores-removed": 0,
+        "load-forward:changed-functions": 0,
+        "load-forward:retained-functions": 6,
+        "load-forward:nodes-before": 149,
+        "load-forward:nodes-after": 149,
+        "load-forward:loads-removed": 0,
+        "load-forward:stores-removed": 0,
+        "store-elim:changed-functions": 1,
+        "store-elim:retained-functions": 5,
+        "store-elim:nodes-before": 149,
+        "store-elim:nodes-after": 149,
+        "store-elim:loads-removed": 0,
+        "store-elim:stores-removed": 1,
+        "loop-unswitch:changed-functions": 1,
+        "loop-unswitch:retained-functions": 5,
+        "loop-unswitch:nodes-before": 149,
+        "loop-unswitch:nodes-after": 195,
+        "loop-unswitch:loads-removed": 0,
+        "loop-unswitch:stores-removed": 0,
+        "rtl-unroll4:changed-functions": 6,
+        "rtl-unroll4:retained-functions": 0,
+        "rtl-unroll4:nodes-before": 195,
+        "rtl-unroll4:nodes-after": 780,
+        "rtl-unroll4:loads-removed": 0,
+        "rtl-unroll4:stores-removed": 0,
+        "rtl-unroll4:candidate-accepted": 6,
+        "rtl-unroll4:candidate-rejected-fallback": 0,
+        "memory-cleanup:changed-functions": 3,
+        "memory-cleanup:retained-functions": 3,
+        "memory-cleanup:nodes-before": 780,
+        "memory-cleanup:nodes-after": 780,
+        "memory-cleanup:loads-removed": 0,
+        "memory-cleanup:stores-removed": 0,
+        "loop-spill:cyclic-blocks": 348,
+        "trace-layout:candidate": 6,
+        "trace-layout:changed-order": 3
+      }
+    },
+    "scalar2-pic": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup",
+      "options": [
+        "-fPIC"
+      ],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "arm64-combine:enabled": 3,
+        "hoist-constant:enabled": 3,
+        "load-forward:enabled": 3,
+        "loop-spill:enabled": 3,
+        "loop-unswitch:enabled": 3,
+        "memory-cleanup:enabled": 3,
+        "rtl-unroll2:enabled": 3,
+        "schedule-pure:enabled": 3,
+        "small-inline:enabled": 3,
+        "store-elim:enabled": 3,
+        "trace-layout:enabled": 3,
+        "small-inline:selected": 3,
+        "hoist-constant:changed-functions": 4,
+        "hoist-constant:retained-functions": 2,
+        "hoist-constant:nodes-before": 145,
+        "hoist-constant:nodes-after": 149,
+        "hoist-constant:loads-removed": 0,
+        "hoist-constant:stores-removed": 0,
+        "schedule-pure:changed-functions": 3,
+        "schedule-pure:retained-functions": 3,
+        "schedule-pure:nodes-before": 149,
+        "schedule-pure:nodes-after": 149,
+        "schedule-pure:loads-removed": 0,
+        "schedule-pure:stores-removed": 0,
+        "load-forward:changed-functions": 0,
+        "load-forward:retained-functions": 6,
+        "load-forward:nodes-before": 149,
+        "load-forward:nodes-after": 149,
+        "load-forward:loads-removed": 0,
+        "load-forward:stores-removed": 0,
+        "store-elim:changed-functions": 1,
+        "store-elim:retained-functions": 5,
+        "store-elim:nodes-before": 149,
+        "store-elim:nodes-after": 149,
+        "store-elim:loads-removed": 0,
+        "store-elim:stores-removed": 1,
+        "loop-unswitch:changed-functions": 1,
+        "loop-unswitch:retained-functions": 5,
+        "loop-unswitch:nodes-before": 149,
+        "loop-unswitch:nodes-after": 195,
+        "loop-unswitch:loads-removed": 0,
+        "loop-unswitch:stores-removed": 0,
+        "rtl-unroll2:changed-functions": 6,
+        "rtl-unroll2:retained-functions": 0,
+        "rtl-unroll2:nodes-before": 195,
+        "rtl-unroll2:nodes-after": 390,
+        "rtl-unroll2:loads-removed": 0,
+        "rtl-unroll2:stores-removed": 0,
+        "rtl-unroll2:candidate-accepted": 6,
+        "rtl-unroll2:candidate-rejected-fallback": 0,
+        "memory-cleanup:changed-functions": 3,
+        "memory-cleanup:retained-functions": 3,
+        "memory-cleanup:nodes-before": 390,
+        "memory-cleanup:nodes-after": 390,
+        "memory-cleanup:loads-removed": 0,
+        "memory-cleanup:stores-removed": 0,
+        "loop-spill:cyclic-blocks": 174,
+        "trace-layout:candidate": 6,
+        "trace-layout:changed-order": 3
+      }
+    },
+    "scalar4-size": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup",
+      "options": [
+        "-Os"
+      ],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "arm64-combine:enabled": 3,
+        "hoist-constant:enabled": 3,
+        "load-forward:enabled": 3,
+        "loop-spill:enabled": 3,
+        "loop-unswitch:enabled": 3,
+        "memory-cleanup:enabled": 3,
+        "rtl-unroll4:enabled": 3,
+        "schedule-pure:enabled": 3,
+        "small-inline:enabled": 3,
+        "store-elim:enabled": 3,
+        "trace-layout:enabled": 3,
+        "hoist-constant:changed-functions": 4,
+        "hoist-constant:retained-functions": 2,
+        "hoist-constant:nodes-before": 135,
+        "hoist-constant:nodes-after": 139,
+        "hoist-constant:loads-removed": 0,
+        "hoist-constant:stores-removed": 0,
+        "schedule-pure:changed-functions": 3,
+        "schedule-pure:retained-functions": 3,
+        "schedule-pure:nodes-before": 139,
+        "schedule-pure:nodes-after": 139,
+        "schedule-pure:loads-removed": 0,
+        "schedule-pure:stores-removed": 0,
+        "load-forward:changed-functions": 0,
+        "load-forward:retained-functions": 6,
+        "load-forward:nodes-before": 139,
+        "load-forward:nodes-after": 139,
+        "load-forward:loads-removed": 0,
+        "load-forward:stores-removed": 0,
+        "store-elim:changed-functions": 1,
+        "store-elim:retained-functions": 5,
+        "store-elim:nodes-before": 139,
+        "store-elim:nodes-after": 139,
+        "store-elim:loads-removed": 0,
+        "store-elim:stores-removed": 1,
+        "loop-unswitch:changed-functions": 1,
+        "loop-unswitch:retained-functions": 5,
+        "loop-unswitch:nodes-before": 139,
+        "loop-unswitch:nodes-after": 185,
+        "loop-unswitch:loads-removed": 0,
+        "loop-unswitch:stores-removed": 0,
+        "rtl-unroll4:changed-functions": 6,
+        "rtl-unroll4:retained-functions": 0,
+        "rtl-unroll4:nodes-before": 185,
+        "rtl-unroll4:nodes-after": 740,
+        "rtl-unroll4:loads-removed": 0,
+        "rtl-unroll4:stores-removed": 0,
+        "rtl-unroll4:candidate-accepted": 6,
+        "rtl-unroll4:candidate-rejected-fallback": 0,
+        "memory-cleanup:changed-functions": 3,
+        "memory-cleanup:retained-functions": 3,
+        "memory-cleanup:nodes-before": 740,
+        "memory-cleanup:nodes-after": 740,
+        "memory-cleanup:loads-removed": 0,
+        "memory-cleanup:stores-removed": 0,
+        "loop-spill:cyclic-blocks": 348,
+        "trace-layout:candidate": 6,
+        "trace-layout:changed-order": 3
+      }
+    },
+    "scalar2-minimal": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup",
+      "options": [
+        "-fno-inline",
+        "-fno-cse",
+        "-fno-redundancy",
+        "-fno-const-prop"
+      ],
+      "correctness_pass": true,
+      "executions": 10,
+      "stdout_sha256": "ee448db77fa88592ae61b822751ef3a3c9636018964d5fc98ec084051c031784",
+      "effects": {
+        "arm64-combine:enabled": 3,
+        "hoist-constant:enabled": 3,
+        "load-forward:enabled": 3,
+        "loop-spill:enabled": 3,
+        "loop-unswitch:enabled": 3,
+        "memory-cleanup:enabled": 3,
+        "rtl-unroll2:enabled": 3,
+        "schedule-pure:enabled": 3,
+        "small-inline:enabled": 3,
+        "store-elim:enabled": 3,
+        "trace-layout:enabled": 3,
+        "hoist-constant:changed-functions": 4,
+        "hoist-constant:retained-functions": 2,
+        "hoist-constant:nodes-before": 149,
+        "hoist-constant:nodes-after": 153,
+        "hoist-constant:loads-removed": 0,
+        "hoist-constant:stores-removed": 0,
+        "schedule-pure:changed-functions": 3,
+        "schedule-pure:retained-functions": 3,
+        "schedule-pure:nodes-before": 153,
+        "schedule-pure:nodes-after": 153,
+        "schedule-pure:loads-removed": 0,
+        "schedule-pure:stores-removed": 0,
+        "load-forward:changed-functions": 1,
+        "load-forward:retained-functions": 5,
+        "load-forward:nodes-before": 153,
+        "load-forward:nodes-after": 153,
+        "load-forward:loads-removed": 1,
+        "load-forward:stores-removed": 0,
+        "store-elim:changed-functions": 1,
+        "store-elim:retained-functions": 5,
+        "store-elim:nodes-before": 153,
+        "store-elim:nodes-after": 153,
+        "store-elim:loads-removed": 0,
+        "store-elim:stores-removed": 1,
+        "loop-unswitch:changed-functions": 1,
+        "loop-unswitch:retained-functions": 5,
+        "loop-unswitch:nodes-before": 153,
+        "loop-unswitch:nodes-after": 203,
+        "loop-unswitch:loads-removed": 0,
+        "loop-unswitch:stores-removed": 0,
+        "rtl-unroll2:changed-functions": 6,
+        "rtl-unroll2:retained-functions": 0,
+        "rtl-unroll2:nodes-before": 203,
+        "rtl-unroll2:nodes-after": 406,
+        "rtl-unroll2:loads-removed": 0,
+        "rtl-unroll2:stores-removed": 0,
+        "rtl-unroll2:candidate-accepted": 6,
+        "rtl-unroll2:candidate-rejected-fallback": 0,
+        "memory-cleanup:changed-functions": 5,
+        "memory-cleanup:retained-functions": 1,
+        "memory-cleanup:nodes-before": 406,
+        "memory-cleanup:nodes-after": 406,
+        "memory-cleanup:loads-removed": 1,
+        "memory-cleanup:stores-removed": 0,
+        "loop-spill:cyclic-blocks": 176,
+        "trace-layout:candidate": 6,
+        "trace-layout:changed-order": 3
+      }
+    }
+  },
+  "commands": [
+    [
+      "clang",
+      "-O2",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/clang",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/default.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/small-inline.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-spill.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/trace-layout.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/arm64-combine.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/hoist-constant.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/schedule-pure.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/load-forward.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/store-elim.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/loop-unswitch.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll2.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/memory-cleanup.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/rtl-unroll4.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fPIC",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fPIC",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fPIC",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-pic.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-Os",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-Os",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-Os",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar4-size.exe",
+      "4294967295"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-fno-cse",
+      "-fno-redundancy",
+      "-fno-const-prop",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/program.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal-program.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-fno-cse",
+      "-fno-redundancy",
+      "-fno-const-prop",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/helper.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal-helper.o"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-fno-cse",
+      "-fno-redundancy",
+      "-fno-const-prop",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal-program.o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal-helper.o",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "0"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "1"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "2"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "7"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "15"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "16"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "31"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "2147483647"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "2147483648"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/experiments/scalar2-minimal.exe",
+      "4294967295"
+    ],
+    [
+      "python3",
+      "/Users/axel2/Downloads/compcert-fast/perf/bench.py",
+      "--correctness-only",
+      "--output",
+      "/Users/axel2/Downloads/compcert-fast/perf/results/correctness-scalar2.json"
+    ],
+    [
+      "python3",
+      "/Users/axel2/Downloads/compcert-fast/perf/bench.py",
+      "--correctness-only",
+      "--output",
+      "/Users/axel2/Downloads/compcert-fast/perf/results/correctness-scalar4.json"
+    ]
+  ],
+  "source_sha256": {
+    "perf/check_experiments.py": "b197b79d38044bb60326abe415df2e7053ff219c475faefbe0ce38318c8849de",
+    "perf/experiment-profiles.json": "cb91ee5ab8b75712042944721a74ccf22948e8cb770a24fabd1f1b8943690daa"
+  },
+  "compiler_sha256": "1acee6ae0d78d466f176b970a2e7f4d93d917ee1b32e9658eec552d104a68a25",
+  "frozen_suite": {
+    "scalar2": {
+      "correctness_pass": true,
+      "cases": 10
+    },
+    "scalar4": {
+      "correctness_pass": true,
+      "cases": 10
+    }
+  }
+}

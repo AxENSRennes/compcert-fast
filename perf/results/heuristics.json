@@ -1,0 +1,738 @@
+{
+  "success": true,
+  "performance_measured": false,
+  "checks": [
+    "default native checks pass",
+    "default has no counters or trace file",
+    "small-inline native checks pass",
+    "small-inline traces only enabled experiments",
+    "small-inline enabled records are deduplicated",
+    "loop-spill native checks pass",
+    "loop-spill traces only enabled experiments",
+    "loop-spill enabled records are deduplicated",
+    "trace-layout native checks pass",
+    "trace-layout traces only enabled experiments",
+    "trace-layout enabled records are deduplicated",
+    "combined native checks pass",
+    "combined traces only enabled experiments",
+    "combined enabled records are deduplicated",
+    "deduplicated native checks pass",
+    "deduplicated traces only enabled experiments",
+    "deduplicated enabled records are deduplicated",
+    "loop weighting changes a validated high-pressure allocation",
+    "layout alone does not change allocation",
+    "unknown flags rejected before compilation",
+    "empty-token flags rejected before compilation",
+    "incompatible flags rejected before compilation",
+    "default call-retention contract",
+    "default execution with argc=1",
+    "default execution with argc=2",
+    "default execution with argc=5",
+    "enabled call-retention contract",
+    "enabled inline selection is observable",
+    "enabled execution with argc=1",
+    "enabled execution with argc=2",
+    "enabled execution with argc=5",
+    "combined call-retention contract",
+    "combined inline selection is observable",
+    "combined execution with argc=1",
+    "combined execution with argc=2",
+    "combined execution with argc=5",
+    "disabled call-retention contract",
+    "disabled execution with argc=1",
+    "disabled execution with argc=2",
+    "disabled execution with argc=5",
+    "size call-retention contract",
+    "size execution with argc=1",
+    "size execution with argc=2",
+    "size execution with argc=5",
+    "attribute call-retention contract",
+    "attribute execution with argc=1",
+    "attribute execution with argc=2",
+    "attribute execution with argc=5",
+    "recursive call-retention contract",
+    "recursive execution with argc=1",
+    "recursive execution with argc=2",
+    "recursive execution with argc=5",
+    "heuristic source contents remain unchanged during tests"
+  ],
+  "native": {
+    "default": {
+      "success": true,
+      "allocation_fingerprint": "091edb0b3dedb90404d04c94babc1942",
+      "checks": [
+        "empty graph",
+        "acyclic graph",
+        "self loop",
+        "two-node cycle",
+        "loop with acyclic exit",
+        "disconnected cycles",
+        "undefined target",
+        "duplicate edges",
+        "deep acyclic graph avoids recursive DFS stack overflow",
+        "cold block spill cost remains unchanged",
+        "cyclic block finite spill cost is weighted only when enabled",
+        "mandatory register cost remains infinite",
+        "layout actually changes the fixture only when enabled",
+        "layout preserves every reachable block without duplication",
+        "production proved validator accepts the chosen order unchanged",
+        "register-pressure candidate passes the production extracted validator",
+        "baseline retry allocation remains validated",
+        "baseline retry disables only experimental spill weighting",
+        "baseline retry restores the previous weighting setting"
+      ],
+      "counters": []
+    },
+    "small-inline": {
+      "success": true,
+      "allocation_fingerprint": "091edb0b3dedb90404d04c94babc1942",
+      "checks": [
+        "empty graph",
+        "acyclic graph",
+        "self loop",
+        "two-node cycle",
+        "loop with acyclic exit",
+        "disconnected cycles",
+        "undefined target",
+        "duplicate edges",
+        "deep acyclic graph avoids recursive DFS stack overflow",
+        "cold block spill cost remains unchanged",
+        "cyclic block finite spill cost is weighted only when enabled",
+        "mandatory register cost remains infinite",
+        "layout actually changes the fixture only when enabled",
+        "layout preserves every reachable block without duplication",
+        "production proved validator accepts the chosen order unchanged",
+        "register-pressure candidate passes the production extracted validator",
+        "baseline retry allocation remains validated",
+        "baseline retry disables only experimental spill weighting",
+        "baseline retry restores the previous weighting setting"
+      ],
+      "counters": []
+    },
+    "loop-spill": {
+      "success": true,
+      "allocation_fingerprint": "8228b9178cc90459626cdd1393e7480b",
+      "checks": [
+        "empty graph",
+        "acyclic graph",
+        "self loop",
+        "two-node cycle",
+        "loop with acyclic exit",
+        "disconnected cycles",
+        "undefined target",
+        "duplicate edges",
+        "deep acyclic graph avoids recursive DFS stack overflow",
+        "cold block spill cost remains unchanged",
+        "cyclic block finite spill cost is weighted only when enabled",
+        "mandatory register cost remains infinite",
+        "layout actually changes the fixture only when enabled",
+        "layout preserves every reachable block without duplication",
+        "production proved validator accepts the chosen order unchanged",
+        "register-pressure candidate passes the production extracted validator",
+        "baseline retry allocation remains validated",
+        "baseline retry disables only experimental spill weighting",
+        "baseline retry restores the previous weighting setting"
+      ],
+      "counters": [
+        {
+          "pass": "loop-spill",
+          "event": "baseline-requested",
+          "count": 1
+        },
+        {
+          "pass": "loop-spill",
+          "event": "cyclic-blocks",
+          "count": 157
+        }
+      ]
+    },
+    "trace-layout": {
+      "success": true,
+      "allocation_fingerprint": "091edb0b3dedb90404d04c94babc1942",
+      "checks": [
+        "empty graph",
+        "acyclic graph",
+        "self loop",
+        "two-node cycle",
+        "loop with acyclic exit",
+        "disconnected cycles",
+        "undefined target",
+        "duplicate edges",
+        "deep acyclic graph avoids recursive DFS stack overflow",
+        "cold block spill cost remains unchanged",
+        "cyclic block finite spill cost is weighted only when enabled",
+        "mandatory register cost remains infinite",
+        "layout actually changes the fixture only when enabled",
+        "layout preserves every reachable block without duplication",
+        "production proved validator accepts the chosen order unchanged",
+        "register-pressure candidate passes the production extracted validator",
+        "baseline retry allocation remains validated",
+        "baseline retry disables only experimental spill weighting",
+        "baseline retry restores the previous weighting setting"
+      ],
+      "counters": [
+        {
+          "pass": "trace-layout",
+          "event": "candidate",
+          "count": 2
+        },
+        {
+          "pass": "trace-layout",
+          "event": "changed-order",
+          "count": 2
+        }
+      ]
+    },
+    "combined": {
+      "success": true,
+      "allocation_fingerprint": "8228b9178cc90459626cdd1393e7480b",
+      "checks": [
+        "empty graph",
+        "acyclic graph",
+        "self loop",
+        "two-node cycle",
+        "loop with acyclic exit",
+        "disconnected cycles",
+        "undefined target",
+        "duplicate edges",
+        "deep acyclic graph avoids recursive DFS stack overflow",
+        "cold block spill cost remains unchanged",
+        "cyclic block finite spill cost is weighted only when enabled",
+        "mandatory register cost remains infinite",
+        "layout actually changes the fixture only when enabled",
+        "layout preserves every reachable block without duplication",
+        "production proved validator accepts the chosen order unchanged",
+        "register-pressure candidate passes the production extracted validator",
+        "baseline retry allocation remains validated",
+        "baseline retry disables only experimental spill weighting",
+        "baseline retry restores the previous weighting setting"
+      ],
+      "counters": [
+        {
+          "pass": "loop-spill",
+          "event": "baseline-requested",
+          "count": 1
+        },
+        {
+          "pass": "loop-spill",
+          "event": "cyclic-blocks",
+          "count": 157
+        },
+        {
+          "pass": "trace-layout",
+          "event": "candidate",
+          "count": 2
+        },
+        {
+          "pass": "trace-layout",
+          "event": "changed-order",
+          "count": 2
+        }
+      ]
+    },
+    "deduplicated": {
+      "success": true,
+      "allocation_fingerprint": "8228b9178cc90459626cdd1393e7480b",
+      "checks": [
+        "empty graph",
+        "acyclic graph",
+        "self loop",
+        "two-node cycle",
+        "loop with acyclic exit",
+        "disconnected cycles",
+        "undefined target",
+        "duplicate edges",
+        "deep acyclic graph avoids recursive DFS stack overflow",
+        "cold block spill cost remains unchanged",
+        "cyclic block finite spill cost is weighted only when enabled",
+        "mandatory register cost remains infinite",
+        "layout actually changes the fixture only when enabled",
+        "layout preserves every reachable block without duplication",
+        "production proved validator accepts the chosen order unchanged",
+        "register-pressure candidate passes the production extracted validator",
+        "baseline retry allocation remains validated",
+        "baseline retry disables only experimental spill weighting",
+        "baseline retry restores the previous weighting setting"
+      ],
+      "counters": [
+        {
+          "pass": "loop-spill",
+          "event": "baseline-requested",
+          "count": 1
+        },
+        {
+          "pass": "loop-spill",
+          "event": "cyclic-blocks",
+          "count": 157
+        }
+      ]
+    }
+  },
+  "codegen": {
+    "default": {
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    "enabled": {
+      "call_retained": false,
+      "outputs_pass": true
+    },
+    "combined": {
+      "call_retained": false,
+      "outputs_pass": true
+    },
+    "disabled": {
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    "size": {
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    "attribute": {
+      "call_retained": true,
+      "outputs_pass": true
+    },
+    "recursive": {
+      "call_retained": true,
+      "outputs_pass": true
+    }
+  },
+  "commands": [
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "ocamlopt",
+      "-g",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/extraction",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/lib",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/common",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/aarch64",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/backend",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/cfrontend",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/cparser",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/driver",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/export",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/debug",
+      "-c",
+      "/Users/axel2/Downloads/compcert-fast/perf/test_heuristics.ml",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/test_heuristics.cmx"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/in-env",
+      "ocamlopt",
+      "-g",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/extraction",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/lib",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/common",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/aarch64",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/backend",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/cfrontend",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/cparser",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/driver",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/export",
+      "-I",
+      "/Users/axel2/Downloads/compcert-fast/debug",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/check_heuristics",
+      "str.cmxa",
+      "unix.cmxa",
+      "extraction/Datatypes.cmx",
+      "extraction/Orders.cmx",
+      "extraction/OrdersTac.cmx",
+      "extraction/OrderedType.cmx",
+      "extraction/List0.cmx",
+      "extraction/EquivDec.cmx",
+      "extraction/BinNums.cmx",
+      "extraction/Nat.cmx",
+      "extraction/BinPosDef.cmx",
+      "extraction/BinPos.cmx",
+      "extraction/BinNat.cmx",
+      "extraction/BinInt.cmx",
+      "extraction/ZArith_dec.cmx",
+      "extraction/Coqlib.cmx",
+      "extraction/Maps.cmx",
+      "extraction/Ordered.cmx",
+      "extraction/Int0.cmx",
+      "extraction/OrdersAlt.cmx",
+      "extraction/OrdersFacts.cmx",
+      "extraction/MSetInterface.cmx",
+      "extraction/MSetAVL.cmx",
+      "extraction/FSetAVL.cmx",
+      "extraction/Registers.cmx",
+      "extraction/Zpower.cmx",
+      "extraction/Zbits.cmx",
+      "lib/Readconfig.cmx",
+      "lib/Responsefile.cmx",
+      "lib/Commandline.cmx",
+      "driver/Configuration.cmx",
+      "extraction/Archi.cmx",
+      "extraction/Integers.cmx",
+      "extraction/Zaux.cmx",
+      "extraction/Zbool.cmx",
+      "extraction/SpecFloat.cmx",
+      "extraction/Round.cmx",
+      "extraction/Bool.cmx",
+      "extraction/BinarySingleNaN.cmx",
+      "extraction/Binary.cmx",
+      "extraction/IEEE754_extra.cmx",
+      "extraction/Bits.cmx",
+      "extraction/Floats.cmx",
+      "extraction/Errors.cmx",
+      "extraction/AST.cmx",
+      "extraction/Values.cmx",
+      "extraction/Znumtheory.cmx",
+      "extraction/Memtype.cmx",
+      "extraction/PeanoNat.cmx",
+      "extraction/Memdata.cmx",
+      "extraction/Memory.cmx",
+      "extraction/Globalenvs.cmx",
+      "extraction/Op.cmx",
+      "extraction/Machregs.cmx",
+      "extraction/Locations.cmx",
+      "lib/Camlcoq.cmx",
+      "backend/XTL.cmx",
+      "extraction/Builtins0.cmx",
+      "extraction/Builtins1.cmx",
+      "extraction/Builtins.cmx",
+      "extraction/RTL.cmx",
+      "extraction/Equalities.cmx",
+      "extraction/DecidableType.cmx",
+      "extraction/FSetInterface.cmx",
+      "extraction/Lattice.cmx",
+      "extraction/Specif.cmx",
+      "extraction/Iteration.cmx",
+      "extraction/Heaps.cmx",
+      "extraction/Kildall.cmx",
+      "backend/Splitting.cmx",
+      "extraction/Unityping.cmx",
+      "extraction/Conventions1.cmx",
+      "extraction/Conventions.cmx",
+      "extraction/RTLtyping.cmx",
+      "common/PrintAST.cmx",
+      "aarch64/PrintOp.cmx",
+      "backend/Machregsnames.cmx",
+      "backend/PrintXTL.cmx",
+      "extraction/LTL.cmx",
+      "backend/PrintLTL.cmx",
+      "lib/Tokenize.cmx",
+      "driver/Version.cmx",
+      "cparser/Diagnostics.cmx",
+      "cparser/Machine.cmx",
+      "cparser/Env.cmx",
+      "cparser/Cprint.cmx",
+      "cparser/Cutil.cmx",
+      "driver/Clflags.cmx",
+      "common/Sections.cmx",
+      "extraction/Ctypes.cmx",
+      "extraction/Cop.cmx",
+      "extraction/Csyntax.cmx",
+      "extraction/Initializers.cmx",
+      "aarch64/Machregsaux.cmx",
+      "cparser/Ceval.cmx",
+      "backend/ExperimentalOptions.cmx",
+      "aarch64/CBuiltins.cmx",
+      "cparser/ExtendedAsm.cmx",
+      "debug/Debug.cmx",
+      "extraction/Ctyping.cmx",
+      "backend/AisAnnot.cmx",
+      "cfrontend/C2C.cmx",
+      "cfrontend/CPragmas.cmx",
+      "backend/IRC.cmx",
+      "backend/Regalloc.cmx",
+      "extraction/FSetAVLplus.cmx",
+      "extraction/Allocation.cmx",
+      "backend/Linearizeaux.cmx",
+      "extraction/Linear.cmx",
+      "extraction/Linearize.cmx",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/test_heuristics.cmx"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/check_heuristics"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/check_heuristics"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/check_heuristics"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/check_heuristics"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/check_heuristics"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/check_heuristics"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-version"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-version"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-version"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-default.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-default.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-default.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-default.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-default.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-default.exe",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-default.exe",
+      "arg",
+      "arg",
+      "arg",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-enabled.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-enabled.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-enabled.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-enabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-enabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-enabled.exe",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-enabled.exe",
+      "arg",
+      "arg",
+      "arg",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-combined.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-combined.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-combined.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-combined.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-combined.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-combined.exe",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-combined.exe",
+      "arg",
+      "arg",
+      "arg",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-disabled.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-disabled.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-disabled.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-disabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-disabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-disabled.exe",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-disabled.exe",
+      "arg",
+      "arg",
+      "arg",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-Os",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-size.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-size.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-Os",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-size.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-size.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-size.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-size.exe",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-size.exe",
+      "arg",
+      "arg",
+      "arg",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-DKEEP_CALL",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-attribute.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-attribute.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-DKEEP_CALL",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-attribute.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-attribute.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-attribute.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-attribute.exe",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-attribute.exe",
+      "arg",
+      "arg",
+      "arg",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-recursive.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-recursive.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-recursive.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-recursive.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-recursive.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-recursive.exe",
+      "arg"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/heuristics/leaf-recursive.exe",
+      "arg",
+      "arg",
+      "arg",
+      "arg"
+    ]
+  ],
+  "tested_flags": [
+    "small-inline",
+    "loop-spill",
+    "trace-layout"
+  ],
+  "scope": "heuristics only; scalar formal passes and NEON have separate harnesses",
+  "source_sha256": {
+    "backend/ExperimentalOptions.ml": "c5185a5895a5b4544401fdbb0f10f6d1978a0203434f122581d5412c5724e879",
+    "backend/Inliningaux.ml": "b32c31072385a64e303f5f5923cfc7e0a8f695dd9cf9b186a5969dbe7f6fbed9",
+    "backend/Regalloc.ml": "9aee1b05aaaba40b0fd1dd0e722f8e0387dce9eab6e30dd66cc636b1054755c8",
+    "backend/Linearizeaux.ml": "2693216bbd3ef6ddfe43a6911beb92d8860001a5747e238c12f125cfc21f323c",
+    "perf/test_heuristics.ml": "818971e45120c84f018da3fdb61cac419882be25e4a87683704012ba7154c992",
+    "perf/check_heuristics.py": "c8e28b8b102e6734ba8482e4061453bcb4605004678029f0e94936dd3e1a6187"
+  },
+  "compiler_sha256": "1acee6ae0d78d466f176b970a2e7f4d93d917ee1b32e9658eec552d104a68a25"
+}
