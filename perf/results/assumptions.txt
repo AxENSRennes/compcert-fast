@@ -55,6 +55,8 @@ Events.external_functions_properties :
 Compopts.experimental_vectorize : unit -> bool
 Compopts.experimental_unswitch : unit -> bool
 Compopts.experimental_unroll4 : unit -> bool
+Compopts.experimental_tile2d : unit -> bool
+Compopts.experimental_tile : unit -> bool
 Compopts.experimental_strength : unit -> bool
 Compopts.experimental_storeelim : unit -> bool
 Compopts.experimental_select : unit -> bool
@@ -62,9 +64,12 @@ Compopts.experimental_schedule : unit -> bool
 Compopts.experimental_scalar : unit -> bool
 Compopts.experimental_preheader : unit -> bool
 Compopts.experimental_peel : unit -> bool
+Compopts.experimental_memvector : unit -> bool
 Compopts.experimental_loadforward : unit -> bool
 Compopts.experimental_licm : unit -> bool
+Compopts.experimental_interchange : unit -> bool
 Compopts.experimental_hoist : unit -> bool
+Compopts.experimental_fusion : unit -> bool
 Compopts.experimental_cleanup : unit -> bool
 Eqdep.Eq_rect_eq.eq_rect_eq :
   forall (U : Type) (p : U) (Q : U -> Type) (x : Q p) (h : p = p),
@@ -132,6 +137,8 @@ Events.external_functions_properties :
 Compopts.experimental_vectorize : unit -> bool
 Compopts.experimental_unswitch : unit -> bool
 Compopts.experimental_unroll4 : unit -> bool
+Compopts.experimental_tile2d : unit -> bool
+Compopts.experimental_tile : unit -> bool
 Compopts.experimental_strength : unit -> bool
 Compopts.experimental_storeelim : unit -> bool
 Compopts.experimental_select : unit -> bool
@@ -139,9 +146,12 @@ Compopts.experimental_schedule : unit -> bool
 Compopts.experimental_scalar : unit -> bool
 Compopts.experimental_preheader : unit -> bool
 Compopts.experimental_peel : unit -> bool
+Compopts.experimental_memvector : unit -> bool
 Compopts.experimental_loadforward : unit -> bool
 Compopts.experimental_licm : unit -> bool
+Compopts.experimental_interchange : unit -> bool
 Compopts.experimental_hoist : unit -> bool
+Compopts.experimental_fusion : unit -> bool
 Compopts.experimental_cleanup : unit -> bool
 Eqdep.Eq_rect_eq.eq_rect_eq :
   forall (U : Type) (p : U) (Q : U -> Type) (x : Q p) (h : p = p),

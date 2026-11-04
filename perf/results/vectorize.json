@@ -317,6 +317,28 @@
     ],
     [
       "/Users/axel2/Downloads/compcert-fast/perf/artifacts/vectorize/loops4.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/vectorize/ordinary.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/vectorize/memory-loops.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/vectorize/ordinary.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/vectorize/memory-loops.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/vectorize/memory-loops.exe"
     ]
   ],
   "checks": [
@@ -351,7 +373,11 @@
     "loops4 automatic NEON code-generation gate",
     "loops4 ordinary affine function contains automatic NEON arithmetic",
     "loops4 ordinary loop function contains automatic NEON arithmetic",
-    "loops4 defined C outputs match clang"
+    "loops4 defined C outputs match clang",
+    "memory-loops automatic NEON code-generation gate",
+    "memory-loops ordinary affine function contains automatic NEON arithmetic",
+    "memory-loops ordinary loop function contains automatic NEON arithmetic",
+    "memory-loops defined C outputs match clang"
   ],
   "native": {
     "success": true,
@@ -463,6 +489,12 @@
       "options": [],
       "neon_emitted": true,
       "correctness_pass": true
+    },
+    "memory-loops": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d",
+      "options": [],
+      "neon_emitted": true,
+      "correctness_pass": true
     }
   },
   "source_sha256": {
@@ -472,7 +504,7 @@
     "backend/LowerLongproof.v": "babf252543229cf7abf4b6e09ae14771be8075d018aba539949ba33a154d70c0",
     "perf/test_vectorize.ml": "8b65f22f1f9c65e6a3df7d2c19cd9c1a4a1b367634fe296e26e3d03856273007",
     "perf/check_vectorize.py": "8c62638d25150a39c9b8d4e25f002065bc9d706fbabd53e9804c7077d474e36a",
-    "perf/experiment-profiles.json": "6d88c1fdaa86a1b2c3aadd9d27cdef0d4717f9cd83491b808388e0cade46bb84"
+    "perf/experiment-profiles.json": "0c53b96afaedcbdc3b5769a39fcea1db02c3f0034dcc64116e5087760f15f3f1"
   },
-  "compiler_sha256": "c44b58501619f84bf47b78c49108b6a337d8b38789bd16a2b1d08ec966dfb469"
+  "compiler_sha256": "9529c09eb37e4bb206d6c7e7ff69b35c4c6aac11fba91be19fac32787d962842"
 }

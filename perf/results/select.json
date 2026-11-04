@@ -49,5 +49,5 @@
     "perf/check_select.py": "dc1c992db924ede6b05e6ac4cf8c4f2687b46cab463c551f52f12704bd4ac91b",
     "perf/test_select.ml": "76d43a7122438275cbff82b1c180879d60654301d956f2884938b09b5a17814f"
   },
-  "compiler_sha256": "c44b58501619f84bf47b78c49108b6a337d8b38789bd16a2b1d08ec966dfb469"
+  "compiler_sha256": "9529c09eb37e4bb206d6c7e7ff69b35c4c6aac11fba91be19fac32787d962842"
 }
