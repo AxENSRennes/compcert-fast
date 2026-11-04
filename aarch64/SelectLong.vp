@@ -89,6 +89,8 @@ Nondetfunction addl (e1: expr) (e2: expr) :=
 Nondetfunction negl (e: expr) :=
   match e with
   | Eop (Olongconst n) Enil => Eop (Olongconst (Int64.neg n)) Enil
+  | Eop Omull (t1:::t2:::Enil) ?? Compopts.experimental_select tt =>
+      Eop Omullsub (longconst Int64.zero ::: t1 ::: t2 ::: Enil)
   | Eop (Oshiftl s a) (t1:::Enil) ?? arith_shift s => Eop (Oneglshift s a) (t1:::Enil)
   | _ =>  Eop Onegl (e ::: Enil)
   end.

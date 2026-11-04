@@ -2,12 +2,14 @@
 PYTHON ?= python3
 JOBS ?= 4
 .NOTPARALLEL:
-.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators
+.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators test-experiments test-neon
 help:
 	@echo 'make -f Makefile.fast baseline  # bootstrap, full + incremental proofs, build, benchmark'
 	@echo 'make -f Makefile.fast bench     # two independent measurement blocks + noise gate'
 	@echo 'make -f Makefile.fast proofs    # full kernel check + one-file rebuild timing'
 	@echo 'make -f Makefile.fast verify    # correctness suite, native regressions, ABI and PIC'
+	@echo 'make -f Makefile.fast test-experiments # proved experimental passes, independent and combined'
+	@echo 'make -f Makefile.fast test-neon # integer model against native NEON, no speed series'
 bootstrap:
 	./perf/bootstrap.sh
 guard:
@@ -21,13 +23,24 @@ compiler: guard
 	./perf/in-env $(MAKE) -j$(JOBS) all
 test-validators: compiler
 	$(PYTHON) perf/check_validators.py
+test-experiments: compiler
+	$(PYTHON) perf/check_heuristics.py
+	$(PYTHON) perf/check_select.py
+	$(PYTHON) perf/check_scalar.py
+	$(PYTHON) perf/check_hoist.py
+	$(PYTHON) perf/check_schedule.py
+	$(PYTHON) perf/check_loadforward.py
+	$(PYTHON) perf/check_storeelim.py
+	$(PYTHON) perf/check_unswitch.py
+	$(PYTHON) perf/check_packed_neon.py
+	$(PYTHON) perf/check_experiments.py
+test-neon: guard
+	$(PYTHON) perf/check_neon.py
 bench: compiler
 	$(PYTHON) perf/bench.py --output perf/results/latest.json
 correctness: compiler
 	$(PYTHON) perf/bench.py --correctness-only --output perf/results/correctness.json
-verify: guard test-harness compiler correctness test-validators
-	./perf/in-env $(MAKE) -C test clean
-	./perf/in-env $(MAKE) -C test -j$(JOBS) all
-	./perf/in-env $(MAKE) -C test test
+verify: guard test-harness compiler correctness test-validators test-experiments test-neon
+	$(PYTHON) perf/check_native_profiles.py --jobs $(JOBS)
 baseline: bootstrap test-harness proofs compiler
 	$(PYTHON) perf/bench.py --output perf/results/baseline.json

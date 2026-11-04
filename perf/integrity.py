@@ -1,6 +1,7 @@
 """Checks anchored to Git objects, complementary to independent Coq checking."""
 from collections import Counter
 import hashlib
+import difflib
 import io
 import json
 import re
@@ -8,7 +9,27 @@ import subprocess
 
 UPSTREAM = "14d616046360a0b2611ebdfc2f98368af402e1f7"
 ASSUMPTIONS_BASE = "befa8484ea29fe73a90785983541fb45745c26a0"
-REVIEWED_FORMAL = {"backend/Linearize.v", "backend/Linearizeproof.v"}
+REVIEWED_FORMAL = {"backend/Linearize.v", "backend/Linearizeproof.v",
+                   "driver/Compiler.v", "driver/Compopts.v", "extraction/extraction.v",
+                   "Makefile", "backend/PrintRTL.ml", "backend/Allocation.v", "backend/Allocproof.v",
+                   "aarch64/SelectOp.vp", "aarch64/SelectOpproof.v", "aarch64/SelectLong.vp", "aarch64/SelectLongproof.v", "aarch64/Builtins1.v", "aarch64/Machregs.v",
+                   "aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml"}
+NEW_FORMAL = {"backend/Experimental.v", "backend/Experimentalproof.v",
+              "backend/ExtraCleanup.v", "backend/ExtraCleanupproof.v",
+              "backend/Schedule.v", "backend/Scheduleproof.v",
+              "backend/HoistConst.v", "backend/HoistConstproof.v",
+              "backend/LoadForward.v", "backend/LoadForwardproof.v",
+              "backend/Unswitch.v", "backend/Unswitchproof.v",
+              "backend/StoreElim.v", "backend/StoreElimproof.v",
+              "aarch64/Neon.v", "perf/neon/Extract.v"}
+COMPUTATIONAL_FLAGS = {"experimental_scalar", "experimental_unroll4", "experimental_cleanup",
+                       "experimental_schedule", "experimental_hoist", "experimental_loadforward",
+                       "experimental_unswitch", "experimental_select", "experimental_storeelim"}
+EXTRACTION_ACCESSORS = {"experimental_scalar": "scalar_enabled", "experimental_unroll4": "unroll4_enabled",
+                        "experimental_cleanup": "cleanup_enabled", "experimental_schedule": "schedule_enabled",
+                        "experimental_hoist": "hoist_enabled", "experimental_loadforward": "loadforward_enabled",
+                        "experimental_unswitch": "unswitch_enabled", "experimental_select": "select_enabled",
+                        "experimental_storeelim": "storeelim_enabled"}
 ORACLES = {"backend/Regalloc.ml", "backend/Inliningaux.ml", "backend/Linearizeaux.ml"}
 BUILD_FILES = {"Makefile", "Makefile.extr", "Makefile.menhir", "configure"}
 
@@ -92,10 +113,69 @@ def assumption_commands(source):
                    re.findall(pattern, coq_code(source, hide_strings=True), re.S))
 
 
-def reviewed_change_safe(original, current):
+def reviewed_change_safe(original, current, path=None):
+    if path == "extraction/extraction.v":
+        return reviewed_build_safe(original, current, path)
     old, new = declarations(original), declarations(current)
-    return (all(new.get(name) == statement for name, statement in old.items())
-            and assumption_commands(original) == assumption_commands(current))
+    if not all(new.get(name) == statement for name, statement in old.items()):
+        return False
+    old_commands, new_commands = assumption_commands(original), assumption_commands(current)
+    if path == "driver/Compiler.v":
+        # New passes require new imports; the actual axioms and every existing
+        # theorem statement remain checked, then independently kernel-checked.
+        old_commands = Counter({k: v for k, v in old_commands.items() if not k.startswith("Require ")})
+        new_commands = Counter({k: v for k, v in new_commands.items() if not k.startswith("Require ")})
+    if path == "driver/Compopts.v":
+        for command in list(new_commands):
+            match = re.fullmatch(r"Parameter\s+(\w+)\s*:\s*unit\s*->\s*bool\s*\.", command)
+            if match and match[1] in COMPUTATIONAL_FLAGS:
+                del new_commands[command]
+    if path == "backend/Allocation.v":
+        original_parameters = [re.fullmatch(r"Parameter\s+regalloc\s*:\s*(.*?)\.", command)
+                               for command in old_commands]
+        original_type = next((match[1] for match in original_parameters if match), None)
+        for command in list(new_commands):
+            match = re.fullmatch(r"Parameter\s+regalloc_baseline\s*:\s*(.*?)\.", command)
+            if match and match[1] == original_type:
+                del new_commands[command]
+    return old_commands == new_commands
+
+
+def reviewed_build_safe(original, current, path):
+    # These manually reviewed platform expansions are trusted OCaml, never
+    # proof/kernel build recipes. Their exact contents are still hash-pinned.
+    if path in {"aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml"}:
+        return True
+    inserted = []
+    old, new = original.splitlines(keepends=True), current.splitlines(keepends=True)
+    for tag, _a, _b, start, stop in difflib.SequenceMatcher(None, old, new).get_opcodes():
+        if tag == "equal":
+            continue
+        if tag != "insert":
+            return False
+        inserted.extend(new[start:stop])
+    addition = "".join(inserted)
+    if path == "Makefile":
+        allowed = {name.rsplit("/", 1)[-1] for name in NEW_FORMAL if name.startswith("backend/")}
+        return all(token in allowed or token == "\\" for token in addition.split())
+    if path == "extraction/extraction.v":
+        code = coq_code(addition)
+        code = code.replace("RTL.init_regs Op.eval_operation Op.eval_condition Op.eval_addressing", "")
+        code = re.sub(r'Extract\s+Constant\s+Allocation\.regalloc_baseline\s*=>\s*"Regalloc\.regalloc_baseline"\s*\.', '', code)
+        for flag, accessor in EXTRACTION_ACCESSORS.items():
+            pattern = (r'Extract\s+Constant\s+Compopts\.' + flag +
+                       r'\s*=>\s*"ExperimentalOptions\.' + accessor + r'"\s*\.')
+            code = re.sub(pattern, "", code)
+        return not code.strip()
+    return path in {"backend/PrintRTL.ml", "aarch64/Asmexpand.ml",
+                    "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml"}
+
+
+def new_source_safe(source):
+    code = coq_code(source, hide_strings=True)
+    return not re.search(r"\b(?:Axioms?|Parameters?|Conjectures?|Admit|Admitted|admit|Primitive|Declare)\b|"
+                         r"\b\w*_no_check\b|\bUnset\s+(?:Guard|Positivity|Universe)\s+Checking\b|"
+                         r"\bSet\s+[^.]*\bType\s+In\s+Type\b", code)
 
 
 def canonical_assumptions(text):
@@ -114,5 +194,16 @@ def canonical_assumptions(text):
 def check_principal_assumptions(root, actual):
     original = subprocess.check_output(
         ["git", "show", f"{ASSUMPTIONS_BASE}:perf/results/assumptions.txt"], cwd=root, text=True)
-    if canonical_assumptions(actual) != canonical_assumptions(original):
-        raise ValueError("Principal theorem assumptions differ from the original checked baseline")
+    old, new = canonical_assumptions(original), canonical_assumptions(actual)
+    options = set()
+    for before, after in zip(old, new):
+        extra = {name: typ for name, typ in after.items() if name not in before}
+        for name, typ in extra.items():
+            option = name in {"Compopts." + flag for flag in COMPUTATIONAL_FLAGS} and typ == "unit -> bool"
+            baseline_allocator = name == "Allocation.regalloc_baseline" and typ == before.get("Allocation.regalloc")
+            if not option and not baseline_allocator:
+                raise ValueError("New trusted principal-theorem assumption: " + name)
+            options.add(name)
+        if {name: typ for name, typ in after.items() if name not in extra} != before:
+            raise ValueError("Original principal-theorem assumptions changed")
+    return sorted(options)

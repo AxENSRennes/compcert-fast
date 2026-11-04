@@ -419,6 +419,17 @@ let num_statements_inline_asm txt =
       |> Str.split re_asm_stmt_separator
       |> List.length
 
+(* Explicit packed-64 NEON builtins remain Pbuiltin until printing.  Their
+   numerical semantics are specified in Builtins1; F16/F17 are declared
+   destroyed in Machregs.  No other builtin bypasses normal expansion. *)
+let is_packed_neon_builtin = function
+  | "__builtin_cc_neon_add_u32x2" | "__builtin_cc_neon_sub_u32x2"
+  | "__builtin_cc_neon_mul_u32x2" -> true
+  | _ -> false
+
+let packed_neon_signature sg =
+  sg.sig_args = [Xlong; Xlong] && sg.sig_res = Xlong && sg.sig_cc = cc_default
+
 (* Branch relaxation *)
 
 module BInfo: BRANCH_INFORMATION = struct
@@ -427,6 +438,7 @@ module BInfo: BRANCH_INFORMATION = struct
     | EF_annot _ -> 0
     | EF_debug _ -> 0
     | EF_inline_asm(txt, _, _) -> 4 * num_statements_inline_asm txt
+    | EF_builtin(name, _) when is_packed_neon_builtin name -> 16
     | _ -> assert false
 
   let instr_size = function
@@ -521,6 +533,13 @@ let expand_instruction instr =
       ()
   | Pbuiltin (ef,args,res) ->
      begin match ef with
+     | EF_builtin (name,sg) when is_packed_neon_builtin name ->
+        if not (packed_neon_signature sg) then
+          raise (Error ("invalid packed NEON builtin signature: " ^ name));
+        begin match args, res with
+        | [BA(IR _); BA(IR _)], BR(IR _) -> emit instr
+        | _ -> raise (Error ("invalid packed NEON builtin operands: " ^ name))
+        end
      | EF_builtin (name,sg) ->
         expand_builtin_inline name args res
      | EF_vload chunk ->

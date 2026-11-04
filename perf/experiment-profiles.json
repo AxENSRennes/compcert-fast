@@ -1,0 +1,28 @@
+{
+  "default_enabled": false,
+  "promotion_allowed_without_performance_result": false,
+  "profiles": {
+    "scalar2": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup",
+    "scalar4": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll4,memory-cleanup"
+  },
+  "limits": {
+    "hoist-constant": "One integer literal per function, cached in a fresh register. No general LICM or induction-variable analysis.",
+    "schedule-pure": "One independent adjacent operation pair per function, validated structurally. No latency model or memory reordering.",
+    "load-forward": "One adjacent identical ordinary load pair with a unique predecessor. No new general alias analysis.",
+    "store-elim": "One adjacent ordinary store pair with identical chunk and address. No volatile or atomic reordering.",
+    "loop-unswitch": "Retains the first execution of a selected immutable-register comparison, then uses specialized CFG copies.",
+    "rtl-unroll2": "Validated two-phase CFG covering. Not general trip-count based loop unrolling.",
+    "rtl-unroll4": "Validated four-phase CFG covering. Not general trip-count based loop unrolling.",
+    "memory-cleanup": "Two existing Constprop/CSE/Deadcode rounds. Analysis failure returns a compiler error; no new rollback proof.",
+    "arm64-combine": "Alternative 32/64-bit multiply-negate combination using existing modeled operations; no speed claim.",
+    "neon-packed": "Explicit two-lane uint32 packed add/sub/mul intrinsics. Trusted hardware expansion, no automatic C-loop vectorization."
+  },
+  "not_implemented": [
+    "general induction-variable simplification and strength reduction beyond stock CompCert",
+    "general LICM and speculative memory motion",
+    "loop fusion, interchange and tiling",
+    "automatic NEON vectorization of ordinary C loops",
+    "128-bit vector register state and ABI in Asm.v",
+    "Arm/Sail refinement and proof of assembly encoding"
+  ]
+}

@@ -67,6 +67,8 @@ Nondetfunction add (e1: expr) (e2: expr) :=
 Nondetfunction negint (e: expr) :=
   match e with
   | Eop (Ointconst n) Enil => Eop (Ointconst (Int.neg n)) Enil
+  | Eop Omul (t1:::t2:::Enil) ?? Compopts.experimental_select tt =>
+      Eop Omulsub (Eop (Ointconst Int.zero) Enil ::: t1 ::: t2 ::: Enil)
   | Eop (Oshift s a) (t1:::Enil) ?? arith_shift s => Eop (Onegshift s a) (t1:::Enil)
   | _ =>  Eop Oneg (e ::: Enil)
   end.

@@ -1722,6 +1722,50 @@ Qed.
 
 (** Inversion on [transf_function] *)
 
+Lemma checked_allocation_inv:
+  forall f env candidate tf,
+  checked_allocation f env candidate = OK tf ->
+  check_function f tf env = OK tt.
+Proof.
+  unfold checked_allocation; intros.
+  destruct candidate; try discriminate.
+  destruct (check_function f f0 env) as [[]|] eqn:CHECK; inv H. auto.
+Qed.
+
+Lemma validate_with_fallback_inv:
+  forall f env candidate baseline tf,
+  validate_with_fallback f env candidate baseline = OK tf ->
+  check_function f tf env = OK tt.
+Proof.
+  unfold validate_with_fallback; intros.
+  destruct (checked_allocation f env candidate) eqn:CHECK.
+  - inv H. eapply checked_allocation_inv; eauto.
+  - eapply checked_allocation_inv; eauto.
+Qed.
+
+Lemma validate_with_fallback_accept:
+  forall f env tf baseline,
+  check_function f tf env = OK tt ->
+  validate_with_fallback f env (OK tf) baseline = OK tf.
+Proof.
+  unfold validate_with_fallback, checked_allocation; intros. rewrite H. reflexivity.
+Qed.
+
+Lemma validate_with_fallback_oracle_error:
+  forall f env message baseline,
+  validate_with_fallback f env (Error message) baseline =
+  checked_allocation f env (baseline tt).
+Proof. reflexivity. Qed.
+
+Lemma validate_with_fallback_validation_error:
+  forall f env tf message baseline,
+  check_function f tf env = Error message ->
+  validate_with_fallback f env (OK tf) baseline =
+  checked_allocation f env (baseline tt).
+Proof.
+  unfold validate_with_fallback, checked_allocation; intros. rewrite H. reflexivity.
+Qed.
+
 Inductive transf_function_spec (f: RTL.function) (tf: LTL.function) : Prop :=
   | transf_function_spec_intro:
       forall env an mv k e1 e2,
@@ -1744,8 +1788,8 @@ Lemma transf_function_inv:
 Proof.
   unfold transf_function; intros.
   destruct (type_function f) as [env|] eqn:TY; try discriminate.
-  destruct (regalloc f); try discriminate.
-  destruct (check_function f f0 env) as [] eqn:?; inv H.
+  assert (Heqr: check_function f tf env = OK tt).
+  { eapply validate_with_fallback_inv; eauto. }
   unfold check_function in Heqr.
   destruct (analyze f env (pair_codes f tf)) as [an|] eqn:?; try discriminate.
   monadInv Heqr.

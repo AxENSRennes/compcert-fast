@@ -1354,16 +1354,33 @@ Definition check_function (rtl: RTL.function) (ltl: LTL.function) (env: regenv):
 
 Parameter regalloc: RTL.function -> res LTL.function.
 
+(** A second untrusted computational oracle supplies the original allocation
+    heuristic when an experimental candidate fails. It receives no correctness
+    assumption: its output must pass exactly the same validator. *)
+Parameter regalloc_baseline: RTL.function -> res LTL.function.
+
+Definition checked_allocation (f: RTL.function) (env: regenv)
+                             (candidate: res LTL.function) : res LTL.function :=
+  match candidate with
+  | Error m => Error m
+  | OK tf => do x <- check_function f tf env; OK tf
+  end.
+
+Definition validate_with_fallback (f: RTL.function) (env: regenv)
+         (candidate: res LTL.function) (baseline: unit -> res LTL.function)
+         : res LTL.function :=
+  match checked_allocation f env candidate with
+  | OK tf => OK tf
+  | Error _ => checked_allocation f env (baseline tt)
+  end.
+
 (** Register allocation followed by validation. *)
 
 Definition transf_function (f: RTL.function) : res LTL.function :=
   match type_function f with
   | Error m => Error m
   | OK env =>
-      match regalloc f with
-      | Error m => Error m
-      | OK tf => do x <- check_function f tf env; OK tf
-      end
+      validate_with_fallback f env (regalloc f) (fun _ => regalloc_baseline f)
   end.
 
 Definition transf_fundef (fd: RTL.fundef) : res LTL.fundef :=

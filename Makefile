@@ -207,6 +207,9 @@ BACKEND=\
   ConstpropOp.v Constprop.v ConstpropOpproof.v Constpropproof.v \
   CSEdomain.v CombineOp.v CSE.v CombineOpproof.v CSEproof.v \
   NeedDomain.v NeedOp.v Deadcode.v Deadcodeproof.v \
+  ExtraCleanup.v ExtraCleanupproof.v Experimental.v Experimentalproof.v \
+  HoistConst.v HoistConstproof.v Schedule.v Scheduleproof.v LoadForward.v LoadForwardproof.v \
+  StoreElim.v StoreElimproof.v Unswitch.v Unswitchproof.v \
   Unusedglob.v Unusedglobproof.v \
   Machregs.v Locations.v Conventions1.v Conventions.v LTL.v \
   Allocation.v Allocproof.v \

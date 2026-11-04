@@ -609,6 +609,25 @@ module Target(System: SYSTEM): TARGET =
         cfi_rel_offset oc "x30" (camlint_of_coqint ofs)
     | Pbuiltin(ef, args, res) ->
         begin match ef with
+          | EF_builtin(name, sg) when
+              name = "__builtin_cc_neon_add_u32x2" ||
+              name = "__builtin_cc_neon_sub_u32x2" ||
+              name = "__builtin_cc_neon_mul_u32x2" ->
+            assert (sg.sig_args = [Xlong; Xlong] && sg.sig_res = Xlong && sg.sig_cc = cc_default);
+            begin match args, res with
+            | [BA(IR a1); BA(IR a2)], BR(IR rd) ->
+              (* Trusted expansion of the packed integer specification in
+                 Builtins1.  Machregs advertises both scratch clobbers;
+                 Asmexpand.BInfo accounts for all four instructions. *)
+              let op = if name = "__builtin_cc_neon_add_u32x2" then "add"
+                       else if name = "__builtin_cc_neon_sub_u32x2" then "sub"
+                       else "mul" in
+              fprintf oc "\tfmov\td16, %a\n" xreg a1;
+              fprintf oc "\tfmov\td17, %a\n" xreg a2;
+              fprintf oc "\t%s\tv16.2s, v16.2s, v17.2s\n" op;
+              fprintf oc "\tfmov\t%a, d16\n" xreg rd
+            | _ -> assert false
+            end
           | EF_annot(kind,txt, targs) ->
             begin match (P.to_int kind) with
               | 1 -> let annot = annot_text preg_annot "sp" txt args  in

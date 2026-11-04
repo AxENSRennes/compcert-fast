@@ -41,6 +41,13 @@ Require Renumber.
 Require Constprop.
 Require CSE.
 Require Deadcode.
+Require HoistConst.
+Require Schedule.
+Require LoadForward.
+Require StoreElim.
+Require Unswitch.
+Require Experimental.
+Require ExtraCleanup.
 Require Unusedglob.
 Require Allocation.
 Require Tunneling.
@@ -62,6 +69,13 @@ Require Renumberproof.
 Require Constpropproof.
 Require CSEproof.
 Require Deadcodeproof.
+Require HoistConstproof.
+Require Scheduleproof.
+Require LoadForwardproof.
+Require StoreElimproof.
+Require Unswitchproof.
+Require Experimentalproof.
+Require ExtraCleanupproof.
 Require Unusedglobproof.
 Require Allocproof.
 Require Tunnelingproof.
@@ -134,6 +148,29 @@ Definition transf_rtl_program (f: RTL.program) : res Asm.program :=
    @@ print (print_RTL 6)
   @@@ partial_if Compopts.optim_redundancy (time "Redundancy elimination" Deadcode.transf_program)
    @@ print (print_RTL 7)
+   @@ print (print_RTL 50)
+   @@ total_if Compopts.experimental_hoist
+        (time "Experimental integer constant hoisting" HoistConst.transf_program)
+   @@ print (print_RTL 51)
+   @@ total_if Compopts.experimental_schedule
+        (time "Experimental dependency scheduling" Schedule.transf_program)
+   @@ print (print_RTL 52)
+   @@ total_if Compopts.experimental_loadforward
+        (time "Experimental load forwarding" LoadForward.transf_program)
+   @@ print (print_RTL 53)
+   @@ total_if Compopts.experimental_storeelim
+        (time "Experimental overwritten-store elimination" StoreElim.transf_program)
+   @@ print (print_RTL 54)
+   @@ total_if Compopts.experimental_unswitch
+        (time "Experimental delayed loop unswitching" Unswitch.transf_program)
+   @@ print (print_RTL 55)
+   @@ total_if Compopts.experimental_scalar
+        (time "Experimental CFG covering"
+          (Experimental.transf_program (Compopts.experimental_unroll4 tt)))
+   @@ print (print_RTL 56)
+  @@@ partial_if Compopts.experimental_cleanup
+        (time "Experimental cleanup" ExtraCleanup.transf_program)
+   @@ print (print_RTL 57)
   @@@ time "Unused globals" Unusedglob.transform_program
    @@ print (print_RTL 8)
   @@@ time "Register allocation" Allocation.transf_program
@@ -242,6 +279,14 @@ Definition CompCert's_passes :=
   ::: mkpass (match_if Compopts.optim_constprop Renumberproof.match_prog)
   ::: mkpass (match_if Compopts.optim_CSE CSEproof.match_prog)
   ::: mkpass (match_if Compopts.optim_redundancy Deadcodeproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_hoist HoistConstproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_schedule Scheduleproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_loadforward LoadForwardproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_storeelim StoreElimproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_unswitch Unswitchproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_scalar
+        (Experimentalproof.match_prog (Compopts.experimental_unroll4 tt)))
+  ::: mkpass (match_if Compopts.experimental_cleanup ExtraCleanupproof.match_prog)
   ::: mkpass Unusedglobproof.match_prog
   ::: mkpass Allocproof.match_prog
   ::: mkpass Tunnelingproof.match_prog
@@ -277,7 +322,8 @@ Proof.
   unfold transf_cminor_program, time in T. rewrite ! compose_print_identity in T. simpl in T.
   destruct (Selection.sel_program p4) as [p5|e] eqn:P5; simpl in T; try discriminate.
   destruct (RTLgen.transl_program p5) as [p6|e] eqn:P6; simpl in T; try discriminate.
-  unfold transf_rtl_program, time in T. rewrite ! compose_print_identity in T. simpl in T.
+  unfold transf_rtl_program, time in T. rewrite ! compose_print_identity in T.
+  cbn [apply_total apply_partial] in T.
   set (p7 := total_if optim_tailcalls Tailcall.transf_program p6) in *.
   destruct (Inlining.transf_program p7) as [p8|e] eqn:P8; simpl in T; try discriminate.
   set (p9 := Renumber.transf_program p8) in *.
@@ -285,7 +331,16 @@ Proof.
   set (p11 := total_if optim_constprop Renumber.transf_program p10) in *.
   destruct (partial_if optim_CSE CSE.transf_program p11) as [p12|e] eqn:P12; simpl in T; try discriminate.
   destruct (partial_if optim_redundancy Deadcode.transf_program p12) as [p13|e] eqn:P13; simpl in T; try discriminate.
-  destruct (Unusedglob.transform_program p13) as [p14|e] eqn:P14; simpl in T; try discriminate.
+  set (p13h := total_if experimental_hoist HoistConst.transf_program p13) in *.
+  set (p13s := total_if experimental_schedule Schedule.transf_program p13h) in *.
+  set (p13l := total_if experimental_loadforward LoadForward.transf_program p13s) in *.
+  set (p13d := total_if experimental_storeelim StoreElim.transf_program p13l) in *.
+  set (p13u := total_if experimental_unswitch Unswitch.transf_program p13d) in *.
+  set (p13a := total_if experimental_scalar
+    (Experimental.transf_program (experimental_unroll4 tt)) p13u) in *.
+  destruct (partial_if experimental_cleanup ExtraCleanup.transf_program p13a)
+    as [p13b|e] eqn:P13b; simpl in T; try discriminate.
+  destruct (Unusedglob.transform_program p13b) as [p14|e] eqn:P14; simpl in T; try discriminate.
   destruct (Allocation.transf_program p14) as [p15|e] eqn:P15; simpl in T; try discriminate.
   set (p16 := Tunneling.tunnel_program p15) in *.
   destruct (Linearize.transf_program p16) as [p17|e] eqn:P17; simpl in T; try discriminate.
@@ -306,6 +361,13 @@ Proof.
   exists p11; split. apply total_if_match. apply Renumberproof.transf_program_match.
   exists p12; split. eapply partial_if_match; eauto. apply CSEproof.transf_program_match.
   exists p13; split. eapply partial_if_match; eauto. apply Deadcodeproof.transf_program_match.
+  exists p13h; split. apply total_if_match. apply HoistConstproof.transf_program_match.
+  exists p13s; split. apply total_if_match. apply Scheduleproof.transf_program_match.
+  exists p13l; split. apply total_if_match. apply LoadForwardproof.transf_program_match.
+  exists p13d; split. apply total_if_match. apply StoreElimproof.transf_program_match.
+  exists p13u; split. apply total_if_match. apply Unswitchproof.transf_program_match.
+  exists p13a; split. apply total_if_match. apply Experimentalproof.transf_program_match.
+  exists p13b; split. eapply partial_if_match; eauto. apply ExtraCleanupproof.transf_program_match.
   exists p14; split. apply Unusedglobproof.transf_program_match; auto.
   exists p15; split. apply Allocproof.transf_program_match; auto.
   exists p16; split. apply Tunnelingproof.transf_program_match.
@@ -364,7 +426,7 @@ Ltac DestructM :=
       destruct H as (p & M & MM)
   end.
   repeat DestructM. subst tp.
-  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p21)).
+  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p28)).
   {
   eapply compose_forward_simulations.
     eapply SimplExprproof.transl_program_correct; eassumption.
@@ -391,6 +453,21 @@ Ltac DestructM :=
     eapply match_if_simulation. eassumption. exact CSEproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact Deadcodeproof.transf_program_correct; eassumption.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact HoistConstproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact Scheduleproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LoadForwardproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact StoreElimproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact Unswitchproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption.
+    exact (Experimentalproof.transf_program_correct (experimental_unroll4 tt)).
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact ExtraCleanupproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply Unusedglobproof.transf_program_correct; eassumption.
   eapply compose_forward_simulations.

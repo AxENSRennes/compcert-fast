@@ -110,5 +110,66 @@ let flatten_blocks blks =
 
 (* Build the enumeration *)
 
+let trace_blocks f blocks =
+  let owner = Hashtbl.create (List.length blocks) in
+  let table = Hashtbl.create (List.length blocks) in
+  List.iter (fun (minpc, nodes) -> match nodes with
+    | [] -> ()
+    | head :: _ ->
+        let key = P.to_int head in
+        Hashtbl.replace table key (minpc, nodes);
+        List.iter (fun pc -> Hashtbl.replace owner (P.to_int pc) key) nodes) blocks;
+  let successors nodes =
+    match List.rev nodes with
+    | [] -> []
+    | last :: _ ->
+        match PTree.get last f.fn_code with
+        | None -> []
+        | Some block ->
+            successors_block block
+            |> List.filter_map (fun pc ->
+                try Some (Hashtbl.find owner (P.to_int pc)) with Not_found -> None) in
+  let graph = Hashtbl.fold
+    (fun key (_, nodes) acc -> (key, successors nodes) :: acc) table [] in
+  let cyclic = ExperimentalOptions.cyclic_nodes graph in
+  let used = Hashtbl.create (List.length blocks) in
+  let result = ref [] in
+  let append_trace start =
+    let current = ref (Some start) in
+    while !current <> None do
+      match !current with
+      | None -> ()
+      | Some key ->
+          current := None;
+          if not (Hashtbl.mem used key) then begin
+            Hashtbl.add used key ();
+            let _, nodes = Hashtbl.find table key in
+            result := nodes :: !result;
+            let available = List.filter (fun pc -> not (Hashtbl.mem used pc)) (successors nodes) in
+            (* Prefer a cyclic successor before an acyclic exit. Otherwise
+               prefer the false/fall-through edge supplied last by LTL. *)
+            let preferred =
+              List.filter (fun pc -> List.mem key cyclic && List.mem pc cyclic) available in
+            match List.rev (if preferred = [] then available else preferred) with
+            | next :: _ -> current := Some next
+            | [] -> ()
+          end
+    done in
+  (try append_trace (Hashtbl.find owner (P.to_int f.fn_entrypoint)) with Not_found -> ());
+  let ordered = List.sort (fun (x, _) (y, _) -> compare y x) blocks in
+  List.iter (fun (_, nodes) -> match nodes with
+    | [] -> ()
+    | head :: _ -> append_trace (P.to_int head)) ordered;
+  List.flatten (List.rev !result)
+
 let enumerate_aux f reach =
-  flatten_blocks (basic_blocks f (join_points f))
+  let blocks = basic_blocks f (join_points f) in
+  let baseline = flatten_blocks blocks in
+  if not (ExperimentalOptions.enabled "trace-layout") then baseline
+  else begin
+    let candidate = trace_blocks f blocks in
+    ExperimentalOptions.note ~pass:"trace-layout" ~event:"candidate" 1;
+    if candidate <> baseline then
+      ExperimentalOptions.note ~pass:"trace-layout" ~event:"changed-order" 1;
+    candidate
+  end

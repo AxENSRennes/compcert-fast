@@ -487,9 +487,12 @@ let dead_code_elimination f liveness =
 (* Estimate spill costs and count other statistics for every variable.
    Variables that must not be spilled are given infinite costs. *)
 
+let allow_loop_weighting = ref true
+
 let spill_costs f =
 
   let costs = ref PTree.empty in
+  let block_weight = ref 1 in
 
   let get_stats r =
     match PTree.get r !costs with
@@ -500,6 +503,12 @@ let spill_costs f =
         st in
 
   let charge amount uses v =
+    (* Keep max_int reserved for mandatory registers. Finite costs use a
+       bounded loop multiplier and saturate without integer wraparound. *)
+    let amount =
+      if amount = max_int then max_int
+      else if amount > (max_int - 1) / !block_weight then max_int - 1
+      else amount * !block_weight in
     match v with
     | L l -> ()
     | V(r, ty) ->
@@ -584,9 +593,21 @@ let spill_costs f =
 
   let charge_block blk = List.iter charge_instr blk in
 
-  PTree.fold1
-    (fun () blk -> charge_block blk)
-    f.fn_code ();
+  if not (ExperimentalOptions.enabled "loop-spill" && !allow_loop_weighting) then
+    PTree.fold1 (fun () blk -> charge_block blk) f.fn_code ()
+  else begin
+    let graph = PTree.fold
+      (fun acc pc blk ->
+        (P.to_int pc, List.map P.to_int (successors_block blk)) :: acc)
+      f.fn_code [] in
+    let cyclic = ExperimentalOptions.cyclic_nodes graph in
+    let members = Hashtbl.create (List.length cyclic) in
+    List.iter (fun pc -> Hashtbl.replace members pc ()) cyclic;
+    ExperimentalOptions.note ~pass:"loop-spill" ~event:"cyclic-blocks" (List.length cyclic);
+    PTree.fold (fun () pc blk ->
+      block_weight := if Hashtbl.mem members (P.to_int pc) then 8 else 1;
+      charge_block blk) f.fn_code ()
+  end;
   if !option_dalloctrace then begin
     fprintf !pp "------------------ Unspillable variables --------------\n\n";
     PTree.fold
@@ -1216,3 +1237,13 @@ let regalloc f =
                         Errors.POS pc]
       | Bad_LTL ->
           Errors.Error(Errors.msg "bad LTL after spilling")
+
+(* The Coq wrapper invokes this only after candidate generation or validation
+   fails. Its result is separately validated. No other experimental pass is
+   disabled, and restoration also happens if the oracle raises an exception. *)
+let regalloc_baseline f =
+  ExperimentalOptions.note ~pass:"loop-spill" ~event:"baseline-requested" 1;
+  let previous = !allow_loop_weighting in
+  allow_loop_weighting := false;
+  Fun.protect ~finally:(fun () -> allow_loop_weighting := previous)
+    (fun () -> regalloc f)

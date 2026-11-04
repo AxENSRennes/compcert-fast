@@ -113,6 +113,7 @@ let print_program pp (prog: RTL.program) =
 let destination : string option ref = ref None
 
 let print_if passno prog =
+  ExperimentalTrace.observe passno prog;
   match !destination with
   | None -> ()
   | Some f ->

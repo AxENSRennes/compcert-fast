@@ -26,9 +26,9 @@ jobs:
         run: brew install gmp pkgconf
       - name: Frozen local toolchain
         run: make -f Makefile.fast bootstrap
-      - name: Full proofs, independent kernel check and unchanged principal assumptions
+      - name: Full proofs, independent kernel check and preserved logical assumptions
         run: make -f Makefile.fast proofs
-      - name: Native validators, reference outputs, regression tests, ABI and PIC
+      - name: Validators, experimental profiles, native NEON, regressions, ABI and PIC
         run: make -f Makefile.fast verify
       - name: Preserve results and failure diagnostics
         if: always()
@@ -39,4 +39,7 @@ jobs:
             perf/results/
             perf/artifacts/proofs/
             perf/artifacts/validators/
+            perf/artifacts/experiments/
+            perf/artifacts/neon/
+            perf/artifacts/packed-neon/
           retention-days: 14

@@ -212,6 +212,13 @@ Fixpoint destroyed_by_clobber (cl: list string): list mreg :=
 Definition destroyed_by_builtin (ef: external_function): list mreg :=
   match ef with
   | EF_memcpy sz al => R14 :: R15 :: R17 :: nil
+  | EF_builtin name sg =>
+      if string_dec name "__builtin_cc_neon_add_u32x2"
+      then F16 :: F17 :: nil else
+      if string_dec name "__builtin_cc_neon_sub_u32x2"
+      then F16 :: F17 :: nil else
+      if string_dec name "__builtin_cc_neon_mul_u32x2"
+      then F16 :: F17 :: nil else nil
   | EF_inline_asm txt sg clob => destroyed_by_clobber clob
   | _ => nil
   end.

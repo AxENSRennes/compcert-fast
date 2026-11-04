@@ -129,8 +129,36 @@ let check_allocation () =
     { valid with LTL.fn_code } in
   let rejected name candidate =
     check name (is_error (Allocation.check_function rtl candidate env)) in
+  let wrong_opcode = mutate_op (fun args dst -> LTL.Lop (Oadd, args, dst)) in
   rejected "allocator validator rejects a changed arithmetic opcode"
-    (mutate_op (fun args dst -> LTL.Lop (Oadd, args, dst)));
+    wrong_opcode;
+  let baseline_calls = ref 0 in
+  let baseline () =
+    incr baseline_calls;
+    Allocation.regalloc_baseline rtl in
+  let accepted = Allocation.validate_with_fallback rtl env (OK valid) baseline in
+  check "accepted allocation does not evaluate the lazy baseline"
+    (!baseline_calls = 0 && accepted = OK valid);
+  let repaired = Allocation.validate_with_fallback rtl env (OK wrong_opcode) baseline in
+  check "invalid candidate invokes the baseline exactly once" (!baseline_calls = 1);
+  check "invalid candidate is replaced by a validated production baseline"
+    (match repaired with OK tf -> is_ok (Allocation.check_function rtl tf env) | Error _ -> false);
+  baseline_calls := 0;
+  let repaired_error = Allocation.validate_with_fallback rtl env
+    (Error [MSG "injected candidate oracle error"]) baseline in
+  check "candidate oracle error invokes baseline once" (!baseline_calls = 1);
+  check "candidate oracle error is recovered through production validation"
+    (match repaired_error with OK tf -> is_ok (Allocation.check_function rtl tf env) | Error _ -> false);
+  baseline_calls := 0;
+  let bad_baseline () = incr baseline_calls; OK wrong_opcode in
+  check "malformed baseline is rejected by the same production validator"
+    (is_error (Allocation.validate_with_fallback rtl env (OK wrong_opcode) bad_baseline));
+  check "malformed baseline is attempted exactly once" (!baseline_calls = 1);
+  baseline_calls := 0;
+  let failing_baseline () = incr baseline_calls; Error [MSG "injected baseline oracle error"] in
+  check "errors from both oracles remain compilation errors"
+    (is_error (Allocation.validate_with_fallback rtl env
+      (Error [MSG "injected candidate oracle error"]) failing_baseline) && !baseline_calls = 1);
   rejected "allocator validator rejects reversed subtraction operands"
     (mutate_op (fun args dst -> LTL.Lop (Osub, List.rev args, dst)));
   rejected "allocator validator rejects a corrupted result register"

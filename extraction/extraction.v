@@ -75,6 +75,7 @@ Extraction Inline Inlining.ret Inlining.bind.
 
 (* Allocation *)
 Extract Constant Allocation.regalloc => "Regalloc.regalloc".
+Extract Constant Allocation.regalloc_baseline => "Regalloc.regalloc_baseline".
 
 (* Linearize *)
 Extract Constant Linearize.enumerate_aux => "Linearizeaux.enumerate_aux".
@@ -84,6 +85,15 @@ Extract Constant SimplExpr.first_unused_ident => "Camlcoq.first_unused_ident".
 Extraction Inline SimplExpr.ret SimplExpr.error SimplExpr.bind SimplExpr.bind2.
 
 (* Compopts *)
+Extract Constant Compopts.experimental_scalar => "ExperimentalOptions.scalar_enabled".
+Extract Constant Compopts.experimental_unroll4 => "ExperimentalOptions.unroll4_enabled".
+Extract Constant Compopts.experimental_cleanup => "ExperimentalOptions.cleanup_enabled".
+Extract Constant Compopts.experimental_schedule => "ExperimentalOptions.schedule_enabled".
+Extract Constant Compopts.experimental_hoist => "ExperimentalOptions.hoist_enabled".
+Extract Constant Compopts.experimental_loadforward => "ExperimentalOptions.loadforward_enabled".
+Extract Constant Compopts.experimental_unswitch => "ExperimentalOptions.unswitch_enabled".
+Extract Constant Compopts.experimental_storeelim => "ExperimentalOptions.storeelim_enabled".
+Extract Constant Compopts.experimental_select => "ExperimentalOptions.select_enabled".
 Extract Constant Compopts.optim_for_size =>
   "fun _ -> !Clflags.option_Osize".
 Extract Constant Compopts.va_strict =>
@@ -158,6 +168,7 @@ Separate Extraction
    Conventions1.dummy_int_reg Conventions1.dummy_float_reg
    Conventions1.allocatable_registers
    RTL.instr_defs RTL.instr_uses
+   RTL.init_regs Op.eval_operation Op.eval_condition Op.eval_addressing
    Machregs.mregs_for_operation Machregs.mregs_for_builtin
    Machregs.two_address_op Machregs.is_stack_reg
    Machregs.destroyed_at_indirect_call

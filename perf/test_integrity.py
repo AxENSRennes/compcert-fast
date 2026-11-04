@@ -60,13 +60,24 @@ class SourceGateTests(unittest.TestCase):
             self.check()
 
     def test_review_manifest_cannot_authorize_main_theorem_change(self):
-        self.write("proved-changes.json", {"driver/Compiler.v": "arbitrary"})
-        with self.assertRaisesRegex(SystemExit, "Unapproved"):
+        name = "driver/Compiler.v"
+        source = "Theorem correct: False. Proof. exact I. Qed.\n"
+        (self.root / name).write_text(source)
+        self.write("proved-changes.json", {name: integrity.sha(source.encode())})
+        with self.assertRaisesRegex(SystemExit, "existing statement"):
             self.check()
 
     def test_build_recipe_cannot_replace_kernel_check_with_echo(self):
         (self.root / "Makefile").write_text("check-proof:\n\techo success\n")
         with self.assertRaisesRegex(SystemExit, "Makefile"):
+            self.check()
+
+    def test_review_hash_cannot_authorize_a_fake_kernel_check(self):
+        name = "Makefile"
+        source = "check-proof:\n\techo success\n"
+        (self.root / name).write_text(source)
+        self.write("proved-changes.json", {name: integrity.sha(source.encode())})
+        with self.assertRaisesRegex(SystemExit, "trusted build recipe"):
             self.check()
 
     def test_reviewed_proof_cannot_add_an_axiom_or_change_an_existing_statement(self):
@@ -83,6 +94,17 @@ class SourceGateTests(unittest.TestCase):
 
 
 class AssumptionsTests(unittest.TestCase):
+    def test_only_named_inhabited_boolean_options_may_be_added(self):
+        original = "Axioms:\nfoo : nat\nAxioms:\nfoo : nat\n"
+        def actual(name, typ):
+            return (f"Axioms:\nfoo : nat\n{name} : {typ}\n" * 2)
+        with patch.object(integrity.subprocess, "check_output", return_value=original):
+            self.assertEqual(integrity.check_principal_assumptions(Path('.'), actual('Compopts.experimental_scalar', 'unit -> bool')),
+                             ['Compopts.experimental_scalar'])
+            for name, typ in [('Compopts.experimental_scalar', 'False'), ('optimizer_correct', 'True'),
+                              ('Compopts.experimental_scalar', '(forall p, Correct p)')]:
+                with self.subTest(name=name, typ=typ), self.assertRaises(ValueError):
+                    integrity.check_principal_assumptions(Path('.'), actual(name,typ))
     def test_comments_and_strings_do_not_create_fake_admissions(self):
         source = '(* outer (* Axiom bad: False. *) *) Definition text := "Admitted.".\n'
         self.assertEqual(integrity.assumption_commands(source), {})

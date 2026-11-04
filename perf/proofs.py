@@ -47,7 +47,8 @@ def verify(jobs):
         stage("source gate", [sys.executable, str(ROOT / "perf/guard.py")], "guard.log")
         result["coq"] = subprocess.check_output(["coqc", "--version"], text=True).strip()
         result["revision"] = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
-        lock = json.loads((ROOT / "perf/trust-lock.json").read_text())["files"]
+        lock = dict(json.loads((ROOT / "perf/trust-lock.json").read_text())["files"])
+        lock.update(json.loads((ROOT / "perf/proved-changes.json").read_text()))
         result["formal_source_sha256"] = {name: sha((ROOT / name).read_bytes()) for name in lock}
         stage("clean", ["make", "clean"], "clean.log")
         stage("dependencies", ["make", "depend"], "depend.log")
@@ -63,9 +64,11 @@ def verify(jobs):
         stage("principal assumptions", ["coqtop", "-q", "-batch", *includes, "-l", str(assumptions)],
               "assumptions.txt")
         actual = (logs / "assumptions.txt").read_text()
-        check_principal_assumptions(ROOT, actual)
+        options = check_principal_assumptions(ROOT, actual)
         (ROOT / "perf/results/assumptions.txt").write_text(actual)
-        result["principal_assumptions_unchanged"] = True
+        result["principal_assumptions_unchanged"] = not options
+        result["original_principal_assumptions_preserved"] = True
+        result["new_computational_options"] = options
         source = ROOT / "driver/Compiler.v"
         before = source.read_bytes()
         source.touch()

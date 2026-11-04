@@ -61,39 +61,100 @@ macOS QoS requests favor performance cores but do not enforce or verify
 exclusive placement on them. A rejected timing series is not a valid baseline
 or evidence of an optimization gain.
 
-`perf/guard.py` anchors the original formal source and license hashes to the
-fixed upstream Git objects. On `proof/validated-fallback`, only
-`backend/Linearize.v` and `backend/Linearizeproof.v` have reviewed changes,
-recorded separately in `perf/proved-changes.json`. Existing lemma statements
-remain identical. The principal theorem files, axioms, semantics, extraction
-mappings and trusted build recipes remain frozen. A full proof check also
-compares both principal theorems' assumptions with the original checked
-baseline; it invalidates an old success report before starting. This source
-gate is a regression check, not a replacement for the Coq kernel.
+`perf/guard.py` anchors the original source and license hashes to fixed
+upstream Git objects. Reviewed changes are recorded in
+`perf/proved-changes.json`. All original theorem and lemma statements remain
+identical, including the 11 statements in `driver/Compiler.v`. Its pipeline
+and composition proofs now include the additional proved RTL passes.
+A full check rebuilds the proofs, runs independent `coqchk`, and compares the
+two principal theorems' assumptions with the original checked baseline.
+Additional computational parameters are restricted to named Boolean options
+and a second allocation oracle, whose output is validated. They assert no
+optimizer correctness property. The report distinguishes these parameters
+from unchanged original logical assumptions. An old success report is
+invalidated before verification starts. This source gate complements the
+Coq kernel.
 
-The proved linearization fallback retains a heuristic order when its
-uniqueness and reachable-block checks pass. A rejected returned order is
-replaced by every defined block in deterministic finite-map order, proved
-complete and free of duplicates. This handles validator rejection, not an
-exception or nontermination inside the OCaml heuristic. The native validator
-tests link the production extracted modules, exercise malformed allocations
-and layouts, and check that accepted layouts retain their order.
+### Default-disabled experiments
 
-`make -f Makefile.fast verify` regenerates extracted OCaml from the unchanged
-extraction mappings and rebuilds native tests before running them. The
-`Verified correctness` GitHub workflow runs the frozen ARM64 macOS toolchain,
-full proofs, independent `coqchk`, assumptions comparison and native tests;
-it contains no speed benchmark. Initial speed-baseline capture still requires
-the unchanged compiler on `fast` (the original tooling checkpoint is
-`befa8484ea29fe73a90785983541fb45745c26a0`).
+This branch is `experiment/seven-stage`; it has not been promoted to `fast`.
+No speed improvement is claimed. The full option list, combined profiles and
+precise limits are in `perf/experiment-profiles.json`. For example:
 
-The main correctness theorem, its hypotheses, and `Asm.v` remain unchanged.
-Scalar heuristic experiments live on separate `experiment/*` branches and
-require passing correctness and noise checks, with a smaller measured gap,
-before promotion to `fast`. The small-leaf inlining experiment additionally
-provides `make -f Makefile.fast test-inline` to check generated calls and
-optimization-option contracts. NEON and a Sail/Arm bridge require future
-formal development; this tooling does not implement them.
+```sh
+COMPCERT_EXPERIMENTS=rtl-unroll2,memory-cleanup ./ccomp -stdlib runtime program.c
+COMPCERT_EXPERIMENTS=loop-spill,trace-layout COMPCERT_EXPERIMENT_TRACE=/tmp/compcert-trace.jsonl ./ccomp -stdlib runtime program.c
+make -f Makefile.fast test-experiments
+make -f Makefile.fast test-neon
+make -f Makefile.fast verify
+```
+
+Every option is off by default. Unknown options and simultaneous
+`rtl-unroll2,rtl-unroll4` are rejected. JSONL tracing records actual heuristic
+choices, validated CFG candidates, and per-pass RTL changes. Structural tests
+also require real transformations, rather than merely successful compilation.
+
+The experiments currently implement:
+
+* Small nonrecursive leaf inlining, loop-weighted spill costs and an alternative
+  trace layout, checked by the existing CompCert inlining/allocation/layout
+  correctness machinery. An invalid allocation candidate can use a separately
+  validated baseline allocation; an invalid returned layout uses the proved
+  deterministic fallback. Exceptions or nontermination inside an oracle are
+  not covered by this fallback.
+* Alternative 32/64-bit multiply-negate selection using existing modeled ARM64
+  operations, with unchanged selection lemma statements.
+* A proved CFG-covering validator and two/four-phase candidates. This duplicates
+  control flow while preserving operations and projected edges; it is not a
+  general trip-count analysis or a proof of profitable loop unrolling.
+* One integer constant cached in a fresh register, one independent adjacent
+  operation swap, one adjacent identical-load forwarding, and one adjacent
+  overwritten-store elimination per function. Their whole-program simulations
+  cover calls and memory. No new general alias analysis or speculative load
+  motion is introduced.
+* Delayed specialization of an immutable-register comparison: its original
+  first execution is retained, then subsequent executions use specialized CFG
+  copies. This preserves zero-iteration behavior.
+* Two additional rounds of existing constant propagation, CSE and dead-code
+  cleanup. Analysis failure still returns a compiler error; this experiment
+  does not claim a new proved rollback for those existing partial passes.
+
+`test-experiments` exercises production extracted transformations, malformed
+candidate refusal, real memory operations, defined C programs with separate
+translation units, each independent option and combined profiles, and the
+fixed public suite without timing series. `verify` additionally runs the
+original native regression suite, ABI/PIC checks and the NEON comparisons.
+The upstream suite is rebuilt and run with default options and both combined
+scalar profiles. The GitHub `Verified correctness` workflow contains no speed
+benchmark.
+Initial performance-baseline capture still requires the unchanged compiler at
+`befa8484ea29fe73a90785983541fb45745c26a0` on an idle Mac.
+
+### NEON scope and trust
+
+`aarch64/Neon.v` is an isolated integer-lane model and checked contiguous
+vector/tail planner. Its five main model/planner results are closed proofs,
+independently kernel-checked, and its extracted behavior is compared with
+native NEON instructions over random and boundary inputs. It is not the
+compiler's general vector backend.
+
+With `COMPCERT_EXPERIMENTS=neon-packed`, three explicit C builtins are available:
+`__builtin_cc_neon_add_u32x2`, `__builtin_cc_neon_sub_u32x2`, and
+`__builtin_cc_neon_mul_u32x2`. Each takes two `unsigned long long` arguments
+and returns the same type, holding two independent uint32 lanes. Their
+numerical semantics are specified in `Builtins1.v`; floating-point scratch
+register clobbers and four-instruction sizes are declared in the backend.
+The existing `Pbuiltin` semantics carries them through the correctness proof.
+The hand-written expansion into hardware NEON instructions is an additional
+trusted platform specification/expansion surface, tested against scalar
+references. These tests do not prove hardware equivalence.
+
+`Asm.v` remains unchanged. General induction-variable optimization, general
+LICM, fusion/interchange/tiling, automatic C-loop vectorization, 128-bit vector
+state/ABI, and an Arm/Sail refinement remain unimplemented. The prototype
+passes above do not constitute all optimizations found in a production
+optimizing compiler. Promotion still requires correctness checks and reliable
+measurements showing a smaller gap with clang `-O2`.
 
 ## License
 CompCert is not free software.  This non-commercial release can only

@@ -44,3 +44,15 @@ Parameter thumb: unit -> bool.
 
 (** Flag -g.  For insertion of debugging information. *)
 Parameter debug: unit -> bool.
+
+(** Default-disabled experimental transformations. Their semantic preservation
+    is proved for every value of these computational options. *)
+Parameter experimental_scalar: unit -> bool.
+Parameter experimental_unroll4: unit -> bool.
+Parameter experimental_cleanup: unit -> bool.
+Parameter experimental_unswitch: unit -> bool.
+Parameter experimental_select: unit -> bool.
+Parameter experimental_hoist: unit -> bool.
+Parameter experimental_schedule: unit -> bool.
+Parameter experimental_loadforward: unit -> bool.
+Parameter experimental_storeelim: unit -> bool.
