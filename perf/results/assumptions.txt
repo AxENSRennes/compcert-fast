@@ -1,0 +1,124 @@
+Axioms:
+Compopts.va_strict : unit -> bool
+Asm.symbol_low : Asm.genv -> AST.ident -> Integers.Ptrofs.int -> Values.val
+SelectOp.symbol_is_relocatable : AST.ident -> bool
+Asmgen.symbol_is_aligned : AST.ident -> BinNums.Z -> bool
+Asm.symbol_high_low :
+  forall (ge : Asm.genv) (id : AST.ident) (ofs : Integers.Ptrofs.int),
+  Values.Val.addl (Asm.symbol_high ge id ofs) (Asm.symbol_low ge id ofs) =
+  Globalenvs.Genv.symbol_address ge id ofs
+Asm.symbol_high : Asm.genv -> AST.ident -> Integers.Ptrofs.int -> Values.val
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+Inlining.should_inline :
+  Inlining.inlining_info -> AST.ident -> RTL.function -> bool
+Allocation.regalloc : RTL.function -> Errors.res LTL.function
+Compopts.propagate_float_constants : unit -> bool
+Axioms.proof_irr : ClassicalFacts.proof_irrelevance
+print_RTL : BinNums.Z -> RTL.program -> unit
+print_Mach : Mach.program -> unit
+print_LTL : LTL.program -> unit
+print_Cminor : Cminor.program -> unit
+print_Clight : Clight.program -> unit
+Compopts.optim_tailcalls : unit -> bool
+Compopts.optim_redundancy : unit -> bool
+Compopts.optim_for_size : unit -> bool
+Compopts.optim_constprop : unit -> bool
+Compopts.optim_CSE : unit -> bool
+RTLgen.more_likely :
+  CminorSel.condexpr -> CminorSel.stmt -> CminorSel.stmt -> bool
+Inlining.inlining_info : Type
+Inlining.inlining_analysis : RTL.program -> Inlining.inlining_info
+Events.inline_assembly_sem :
+  String.string -> AST.signature -> Events.extcall_sem
+Events.inline_assembly_properties :
+  forall (id : String.string) (sg : AST.signature),
+  Events.extcall_properties (Events.inline_assembly_sem id sg) sg
+Selection.if_conversion_heuristic :
+  AST.ident ->
+  Cminor.expr ->
+  Cminor.expr -> Cminor.expr -> AST.typ -> CminorSel.stmt -> bool
+Compopts.generate_float_constants : unit -> bool
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+SimplExpr.first_unused_ident : unit -> AST.ident
+Events.external_functions_sem :
+  String.string -> AST.signature -> Events.extcall_sem
+Events.external_functions_properties :
+  forall (id : String.string) (sg : AST.signature),
+  Events.extcall_properties (Events.external_functions_sem id sg) sg
+Eqdep.Eq_rect_eq.eq_rect_eq :
+  forall (U : Type) (p : U) (Q : U -> Type) (x : Q p) (h : p = p),
+  x = eq_rect p Q x p h
+Linearize.enumerate_aux : LTL.function -> Maps.PMap.t bool -> list LTL.node
+Compopts.debug : unit -> bool
+Selection.compile_switch :
+  BinNums.Z -> nat -> Switch.table -> Switch.comptree
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Archi.abi : Archi.abi_kind
+Axioms:
+Compopts.va_strict : unit -> bool
+Asm.symbol_low : Asm.genv -> AST.ident -> Integers.Ptrofs.int -> Values.val
+SelectOp.symbol_is_relocatable : AST.ident -> bool
+Asmgen.symbol_is_aligned : AST.ident -> BinNums.Z -> bool
+Asm.symbol_high_low :
+  forall (ge : Asm.genv) (id : AST.ident) (ofs : Integers.Ptrofs.int),
+  Values.Val.addl (Asm.symbol_high ge id ofs) (Asm.symbol_low ge id ofs) =
+  Globalenvs.Genv.symbol_address ge id ofs
+Asm.symbol_high : Asm.genv -> AST.ident -> Integers.Ptrofs.int -> Values.val
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+Inlining.should_inline :
+  Inlining.inlining_info -> AST.ident -> RTL.function -> bool
+Allocation.regalloc : RTL.function -> Errors.res LTL.function
+Compopts.propagate_float_constants : unit -> bool
+Axioms.proof_irr : ClassicalFacts.proof_irrelevance
+print_RTL : BinNums.Z -> RTL.program -> unit
+print_Mach : Mach.program -> unit
+print_LTL : LTL.program -> unit
+print_Cminor : Cminor.program -> unit
+print_Clight : Clight.program -> unit
+Compopts.optim_tailcalls : unit -> bool
+Compopts.optim_redundancy : unit -> bool
+Compopts.optim_for_size : unit -> bool
+Compopts.optim_constprop : unit -> bool
+Compopts.optim_CSE : unit -> bool
+RTLgen.more_likely :
+  CminorSel.condexpr -> CminorSel.stmt -> CminorSel.stmt -> bool
+Inlining.inlining_info : Type
+Inlining.inlining_analysis : RTL.program -> Inlining.inlining_info
+Events.inline_assembly_sem :
+  String.string -> AST.signature -> Events.extcall_sem
+Events.inline_assembly_properties :
+  forall (id : String.string) (sg : AST.signature),
+  Events.extcall_properties (Events.inline_assembly_sem id sg) sg
+Selection.if_conversion_heuristic :
+  AST.ident ->
+  Cminor.expr ->
+  Cminor.expr -> Cminor.expr -> AST.typ -> CminorSel.stmt -> bool
+Compopts.generate_float_constants : unit -> bool
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+SimplExpr.first_unused_ident : unit -> AST.ident
+Events.external_functions_sem :
+  String.string -> AST.signature -> Events.extcall_sem
+Events.external_functions_properties :
+  forall (id : String.string) (sg : AST.signature),
+  Events.extcall_properties (Events.external_functions_sem id sg) sg
+Eqdep.Eq_rect_eq.eq_rect_eq :
+  forall (U : Type) (p : U) (Q : U -> Type) (x : Q p) (h : p = p),
+  x = eq_rect p Q x p h
+Linearize.enumerate_aux : LTL.function -> Maps.PMap.t bool -> list LTL.node
+Compopts.debug : unit -> bool
+Selection.compile_switch :
+  BinNums.Z -> nat -> Switch.table -> Switch.comptree
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Archi.abi : Archi.abi_kind

@@ -34,7 +34,11 @@ fi
 if [ ! -d _opam/.opam-switch ]; then
   "$OPAM" switch create . 4.14.4 --no-switch -y --jobs=4
 fi
-"$OPAM" install coq.8.20.1 menhir.20231231 ocamlfind.1.9.8 --assume-depexts -y --jobs=4
+if [ -f perf/toolchain.export ]; then
+  "$OPAM" switch import perf/toolchain.export --assume-depexts -y --jobs=4
+else
+  "$OPAM" install coq.8.20.1 menhir.20231231 ocamlfind.1.9.8 --assume-depexts -y --jobs=4
+fi
 git submodule update --init test
 "$OPAM" exec -- ./configure -prefix "$PWD/.local" aarch64-macos
 "$OPAM" list --installed --columns=name,version --short > perf/results/toolchain.txt

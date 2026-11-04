@@ -52,8 +52,10 @@ def main():
     assert source.read_bytes() == before
     result["incremental_source"] = "driver/Compiler.v"
     result["incremental_method"] = "mtime-only edit; rebuild Compiler and dependents, unchanged contents"
-    result["incremental_coqc_invocations"] = sum(
-        line.startswith('"') and "coqc" in line for line in (logs / "incremental.log").read_text().splitlines())
+    result["incremental_recompiled_sources"] = [
+        line.split(" ", 1)[1] for line in (logs / "incremental.log").read_text().splitlines()
+        if line.startswith("CROCQ ")]
+    result["incremental_coqc_invocations"] = len(result["incremental_recompiled_sources"])
     result["success"] = True
     output = ROOT / "perf/results/proofs.json"
     output.parent.mkdir(parents=True, exist_ok=True)

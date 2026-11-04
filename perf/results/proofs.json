@@ -1,0 +1,17 @@
+{
+  "date_utc": "2026-11-04T18:18:17.220376+00:00",
+  "jobs": 4,
+  "coq": "The Coq Proof Assistant, version 8.20.1\ncompiled with OCaml 4.14.4",
+  "revision": "0af1f4ab43640e37b5548948cadab49b1bdab3cc",
+  "full_proof_seconds": 83.8753130000041,
+  "kernel_check_seconds": 43.56008216700138,
+  "incremental_proof_seconds": 1.4847671249954146,
+  "incremental_source": "driver/Compiler.v",
+  "incremental_method": "mtime-only edit; rebuild Compiler and dependents, unchanged contents",
+  "incremental_coqc_invocations": 2,
+  "success": true,
+  "incremental_recompiled_sources": [
+    "driver/Compiler.v",
+    "driver/Complements.v"
+  ]
+}
