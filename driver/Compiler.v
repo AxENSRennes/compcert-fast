@@ -364,11 +364,11 @@ Proof.
   unfold transf_rtl_program, time in T. rewrite ! compose_print_identity in T.
   cbn [apply_total apply_partial] in T.
   set (p7 := total_if optim_tailcalls Tailcall.transf_program p6) in *.
-  destruct (Inlining.transf_program p7) as [p8|e] eqn:P8; simpl in T; try discriminate.
+  destruct (Inlining.transf_program p7) as [p8|e] eqn:P8; cbn [apply_total apply_partial] in T; try discriminate.
   set (p9 := Renumber.transf_program p8) in *.
   set (p10 := total_if optim_constprop Constprop.transf_program p9) in *.
   set (p11 := total_if optim_constprop Renumber.transf_program p10) in *.
-  destruct (partial_if optim_CSE CSE.transf_program p11) as [p12|e] eqn:P12; simpl in T; try discriminate.
+  destruct (partial_if optim_CSE CSE.transf_program p11) as [p12|e] eqn:P12; cbn [apply_total apply_partial] in T; try discriminate.
   destruct (partial_if optim_redundancy Deadcode.transf_program p12) as [p13|e] eqn:P13; simpl in T; try discriminate.
   set (p13v := total_if experimental_vectorize Vectorize.transf_program p13) in *.
   set (p13w := total_if experimental_vectorize LowerLong.transf_program p13v) in *.

@@ -41,7 +41,7 @@
   "backend/Unswitchproof.v": "1862862fb776cc7d8946a0c406798c985e308dfa31511e27c4dc36bf03af7a81",
   "backend/Vectorize.v": "d051ddba3f80653e67f90ec1248d119fcb52956c1e92544754ae52570e1a2730",
   "backend/Vectorizeproof.v": "20d4af8ae7d45b930abc89c3d8c5e2dd622ee5b7bb60c506de197a1516722326",
-  "driver/Compiler.v": "322fdc0ca0666951ace02eb57938e73fbb1eab5c3ffb0cf02ab20d9e4db4ed55",
+  "driver/Compiler.v": "aef16351b30c8e8bc7f4f1a69df5b854b8638393168ca7747a161cdfdfb42b53",
   "driver/Compopts.v": "af2469a6ccb2f2204c3ebfa949ab8a5867646d3823adc507201441bf3644e948",
   "extraction/extraction.v": "f41a2c42875167b48d39839e8ef6c0180e43a635c6877ded48195f002bd610e2",
   "perf/neon/Extract.v": "57671dac176b52fd47b7200ea177e9370ddae02de05068060df606ee5d962a8d"
