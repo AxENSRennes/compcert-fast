@@ -2,11 +2,12 @@
 PYTHON ?= python3
 JOBS ?= 4
 .NOTPARALLEL:
-.PHONY: help bootstrap proofs compiler bench baseline guard test-harness
+.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify
 help:
 	@echo 'make -f Makefile.fast baseline  # bootstrap, full + incremental proofs, build, benchmark'
 	@echo 'make -f Makefile.fast bench     # two independent measurement blocks + noise gate'
 	@echo 'make -f Makefile.fast proofs    # full kernel check + one-file rebuild timing'
+	@echo 'make -f Makefile.fast verify    # correctness suite, native regressions, ABI and PIC'
 bootstrap:
 	./perf/bootstrap.sh
 guard:
@@ -19,5 +20,10 @@ compiler:
 	./perf/in-env $(MAKE) -j$(JOBS) all
 bench:
 	$(PYTHON) perf/bench.py --output perf/results/latest.json
+correctness:
+	$(PYTHON) perf/bench.py --correctness-only --output perf/results/correctness.json
+verify: guard test-harness compiler correctness
+	./perf/in-env $(MAKE) -C test -j$(JOBS) all
+	./perf/in-env $(MAKE) -C test test
 baseline: bootstrap test-harness proofs compiler
 	$(PYTHON) perf/bench.py --output perf/results/baseline.json

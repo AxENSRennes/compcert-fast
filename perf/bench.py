@@ -2,7 +2,9 @@
 """Frozen suite, differential correctness, paired measurements and a noise gate.
 
 Run from any directory: python3 perf/bench.py --output perf/results/latest.json
-Exit 0 only when correctness and both noise checks pass. The metric is the
+By default, exit 0 only when correctness and both noise checks pass. Use
+--correctness-only to validate outputs without claiming a performance result.
+The metric is the
 equal-weight geometric mean of (CompCert time / clang -O2 time). Closing 75%
 of a baseline gap R0-1 means R <= 1 + 0.25*(R0-1).
 """
@@ -84,6 +86,7 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--compcert", type=Path, default=ROOT / "ccomp")
     parser.add_argument("--clang", default="clang")
+    parser.add_argument("--correctness-only", action="store_true")
     args = parser.parse_args()
     manifest_bytes = (ROOT / "perf/suite.json").read_bytes()
     manifest = json.loads(manifest_bytes)
@@ -97,12 +100,15 @@ def main():
     compcert = args.compcert.resolve()
     output = args.output.resolve()
     baseline = ROOT / "perf/results/baseline.json"
+    if args.correctness_only and output == baseline.resolve():
+        raise RuntimeError("Correctness-only output must not replace the performance baseline")
     if output == baseline.resolve() and output.exists():
         previous = json.loads(output.read_text())
         if previous.get("noise_pass") and previous.get("correctness_pass"):
             raise RuntimeError("A valid baseline is already frozen; use a different --output")
     report = {
-        "schema_version": 1, "created_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "schema_version": 1, "mode": "correctness" if args.correctness_only else "performance",
+        "created_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "suite_sha256": digest(manifest_bytes),
         "revision": capture(["git", "rev-parse", "HEAD"]),
         "tracked_changes": capture(["git", "diff", "--stat", "HEAD"]),
@@ -128,6 +134,17 @@ def main():
     save()
     try:
         report["compile_commands"] = compile_suite(manifest, str(compcert), args.clang)
+        if args.correctness_only:
+            for case in manifest["benchmarks"]:
+                for label in ("compcert", "clang"):
+                    measure(ARTIFACTS / f"{case['name']}.{label}", case)
+                report["benchmarks"][case["name"]] = {
+                    "stdout_sha256": manifest["sha256"][case["expected"]], "correctness_pass": True}
+                print(f"{case['name']}: both compilers match the reference", flush=True)
+            report["correctness_pass"] = True
+            report["performance_measured"] = False
+            save()
+            return
         # Calibrate batches from the faster executable; both use identical work.
         batches = {}
         for case in manifest["benchmarks"]:
