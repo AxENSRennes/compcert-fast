@@ -1,0 +1,103 @@
+{
+  "test_commit": "4df7312a3ff71037c20856dfeff727e36c77848e",
+  "license": "test/LICENSE (GPL-2.0-or-later unless individual file states otherwise)",
+  "compcert_flags": [
+    "-O",
+    "-stdlib",
+    "runtime"
+  ],
+  "clang_flags": [
+    "-O2"
+  ],
+  "samples_per_block": 9,
+  "blocks": 2,
+  "min_sample_seconds": 0.25,
+  "max_relative_mad": 0.05,
+  "max_block_drift": 0.03,
+  "target_gap_fraction": 0.75,
+  "benchmarks": [
+    {
+      "name": "fft",
+      "source": "test/c/fft.c",
+      "args": [],
+      "expected": "test/c/Results/fft"
+    },
+    {
+      "name": "nbody",
+      "source": "test/c/nbody.c",
+      "args": [],
+      "expected": "test/c/Results/nbody"
+    },
+    {
+      "name": "qsort",
+      "source": "test/c/qsort.c",
+      "args": [],
+      "expected": "test/c/Results/qsort"
+    },
+    {
+      "name": "spectral",
+      "source": "test/c/spectral.c",
+      "args": [],
+      "expected": "test/c/Results/spectral"
+    },
+    {
+      "name": "nsieve",
+      "source": "test/c/nsieve.c",
+      "args": [],
+      "expected": "test/c/Results/nsieve"
+    },
+    {
+      "name": "fannkuch",
+      "source": "test/c/fannkuch.c",
+      "args": [],
+      "expected": "test/c/Results/fannkuch"
+    },
+    {
+      "name": "binarytrees",
+      "source": "test/c/binarytrees.c",
+      "args": [],
+      "expected": "test/c/Results/binarytrees"
+    },
+    {
+      "name": "integr",
+      "source": "test/c/integr.c",
+      "args": [],
+      "expected": "test/c/Results/integr"
+    },
+    {
+      "name": "perlin",
+      "source": "test/c/perlin.c",
+      "args": [],
+      "expected": "test/c/Results/perlin"
+    },
+    {
+      "name": "lists",
+      "source": "test/c/lists.c",
+      "args": [],
+      "expected": "test/c/Results/lists"
+    }
+  ],
+  "sha256": {
+    "perf/runner.c": "2cb3f9e2f23a58a45ff008b7e7d73420eefa9c6c7b68d0d61545951f67e4a303",
+    "test/c/fft.c": "e5a2ecd3cb5719345e9a65345df1e41b1ffbbac23b08e09fb2ca3083eb90e4c5",
+    "test/c/Results/fft": "57c8ddaa21df4bc07a23b03b76e152216f7650843d6870c98e87e650da0a4286",
+    "test/c/nbody.c": "d5b708a5cf5f67b97f18eaff67cb8b09f3308b6fe4c91bbe676232103a39ebf9",
+    "test/c/Results/nbody": "3fb938822f2b87322baee13eea59620bab076cca553f7e01214dbc674bd09387",
+    "test/c/qsort.c": "c289e67a3dfb838590d9da36532d7865e2e09b61df47698ecd4a3500cccf16ce",
+    "test/c/Results/qsort": "a12b7cb43c9d9134b5bb1b35e9096b66775d9e92e7611d1cc92b02edd6782a87",
+    "test/c/spectral.c": "65ea4d12eedb4d6949300f629eff2d08bec6c07ed17038a0c339fd68498a95fe",
+    "test/c/Results/spectral": "ab9143969dccdc1ca1f49d5e60c4fc40b4299e9fd2841f8d358a0cde47f78427",
+    "test/c/nsieve.c": "3c8427f508dd4e418f43cd2714718206749dc62058e21d27e2b22bc7ec5da217",
+    "test/c/Results/nsieve": "4053ed86223d706063af25e9f1d54ed8a79741264c82fc05210ce18be55f6aaf",
+    "test/c/fannkuch.c": "4728f0c11f5e5f4b2f53c37658c6be79fc9606eabb700c514c25e2e3e3438282",
+    "test/c/Results/fannkuch": "434a247ac82639ee127b5cdf37b15404cb095c6009f2fcc8f29e67f90555ea33",
+    "test/c/binarytrees.c": "049ad911312a337c44cdae58515d2692a68e7f447fe503484f023d52f6b8b515",
+    "test/c/Results/binarytrees": "a5814ed8f8e2a878b707e810b46e0979cfbcc369cc1960d51d5b2efa70d375f4",
+    "test/c/integr.c": "2215ae95076f615194e83725130fc4a9e14e48c285211caa72d1041fa29d233e",
+    "test/c/Results/integr": "2640d73d6d3fdf358c5afca575b4d255f3077bbd509f3a3af5b0315bc37eb9d8",
+    "test/c/perlin.c": "0b350077331d665499816f67940b06dbf878f8c4e21a7c68448ca25a711f0ef1",
+    "test/c/Results/perlin": "5291442145f98dd0544caa762520d9a5ad359fdb89e5ccbd8a91dabe24fd848f",
+    "test/c/lists.c": "e718217cad44fc637c4b63179e21ad38feabb141f32d601d80fed40f964e7cc7",
+    "test/c/Results/lists": "3df37de95de2d6178e7c17a0bcb38f78927088befb99aeaa7e6aa7df2f9b8a33"
+  }
+}

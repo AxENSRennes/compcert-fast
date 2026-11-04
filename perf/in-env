@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+cd "$(dirname "$0")/.."
+export OPAMROOT="$PWD/.opam-root"
+export OPAMSWITCH="$PWD"
+export PATH="$PWD/.tools/bin:$PATH"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/gmp/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+exec "$PWD/.tools/bin/opam" exec -- "$@"

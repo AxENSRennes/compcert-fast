@@ -1,0 +1,23 @@
+# Research tooling; compiler sources and their licenses remain unchanged.
+PYTHON ?= python3
+JOBS ?= 4
+.NOTPARALLEL:
+.PHONY: help bootstrap proofs compiler bench baseline guard test-harness
+help:
+	@echo 'make -f Makefile.fast baseline  # bootstrap, full + incremental proofs, build, benchmark'
+	@echo 'make -f Makefile.fast bench     # two independent measurement blocks + noise gate'
+	@echo 'make -f Makefile.fast proofs    # full kernel check + one-file rebuild timing'
+bootstrap:
+	./perf/bootstrap.sh
+guard:
+	$(PYTHON) perf/guard.py
+test-harness:
+	$(PYTHON) -m unittest discover -s perf -p 'test_*.py'
+proofs: guard
+	./perf/in-env $(PYTHON) perf/proofs.py --jobs $(JOBS)
+compiler:
+	./perf/in-env $(MAKE) -j$(JOBS) all
+bench:
+	$(PYTHON) perf/bench.py --output perf/results/latest.json
+baseline: bootstrap test-harness proofs compiler
+	$(PYTHON) perf/bench.py --output perf/results/baseline.json

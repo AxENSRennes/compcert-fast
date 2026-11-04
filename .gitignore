@@ -87,3 +87,10 @@
 .csdp.cache
 # Build auxiliaries
 /build
+# Local, reproducible toolchain and measurement intermediates
+/.tools/
+/.opam-root/
+/_opam/
+/.local/
+/perf/artifacts/
+__pycache__/
