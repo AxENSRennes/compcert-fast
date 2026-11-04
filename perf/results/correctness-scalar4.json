@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
   "mode": "correctness",
-  "created_utc": "2026-11-04T20:40:33.750220+00:00",
+  "created_utc": "2026-11-04T22:13:45.450069+00:00",
   "suite_sha256": "610d36f8c304769184e9182982d10b8928cd0c31748e31747ce231b6d3a38f5d",
-  "revision": "52aa3e47791b1937c9f65b1feeec019d1645fb65",
-  "tracked_changes": "perf/results/assumptions.txt  | 20 +++++++++++++\n perf/results/correctness.json | 10 +++----\n perf/results/proofs.json      | 70 ++++++++++++++++++++++++++++++++-----------\n perf/results/validators.json  | 48 ++++++++++++++++++-----------\n 4 files changed, 107 insertions(+), 41 deletions(-)",
+  "revision": "4c214fad78c42ec6f4ae78d818945a3cff02a462",
+  "tracked_changes": "perf/results/assumptions.txt          |  10 +\n perf/results/correctness-scalar2.json |  10 +-\n perf/results/correctness.json         |  10 +-\n perf/results/experiments.json         | 629 +++++++++++++++++++++++++++++++++-\n perf/results/heuristics.json          |   4 +-\n perf/results/packed-neon.json         |  42 ++-\n perf/results/proofs.json              |  37 +-\n perf/results/select.json              |   2 +-\n 8 files changed, 705 insertions(+), 39 deletions(-)",
   "machine": {
     "cpu": "Apple M5",
     "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
-    "power": "Now drawing from 'Battery Power'\n -InternalBattery-0 (id=23527523)\t36%; discharging; 0:37 remaining present: true",
+    "power": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23527523)\t86%; charging; 0:46 remaining present: true",
     "p_cores": "4",
     "scheduling": "QOS_CLASS_USER_INTERACTIVE; advisory, P-core placement NOT verified"
   },
   "compiler": {
     "compcert": "The CompCert C verified compiler, version 3.17",
-    "compcert_sha256": "1acee6ae0d78d466f176b970a2e7f4d93d917ee1b32e9658eec552d104a68a25",
+    "compcert_sha256": "c44b58501619f84bf47b78c49108b6a337d8b38789bd16a2b1d08ec966dfb469",
     "clang": "Apple clang version 21.0.0 (clang-2100.4.1.1)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
   },
   "protocol": {

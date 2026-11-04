@@ -727,12 +727,12 @@
   ],
   "scope": "heuristics only; scalar formal passes and NEON have separate harnesses",
   "source_sha256": {
-    "backend/ExperimentalOptions.ml": "c5185a5895a5b4544401fdbb0f10f6d1978a0203434f122581d5412c5724e879",
+    "backend/ExperimentalOptions.ml": "bcc35bf3446ddb9bf3b1875a86878668dc58d312108d550d726c0b4e470524e9",
     "backend/Inliningaux.ml": "b32c31072385a64e303f5f5923cfc7e0a8f695dd9cf9b186a5969dbe7f6fbed9",
     "backend/Regalloc.ml": "9aee1b05aaaba40b0fd1dd0e722f8e0387dce9eab6e30dd66cc636b1054755c8",
     "backend/Linearizeaux.ml": "2693216bbd3ef6ddfe43a6911beb92d8860001a5747e238c12f125cfc21f323c",
     "perf/test_heuristics.ml": "818971e45120c84f018da3fdb61cac419882be25e4a87683704012ba7154c992",
     "perf/check_heuristics.py": "c8e28b8b102e6734ba8482e4061453bcb4605004678029f0e94936dd3e1a6187"
   },
-  "compiler_sha256": "1acee6ae0d78d466f176b970a2e7f4d93d917ee1b32e9658eec552d104a68a25"
+  "compiler_sha256": "c44b58501619f84bf47b78c49108b6a337d8b38789bd16a2b1d08ec966dfb469"
 }

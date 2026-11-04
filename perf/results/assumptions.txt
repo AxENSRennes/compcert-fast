@@ -52,13 +52,18 @@ Events.external_functions_sem :
 Events.external_functions_properties :
   forall (id : String.string) (sg : AST.signature),
   Events.extcall_properties (Events.external_functions_sem id sg) sg
+Compopts.experimental_vectorize : unit -> bool
 Compopts.experimental_unswitch : unit -> bool
 Compopts.experimental_unroll4 : unit -> bool
+Compopts.experimental_strength : unit -> bool
 Compopts.experimental_storeelim : unit -> bool
 Compopts.experimental_select : unit -> bool
 Compopts.experimental_schedule : unit -> bool
 Compopts.experimental_scalar : unit -> bool
+Compopts.experimental_preheader : unit -> bool
+Compopts.experimental_peel : unit -> bool
 Compopts.experimental_loadforward : unit -> bool
+Compopts.experimental_licm : unit -> bool
 Compopts.experimental_hoist : unit -> bool
 Compopts.experimental_cleanup : unit -> bool
 Eqdep.Eq_rect_eq.eq_rect_eq :
@@ -124,13 +129,18 @@ Events.external_functions_sem :
 Events.external_functions_properties :
   forall (id : String.string) (sg : AST.signature),
   Events.extcall_properties (Events.external_functions_sem id sg) sg
+Compopts.experimental_vectorize : unit -> bool
 Compopts.experimental_unswitch : unit -> bool
 Compopts.experimental_unroll4 : unit -> bool
+Compopts.experimental_strength : unit -> bool
 Compopts.experimental_storeelim : unit -> bool
 Compopts.experimental_select : unit -> bool
 Compopts.experimental_schedule : unit -> bool
 Compopts.experimental_scalar : unit -> bool
+Compopts.experimental_preheader : unit -> bool
+Compopts.experimental_peel : unit -> bool
 Compopts.experimental_loadforward : unit -> bool
+Compopts.experimental_licm : unit -> bool
 Compopts.experimental_hoist : unit -> bool
 Compopts.experimental_cleanup : unit -> bool
 Eqdep.Eq_rect_eq.eq_rect_eq :
