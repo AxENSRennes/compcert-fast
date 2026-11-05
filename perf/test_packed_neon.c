@@ -10,11 +10,12 @@
 
 typedef unsigned long long u64;
 
-/* Explicit declarations also let the default-off assembly check verify that
-   these names remain ordinary external functions when not registered. */
+/* The reference-mode assembly check uses ordinary external declarations. */
+#ifndef USE_IMPLICIT_NEON
 extern u64 __builtin_cc_neon_add_u32x2(u64, u64);
 extern u64 __builtin_cc_neon_sub_u32x2(u64, u64);
 extern u64 __builtin_cc_neon_mul_u32x2(u64, u64);
+#endif
 
 u64 scalar_add(u64 a, u64 b) {
   unsigned lo = (unsigned)a + (unsigned)b;

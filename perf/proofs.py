@@ -9,7 +9,7 @@ import shlex
 import subprocess
 import sys
 import time
-from integrity import check_principal_assumptions, sha
+from integrity import canonical_assumptions, check_principal_assumptions, sha
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -69,6 +69,23 @@ def verify(jobs):
         result["principal_assumptions_unchanged"] = not options
         result["original_principal_assumptions_preserved"] = True
         result["new_computational_options"] = options
+        if (ROOT / "driver/CompileLinkCompatibility.vo").is_file():
+            link_assumptions = logs / "link-assumptions.v"
+            link_assumptions.write_text(
+                "Require Import compcert.driver.Compiler compcert.driver.CompileLinkCompatibility.\n"
+                "Print Assumptions transf_c_program_link_interface.\n"
+                "Print Assumptions mixed_compilation_link_succeeds.\n")
+            stage("mixed link assumptions",
+                  ["coqtop", "-q", "-batch", *includes, "-l", str(link_assumptions)],
+                  "link-assumptions.txt")
+            baseline = dict(item for block in canonical_assumptions(actual) for item in block.items())
+            transfer, link = canonical_assumptions((logs / "link-assumptions.txt").read_text())
+            if any(baseline.get(name) != typ for block in (transfer, link) for name, typ in block.items()):
+                raise ValueError("New assumption in compilation link compatibility")
+            result["mixed_link_assumptions"] = {
+                "transf_c_program_link_interface": sorted(transfer),
+                "mixed_compilation_link_succeeds": sorted(link),
+            }
         source = ROOT / "driver/Compiler.v"
         before = source.read_bytes()
         source.touch()

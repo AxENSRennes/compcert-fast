@@ -52,6 +52,7 @@ jobs:
             perf/artifacts/autopair/
             perf/artifacts/arraypair/
             perf/artifacts/arraypair-wide/
+            perf/artifacts/compilation-compatibility/
             perf/artifacts/peeltwo/
             perf/artifacts/loopfusion/
             perf/artifacts/loopinterchange/

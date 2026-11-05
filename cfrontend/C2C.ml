@@ -303,6 +303,13 @@ let builtins = {
     builtins_generic.builtin_functions @ CBuiltins.builtins.builtin_functions
 }
 
+let packed_neon_names =
+  List.filter (fun name -> List.mem_assoc name CBuiltins.builtins.builtin_functions)
+    ExperimentalOptions.packed_neon_names
+
+let is_packed_neon_intrinsic id =
+  List.mem id.name packed_neon_names && List.mem id (Env.initial_identifiers ())
+
 (** ** The known attributes *)
 
 let attributes = [
@@ -1000,6 +1007,24 @@ let rec convertExpr env e =
   | C.ECall({edesc = C.EVar {name = "__builtin_expect"}}, [arg1; arg2]) ->
       convertExpr env arg1
 
+  | C.ECall({edesc = C.EVar id; etyp}, args) when is_packed_neon_intrinsic id ->
+      checkResultType env e.etyp;
+      List.iter (fun arg -> checkArgumentType env arg.etyp) args;
+      begin match convertTyp env etyp with
+      | Tfunction(targs, tres, cc) ->
+          let args' = convertExprList env args in
+          ewrap (match Ctyping.check_rvals args' with
+          | Errors.Error msg -> Errors.Error msg
+          | Errors.OK () ->
+              match Ctyping.check_arguments args' targs with
+              | Errors.Error msg -> Errors.Error msg
+              | Errors.OK () ->
+                  let ef = AST.EF_builtin(id.name, signature_of_type targs tres cc) in
+                  Errors.OK (Ebuiltin(ef, targs, args', tres)))
+      | _ ->
+          error "wrong type for function part of a call"; ezero
+      end
+
   | C.ECall({edesc = C.EVar {name = "printf"}}, args)
     when !Clflags.option_interp ->
       let targs = convertTypArgs env [] args
@@ -1026,6 +1051,8 @@ let rec convertExpr env e =
 
 and convertLvalue env e =
   match e.edesc with
+  | C.EVar id when is_packed_neon_intrinsic id ->
+      error "experimental builtin '%s' must be called directly" id.name; ezero
   | C.EVar id ->
       Evar(intern_string id.name, convertTyp env e.etyp)
   | C.EUnop(C.Oderef, e1) ->
@@ -1316,6 +1343,9 @@ let rec convertGlobdecls env res gl =
   | g :: gl' ->
       updateLoc g.gloc;
       match g.gdesc with
+      | C.Gdecl(_, id, _, _) when is_packed_neon_intrinsic id ->
+          (* Direct calls already carry the builtin in the expression. *)
+          convertGlobdecls env res gl'
       | C.Gdecl((sto, id, ty, optinit) as d) ->
           (* Functions become external declarations.
              Other types become variable declarations. *)
@@ -1543,6 +1573,15 @@ let debug_set_struct_ofs env typs =
 
 let convertProgram p =
   Diagnostics.reset();
+  (* An explicit source declaration denotes an ordinary symbol in the
+     reference compiler. Refuse to reinterpret that symbol as an intrinsic. *)
+  if packed_neon_names <> [] then
+    List.iter (fun g ->
+      match g.gdesc with
+      | Gdecl (_, id, _, _) when List.mem id.name packed_neon_names ->
+          Diagnostics.fatal_error g.gloc
+            "explicit declaration of experimental builtin '%s'" id.name
+      | _ -> ()) p;
   stringNum := 0;
   Hashtbl.clear decl_atom;
   Hashtbl.clear stringTable;

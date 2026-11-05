@@ -146,8 +146,7 @@ The experiments currently implement:
   different definedness cannot safely be packed by this representation.
   One pair is considered per function, with a 512-instruction size guard.
 * Two additional rounds of existing constant propagation, CSE and dead-code
-  cleanup. Analysis failure still returns a compiler error; this experiment
-  does not claim a new proved rollback for those existing partial passes.
+  cleanup. In strict mode, analysis failure returns a compiler error.
 * `memory-vector` exposes the first two loop traversals using a proved CFG
   projection validator, performs existing cleanup and removes unreachable
   nodes, then widens correlated pairs of ordinary 32-bit stores to
@@ -265,6 +264,29 @@ clang with each new option independently, archiving assembly and static
 metrics in `perf/results/memory-assembly.json`. Reproduce that portion with
 `python3 perf/compare_memory_loops.py`.
 
+### Compilation compatibility
+
+All experimental options use the compatibility category **fallback**. A
+failed experimental C compilation is retried in a fresh process using the
+same compiler and arguments with `COMPCERT_EXPERIMENTS` empty. The retry
+covers failures in later compiler passes, assembly and a link that compiles
+its own source inputs. The driver selects the reference directly for
+recognized input/output aliases and one-shot file streams. Use
+`COMPCERT_EXPERIMENT_FALLBACK=0` to reproduce strict failures. This keeps
+each pass's existing candidate checks and local fallback. The
+[compatibility inventory](perf/compilation-compatibility.json)
+lists the passes, proofs and tests for each option.
+
+The Coq proof in `driver/CompileLinkCompatibility.v` establishes link
+success and preserves interfaces for mixed successful outputs when their
+Csyntax units link in the CompCert model. Its interface certificates are
+independent of the experimental options for each unit. The test command
+`make -f Makefile.fast test-compatibility` reproduces the strict failures
+and checks retry and native mixed linking. The model proof covers link
+success and interfaces. Mixed semantic simulation and native assembler
+and linker correctness are distinct obligations. Replay also relies on
+repeatable inputs and external tools.
+
 ### NEON scope and trust
 
 `aarch64/Neon.v` is an isolated integer-lane model and checked contiguous
@@ -276,9 +298,11 @@ compiler's general vector backend.
 With `COMPCERT_EXPERIMENTS=neon-packed`, three explicit C builtins are available:
 `__builtin_cc_neon_add_u32x2`, `__builtin_cc_neon_sub_u32x2`, and
 `__builtin_cc_neon_mul_u32x2`. Each takes two `unsigned long long` arguments
-and returns the same type, holding two independent uint32 lanes. Their
-numerical semantics are specified in `Builtins1.v`; floating-point scratch
-register clobbers and four-instruction sizes are declared in the backend.
+and returns the same type, holding two independent uint32 lanes. The compiler
+supplies the names. Explicit source declarations of those names take the
+reference path as ordinary symbols. `Builtins1.v` specifies the numerical
+semantics. The backend declares the floating-point scratch register clobbers
+and four-instruction sizes.
 The existing `Pbuiltin` semantics carries them through the correctness proof.
 The hand-written expansion into hardware NEON instructions is an additional
 trusted platform specification/expansion surface, tested against scalar

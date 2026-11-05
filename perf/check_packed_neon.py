@@ -92,7 +92,8 @@ def main():
               expected.decode().split()[0] == "1000081")
         execute([*ccomp, SOURCE, "-o", scalar])
         check("default scalar C program matches clang reference", output([scalar]) == expected)
-        execute([*ccomp, "-DUSE_NEON=1", SOURCE, "-o", enabled], "neon-packed")
+        implicit_neon = ["-DUSE_NEON=1", "-DUSE_IMPLICIT_NEON=1"]
+        execute([*ccomp, *implicit_neon, SOURCE, "-o", enabled], "neon-packed")
         check("enabled NEON C program matches scalar reference on every pair and live FP values",
               output([enabled]) == expected)
         report["combined_profiles"] = {}
@@ -100,14 +101,15 @@ def main():
         for name, scalar_flags in profiles.items():
             flags = scalar_flags + ",neon-packed"
             binary = ARTIFACTS/(name+".exe")
-            execute([*ccomp, "-DUSE_NEON=1", SOURCE, "-o", binary], flags)
+            execute([*ccomp, *implicit_neon, SOURCE, "-o", binary], flags)
             check(name+" combined scalar/NEON outputs and live FP values", output([binary]) == expected)
             report["combined_profiles"][name] = {"flags": flags, "correctness_pass": True,
                                                 "hardware_pairs": 1000081}
 
         for name, flags in [("default", ""), ("enabled", "neon-packed")]:
             asm = ARTIFACTS/(name+".s")
-            execute([*ccomp, "-DUSE_NEON=1", "-S", SOURCE, "-o", asm], flags)
+            source_flags = implicit_neon if flags else ["-DUSE_NEON=1"]
+            execute([*ccomp, *source_flags, "-S", SOURCE, "-o", asm], flags)
             text = asm.read_text()
             for op in ("add", "sub", "mul"):
                 emitted = bool(re.search(r"\b"+op+r"\s+v16\.2s,\s*v16\.2s,\s*v17\.2s", text))
@@ -127,7 +129,7 @@ def main():
         small = ARTIFACTS/"small-reference.exe"
         execute(["clang", "-O2", "-DTEST_ROUNDS=0", SOURCE, "-o", small])
         small_expected = output([small])
-        interpreted = output([*ccomp, "-interp", "-quiet", "-DUSE_NEON=1", "-DTEST_ROUNDS=0", SOURCE], "neon-packed")
+        interpreted = output([*ccomp, "-interp", "-quiet", *implicit_neon, "-DTEST_ROUNDS=0", SOURCE], "neon-packed")
         (ARTIFACTS/"interpreter.stdout").write_bytes(interpreted)
         check("Cexec builtin semantics match scalar C for edge cases and live FP values", interpreted == small_expected)
         report["hardware_pair_count"] = 1000081

@@ -1,0 +1,400 @@
+{
+  "reference": {
+    "compiler": "same ccomp executable",
+    "arguments": "unchanged",
+    "COMPCERT_EXPERIMENTS": ""
+  },
+  "shared_evidence": {
+    "driver": "driver/Driver.ml",
+    "strict_control": "COMPCERT_EXPERIMENT_FALLBACK=0",
+    "mixed_link_model": "driver/CompileLinkCompatibility.v",
+    "tests": "perf/check_compilation_compatibility.py",
+    "report": "perf/results/compilation-compatibility.json",
+    "strict_scope": "Disables whole-invocation replay. Existing checked per-pass candidate selection and local fallback still apply.",
+    "shared_passes": [
+      "Validated allocation fallback",
+      "Validated block-layout fallback",
+      "Packed builtin semantics and trusted AArch64 expansion"
+    ]
+  },
+  "optimizations": {
+    "small-inline": {
+      "category": "fallback",
+      "paths": [
+        "Inlining eligibility heuristic"
+      ],
+      "proofs": [
+        "backend/Inliningproof.v"
+      ],
+      "tests": [
+        "perf/check_heuristics.py"
+      ],
+      "strict_regressions": [
+        "small-inline-stack-limit"
+      ]
+    },
+    "loop-spill": {
+      "category": "fallback",
+      "paths": [
+        "Loop-weighted register allocation",
+        "Local retry after allocation or validation failure"
+      ],
+      "proofs": [
+        "backend/Allocproof.v"
+      ],
+      "tests": [
+        "perf/check_heuristics.py",
+        "perf/check_validators.py"
+      ],
+      "strict_regressions": []
+    },
+    "trace-layout": {
+      "category": "fallback",
+      "paths": [
+        "Trace-guided block layout",
+        "Local retry after a rejected layout"
+      ],
+      "proofs": [
+        "backend/Linearizeproof.v"
+      ],
+      "tests": [
+        "perf/check_heuristics.py",
+        "perf/check_validators.py"
+      ],
+      "strict_regressions": []
+    },
+    "memory-neon": {
+      "category": "fallback",
+      "paths": [
+        "ArrayPair indexed and pointer-countdown pairing",
+        "ArrayPair aligned named arrays, guarded pointers and aligned direct calls",
+        "AutoPair lookahead loops",
+        "PointerNeon guarded adjacent additions",
+        "Renumbering, two-iteration peeling and partial cleanup",
+        "MemoryNeon fixed guarded widening",
+        "LowerLong packed word lowering"
+      ],
+      "proofs": [
+        "cfrontend/ArrayPairProgram.v",
+        "cfrontend/ArrayPairCallproof.v",
+        "backend/AutoPairProgram.v",
+        "backend/PointerNeonproof.v",
+        "backend/MemoryNeonproof.v",
+        "backend/PeelTwoproof.v",
+        "backend/ExtraCleanupproof.v",
+        "backend/LowerLongproof.v"
+      ],
+      "tests": [
+        "perf/check_arraypair.py",
+        "perf/check_arraypair_wide.py",
+        "perf/check_autopair.py",
+        "perf/check_pointerneon.py",
+        "perf/check_memoryneon.py",
+        "perf/check_peeltwo.py",
+        "perf/check_lowerlong.py",
+        "perf/check_memory_loops.py"
+      ],
+      "strict_regressions": []
+    },
+    "rtl-unroll2": {
+      "category": "fallback",
+      "paths": [
+        "Two-phase CFG covering"
+      ],
+      "proofs": [
+        "backend/Experimentalproof.v"
+      ],
+      "tests": [
+        "perf/check_scalar.py",
+        "perf/check_experiments.py"
+      ],
+      "strict_regressions": []
+    },
+    "rtl-unroll4": {
+      "category": "fallback",
+      "paths": [
+        "Four-phase CFG covering"
+      ],
+      "proofs": [
+        "backend/Experimentalproof.v"
+      ],
+      "tests": [
+        "perf/check_scalar.py",
+        "perf/check_experiments.py"
+      ],
+      "strict_regressions": []
+    },
+    "memory-cleanup": {
+      "category": "fallback",
+      "paths": [
+        "Two extra Constprop, CSE and Deadcode rounds"
+      ],
+      "proofs": [
+        "backend/ExtraCleanupproof.v"
+      ],
+      "tests": [
+        "perf/check_experiments.py"
+      ],
+      "strict_regressions": []
+    },
+    "schedule-pure": {
+      "category": "fallback",
+      "paths": [
+        "Scheduling independent RTL operations"
+      ],
+      "proofs": [
+        "backend/Scheduleproof.v"
+      ],
+      "tests": [
+        "perf/check_schedule.py"
+      ],
+      "strict_regressions": []
+    },
+    "hoist-constant": {
+      "category": "fallback",
+      "paths": [
+        "Caching an integer literal"
+      ],
+      "proofs": [
+        "backend/HoistConstproof.v"
+      ],
+      "tests": [
+        "perf/check_hoist.py"
+      ],
+      "strict_regressions": [
+        "hoist-constant-stack-limit"
+      ]
+    },
+    "load-forward": {
+      "category": "fallback",
+      "paths": [
+        "Forwarding an identical adjacent load"
+      ],
+      "proofs": [
+        "backend/LoadForwardproof.v"
+      ],
+      "tests": [
+        "perf/check_loadforward.py"
+      ],
+      "strict_regressions": []
+    },
+    "arm64-combine": {
+      "category": "fallback",
+      "paths": [
+        "Multiply-negate instruction selection"
+      ],
+      "proofs": [
+        "aarch64/SelectOpproof.v",
+        "aarch64/SelectLongproof.v"
+      ],
+      "tests": [
+        "perf/check_select.py"
+      ],
+      "strict_regressions": []
+    },
+    "loop-unswitch": {
+      "category": "fallback",
+      "paths": [
+        "Retaining the first test and specializing later CFG visits"
+      ],
+      "proofs": [
+        "backend/Unswitchproof.v"
+      ],
+      "tests": [
+        "perf/check_unswitch.py"
+      ],
+      "strict_regressions": []
+    },
+    "store-elim": {
+      "category": "fallback",
+      "paths": [
+        "Eliminating adjacent overwritten stores"
+      ],
+      "proofs": [
+        "backend/StoreElimproof.v"
+      ],
+      "tests": [
+        "perf/check_storeelim.py"
+      ],
+      "strict_regressions": []
+    },
+    "neon-packed": {
+      "category": "fallback",
+      "paths": [
+        "Explicit source intrinsics",
+        "Reserved-name collision recovery for ordinary declarations"
+      ],
+      "proofs": [
+        "aarch64/Builtins1.v",
+        "aarch64/Neon.v"
+      ],
+      "tests": [
+        "perf/check_packed_neon.py",
+        "perf/check_neon.py",
+        "perf/check_compilation_compatibility.py"
+      ],
+      "strict_regressions": [
+        "packed-builtin-name",
+        "packed-builtin-declaration"
+      ]
+    },
+    "licm-pure": {
+      "category": "fallback",
+      "paths": [
+        "Caching a total invariant operation"
+      ],
+      "proofs": [
+        "backend/LICMproof.v"
+      ],
+      "tests": [
+        "perf/check_licm.py"
+      ],
+      "strict_regressions": [
+        "pure-licm-stack-limit"
+      ]
+    },
+    "strength-reduce": {
+      "category": "fallback",
+      "paths": [
+        "Replacing a modular induction multiplication with an additive recurrence"
+      ],
+      "proofs": [
+        "backend/StrengthReduceproof.v"
+      ],
+      "tests": [
+        "perf/check_strengthreduce.py"
+      ],
+      "strict_regressions": [
+        "strength-reduce-stack-limit"
+      ]
+    },
+    "loop-peel": {
+      "category": "fallback",
+      "paths": [
+        "First-traversal peeling and renumbering"
+      ],
+      "proofs": [
+        "backend/LoopPeelproof.v",
+        "backend/Renumberproof.v"
+      ],
+      "tests": [
+        "perf/check_peel.py"
+      ],
+      "strict_regressions": []
+    },
+    "auto-neon": {
+      "category": "fallback",
+      "paths": [
+        "Automatic same-input adjacent NEON lane formation",
+        "LowerLong packed word lowering"
+      ],
+      "proofs": [
+        "backend/Vectorizeproof.v",
+        "backend/LowerLongproof.v"
+      ],
+      "tests": [
+        "perf/check_vectorize.py",
+        "perf/check_lowerlong.py"
+      ],
+      "strict_regressions": []
+    },
+    "licm-preheader": {
+      "category": "fallback",
+      "paths": [
+        "Eager invariant caching after an entry prefix",
+        "Closed-suffix caching at first use"
+      ],
+      "proofs": [
+        "backend/PreheaderLICMproof.v"
+      ],
+      "tests": [
+        "perf/check_preheader_licm.py"
+      ],
+      "strict_regressions": [
+        "preheader-stack-limit"
+      ]
+    },
+    "memory-vector": {
+      "category": "fallback",
+      "paths": [
+        "Two-iteration peeling, cleanup and renumbering",
+        "Direct and producer-backed widening",
+        "LowerLong packed word lowering"
+      ],
+      "proofs": [
+        "backend/PeelTwoproof.v",
+        "backend/ExtraCleanupproof.v",
+        "backend/MemVectorproof.v",
+        "backend/LowerLongproof.v"
+      ],
+      "tests": [
+        "perf/check_memvector.py",
+        "perf/check_peeltwo.py",
+        "perf/check_lowerlong.py",
+        "perf/check_memory_loops.py"
+      ],
+      "strict_regressions": []
+    },
+    "loop-fusion": {
+      "category": "fallback",
+      "paths": [
+        "Validated fusion of adjacent pure counted loops"
+      ],
+      "proofs": [
+        "backend/LoopFusionproof.v"
+      ],
+      "tests": [
+        "perf/check_loopfusion.py"
+      ],
+      "strict_regressions": []
+    },
+    "loop-interchange": {
+      "category": "fallback",
+      "paths": [
+        "Validated interchange of pure rectangular loops"
+      ],
+      "proofs": [
+        "backend/LoopInterchangeproof.v",
+        "backend/LoopFusionproof.v"
+      ],
+      "tests": [
+        "perf/check_loopinterchange.py"
+      ],
+      "strict_regressions": []
+    },
+    "loop-tile": {
+      "category": "fallback",
+      "paths": [
+        "Order-preserving loop strip mining"
+      ],
+      "proofs": [
+        "backend/LoopTileproof.v"
+      ],
+      "tests": [
+        "perf/check_looptile.py"
+      ],
+      "strict_regressions": [
+        "loop-tile-stack-limit"
+      ]
+    },
+    "loop-tile2d": {
+      "category": "fallback",
+      "paths": [
+        "Validated 2D tiling of a fixed pure rectangle"
+      ],
+      "proofs": [
+        "backend/LoopTile2Dproof.v",
+        "backend/LoopFusionproof.v"
+      ],
+      "tests": [
+        "perf/check_looptile2d.py"
+      ],
+      "strict_regressions": []
+    }
+  },
+  "open_cases": [
+    "The mixed theorem establishes link success and the linked interface in CompCert's C and Asm model. Mixed semantic simulation remains open.",
+    "Native assembler and linker behavior is covered by tests and remains in the existing trust boundary.",
+    "Driver replay requires reproducible inputs and tool invocations. External side effects such as writes selected by arbitrary tool options are not transactional."
+  ]
+}

@@ -16,7 +16,7 @@
     "loop-unswitch": "Retains the first execution of a selected immutable-register comparison, then uses specialized CFG copies.",
     "rtl-unroll2": "Validated two-phase CFG covering. Not general trip-count based loop unrolling.",
     "rtl-unroll4": "Validated four-phase CFG covering. Not general trip-count based loop unrolling.",
-    "memory-cleanup": "Two existing Constprop/CSE/Deadcode rounds. Analysis failure returns a compiler error; no new rollback proof.",
+    "memory-cleanup": "Two existing Constprop/CSE/Deadcode rounds. Analysis failure returns a compiler error in strict mode and invokes the whole-compilation retry otherwise.",
     "arm64-combine": "Alternative 32/64-bit multiply-negate combination using existing modeled operations; no speed claim.",
     "neon-packed": "Explicit two-lane uint32 packed add/sub/mul intrinsics. Trusted hardware expansion, no automatic C-loop vectorization.",
     "licm-pure": "One memory-independent, total nonconstant operation with globally immutable operands is cached at function entry. Arity and totality are proved for all value tags. <=512 nodes; bounded candidate/cycle discovery.",

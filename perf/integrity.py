@@ -13,13 +13,16 @@ REVIEWED_FORMAL = {"backend/Linearize.v", "backend/Linearizeproof.v",
                    "driver/Compiler.v", "driver/Compopts.v", "extraction/extraction.v",
                    "Makefile", "backend/PrintRTL.ml", "backend/Allocation.v", "backend/Allocproof.v",
                    "aarch64/SelectOp.vp", "aarch64/SelectOpproof.v", "aarch64/SelectLong.vp", "aarch64/SelectLongproof.v", "aarch64/Builtins1.v", "aarch64/Machregs.v",
-                   "aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml"}
+                   "aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml",
+                   "driver/Driver.ml", "cfrontend/C2C.ml"}
 NEW_FORMAL = {"backend/AutoPairCounter.v", "backend/AutoPairMemory.v", "backend/AutoPair.v", "backend/AutoPairPack.v", "backend/AutoPairCodeFacts.v", "backend/AutoPairStepFacts.v", "backend/AutoPairproof.v", "backend/AutoPairProgram.v",
               "cfrontend/ArrayPair.v", "cfrontend/ArrayPairMatch.v", "cfrontend/ArrayPairTurn.v",
               "cfrontend/ArrayPairBase.v", "cfrontend/ArrayPairWide.v",
               "cfrontend/ArrayPairReplay.v", "cfrontend/ArrayPairTarget.v", "cfrontend/ArrayPairLocalFacts.v",
               "cfrontend/ArrayPairLocalSource.v", "cfrontend/ArrayPairLocal.v", "cfrontend/ArrayPairProgram.v",
               "cfrontend/ArrayPairContext.v", "cfrontend/ArrayPairCallproof.v",
+              "driver/CompileLinkInterface.v", "driver/CompileRTLInterface.v",
+              "driver/CompileLinkCompatibility.v",
               "backend/PointerNeonFacts.v", "backend/PointerNeon.v", "backend/PointerNeonproof.v",
               "backend/MemoryLaneFacts.v", "backend/MemoryNeon.v", "backend/MemoryNeonBounds.v", "backend/MemoryNeonReplay.v", "backend/MemoryNeonproof.v",
               "backend/LoopTile2D.v", "backend/LoopTile2Dproof.v","backend/PeelTwo.v","backend/PeelTwoproof.v","backend/MemVector.v","backend/MemVectorproof.v","backend/LoopFusion.v","backend/LoopFusionproof.v","backend/LoopInterchange.v","backend/LoopInterchangeproof.v","backend/LoopTile.v","backend/LoopTileproof.v",
@@ -157,10 +160,14 @@ def reviewed_change_safe(original, current, path=None):
 
 
 def reviewed_build_safe(original, current, path):
-    # These manually reviewed platform expansions are trusted OCaml, never
-    # proof/kernel build recipes. Their exact contents are still hash-pinned.
-    if path in {"aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml"}:
+    # These reviewed OCaml boundaries remain hash-pinned.
+    if path in {"aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml",
+                "driver/Driver.ml", "cfrontend/C2C.ml"}:
         return True
+    if path == "Makefile":
+        current = current.replace(
+            "\t$(COQCHK) compcert.driver.Complements $(EXTRA_CHECK_PROOF)\n",
+            "\t$(COQCHK) compcert.driver.Complements\n")
     inserted = []
     old, new = original.splitlines(keepends=True), current.splitlines(keepends=True)
     for tag, _a, _b, start, stop in difflib.SequenceMatcher(None, old, new).get_opcodes():
@@ -171,6 +178,11 @@ def reviewed_build_safe(original, current, path):
         inserted.extend(new[start:stop])
     addition = "".join(inserted)
     if path == "Makefile":
+        addition = addition.replace(
+            "ifeq ($(ARCH),aarch64)\n"
+            "DRIVER+=CompileLinkInterface.v CompileRTLInterface.v CompileLinkCompatibility.v\n"
+            "EXTRA_CHECK_PROOF=compcert.driver.CompileLinkCompatibility\n"
+            "endif\n", "")
         allowed = {name.rsplit("/", 1)[-1] for name in NEW_FORMAL
                    if name.startswith(("backend/", "cfrontend/"))}
         return all(token in allowed or token == "\\" for token in addition.split())

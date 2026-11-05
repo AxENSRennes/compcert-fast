@@ -2,7 +2,7 @@
 PYTHON ?= python3
 JOBS ?= 4
 .NOTPARALLEL:
-.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators test-experiments test-neon test-loops test-memory-loops compare-assembly
+.PHONY: help bootstrap proofs compiler bench baseline guard test-harness correctness verify test-validators test-experiments test-neon test-loops test-memory-loops test-compatibility compare-assembly
 help:
 	@echo 'make -f Makefile.fast baseline  # bootstrap, full + incremental proofs, build, benchmark'
 	@echo 'make -f Makefile.fast bench     # two independent measurement blocks + noise gate'
@@ -12,6 +12,7 @@ help:
 	@echo 'make -f Makefile.fast compare-assembly # ARM64 static comparison with clang -O2; no executable runs'
 	@echo 'make -f Makefile.fast test-loops # LICM, induction, peeling, automatic NEON correctness'
 	@echo 'make -f Makefile.fast test-memory-loops # memory widening, fusion, interchange and tiling correctness'
+	@echo 'make -f Makefile.fast test-compatibility # strict failures, reference retry and mixed native linkage'
 	@echo 'make -f Makefile.fast test-neon # integer model against native NEON, no speed series'
 bootstrap:
 	./perf/bootstrap.sh
@@ -63,11 +64,16 @@ compare-assembly: compiler
 	$(PYTHON) perf/compare_memory_loops.py
 test-neon: guard
 	$(PYTHON) perf/check_neon.py
+test-compatibility: compiler
+	$(PYTHON) perf/check_compilation_compatibility.py
 bench: compiler
 	$(PYTHON) perf/bench.py --output perf/results/latest.json
 correctness: compiler
 	$(PYTHON) perf/bench.py --correctness-only --output perf/results/correctness.json
-verify: guard test-harness compiler correctness test-validators test-experiments test-neon compare-assembly
+# Ordinary correctness checks must observe the optimized path. The dedicated
+# compatibility suite sets the mode explicitly for each attempt.
+verify test-validators test-loops test-memory-loops test-experiments compare-assembly: export COMPCERT_EXPERIMENT_FALLBACK = 0
+verify: guard test-harness compiler correctness test-validators test-experiments test-neon compare-assembly test-compatibility
 	$(PYTHON) perf/check_native_profiles.py --jobs $(JOBS)
 baseline: bootstrap test-harness proofs compiler
 	$(PYTHON) perf/bench.py --output perf/results/baseline.json

@@ -41,21 +41,47 @@ let unswitch_enabled () = enabled "loop-unswitch"
 let storeelim_enabled () = enabled "store-elim"
 let packed_neon_enabled () = enabled "neon-packed"
 
+let packed_neon_names =
+  ["__builtin_cc_neon_add_u32x2"; "__builtin_cc_neon_sub_u32x2";
+   "__builtin_cc_neon_mul_u32x2"]
+
 let counters : ((string * string), int) Hashtbl.t = Hashtbl.create 17
 
-let trace =
+let write_event channel pass event count =
+  (* Names are fixed ASCII identifiers. No source strings are emitted. *)
+  Printf.fprintf channel "{\"pass\":%S,\"event\":%S,\"count\":%d}\n%!"
+    pass event count
+
+let trace_disabled = ref false
+let disable_trace () = trace_disabled := true
+
+let trace = lazy (
   let path = getenv "COMPCERT_EXPERIMENT_TRACE" in
-  if flags = [] || path = "" then None
-  else Some (open_out_gen [Open_creat; Open_append; Open_text] 0o600 path)
+  if !trace_disabled || flags = [] || path = "" then None
+  else
+    try
+      let fd = Unix.openfile path
+        [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_APPEND; Unix.O_NONBLOCK; Unix.O_CLOEXEC]
+        0o600 in
+      let channel = Unix.out_channel_of_descr fd in
+      try
+        if (Unix.fstat fd).Unix.st_kind = Unix.S_REG then begin
+          List.iter (fun pass -> write_event channel pass "enabled" 1) flags;
+          Some channel
+        end else begin
+          close_out_noerr channel;
+          None
+        end
+      with Sys_error _ | Unix.Unix_error _ -> close_out_noerr channel; None
+    with Unix.Unix_error _ -> None)
+
+let start_trace () = ignore (Lazy.force trace)
 
 let emit pass event count =
-  match trace with
+  match Lazy.force trace with
   | None -> ()
   | Some channel ->
-      (* These names are fixed ASCII identifiers, so OCaml's quoted spelling
-         is also valid JSON. No source strings or file paths are emitted. *)
-      Printf.fprintf channel "{\"pass\":%S,\"event\":%S,\"count\":%d}\n%!"
-        pass event count
+      try write_event channel pass event count with Sys_error _ -> ()
 
 let note ~pass ~event count =
   if enabled pass then begin
@@ -69,8 +95,6 @@ let note ~pass ~event count =
 let summary () =
   Hashtbl.fold (fun (pass, event) count acc -> (pass, event, count) :: acc)
     counters [] |> List.sort compare
-
-let () = List.iter (fun pass -> emit pass "enabled" 1) flags
 
 (* A nonrecursive SCC analysis, shared by loop-aware cost and layout oracles.
    Undefined targets are ignored. It has no semantic authority: a mistake can
