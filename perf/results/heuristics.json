@@ -734,5 +734,5 @@
     "perf/test_heuristics.ml": "818971e45120c84f018da3fdb61cac419882be25e4a87683704012ba7154c992",
     "perf/check_heuristics.py": "c8e28b8b102e6734ba8482e4061453bcb4605004678029f0e94936dd3e1a6187"
   },
-  "compiler_sha256": "6be94f9af31be91130b4cd22334bdc971df3c7f43af7ef60e818a5f5d604789a"
+  "compiler_sha256": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2"
 }

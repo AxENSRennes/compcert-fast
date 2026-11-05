@@ -1,0 +1,507 @@
+{
+  "success": true,
+  "performance_measured": false,
+  "commands": [
+    [
+      "python3",
+      "/Users/axel2/Downloads/compcert-fast/perf/guard.py"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-fno-inline",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/clang.s"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/clang.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/clang.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-drtl",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/default.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/default.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/default.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-drtl",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/enabled.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/enabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/enabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-drtl",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/memory-loops.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/array_pair_wide.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/memory-loops.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair-wide/memory-loops.exe"
+    ],
+    [
+      "python3",
+      "/Users/axel2/Downloads/compcert-fast/perf/guard.py"
+    ]
+  ],
+  "c_configurations": {
+    "default": {
+      "flags": "",
+      "correctness_pass": true,
+      "stdout_sha256": "1c0d705f94dd6281f8fab52e0f9c1dbf3dcbb8e9a01d23e930728c936ce3ef49",
+      "assembly_sha256": "60bf15cb4b9622465a940ab7fa53c1363aa2a77bc8d0853306604bdfaf43b331",
+      "functions": {
+        "add_global8": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_static16": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_page": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_pointer": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_weak": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_odd": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_shifted": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_volatile": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_size": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        }
+      }
+    },
+    "enabled": {
+      "flags": "memory-neon",
+      "correctness_pass": true,
+      "stdout_sha256": "1c0d705f94dd6281f8fab52e0f9c1dbf3dcbb8e9a01d23e930728c936ce3ef49",
+      "assembly_sha256": "10ebb9009c43bf142eafdf1745857f54abde29e81020ffba7e148f3e7cc5b429",
+      "functions": {
+        "add_global8": {
+          "rtl0_packed_add_calls": 1,
+          "pair_load": "int64",
+          "pair_store": "int64",
+          "packed_dataflow": true,
+          "tail_load": "int32",
+          "tail_store": "int32",
+          "neon_add_2s": 3,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 9,
+          "integer64_stores_nonstack": 3
+        },
+        "add_static16": {
+          "rtl0_packed_add_calls": 1,
+          "pair_load": "int64",
+          "pair_store": "int64",
+          "packed_dataflow": true,
+          "tail_load": "int32",
+          "tail_store": "int32",
+          "neon_add_2s": 3,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 3,
+          "integer64_stores_nonstack": 3
+        },
+        "add_page": {
+          "rtl0_packed_add_calls": 1,
+          "pair_load": "int64",
+          "pair_store": "int64",
+          "packed_dataflow": true,
+          "tail_load": "int32",
+          "tail_store": "int32",
+          "neon_add_2s": 3,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 9,
+          "integer64_stores_nonstack": 3
+        },
+        "add_pointer": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 3,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_weak": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 3,
+          "integer64_stores_nonstack": 0
+        },
+        "add_odd": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_shifted": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_volatile": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_size": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        }
+      }
+    },
+    "memory-loops": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d,memory-neon",
+      "correctness_pass": true,
+      "stdout_sha256": "1c0d705f94dd6281f8fab52e0f9c1dbf3dcbb8e9a01d23e930728c936ce3ef49",
+      "assembly_sha256": "e66bf421d582a8a51f61601955389db58d155efb3661277af9ea552072491038",
+      "functions": {
+        "add_global8": {
+          "rtl0_packed_add_calls": 1,
+          "pair_load": "int64",
+          "pair_store": "int64",
+          "packed_dataflow": true,
+          "tail_load": "int32",
+          "tail_store": "int32",
+          "neon_add_2s": 9,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 27,
+          "integer64_stores_nonstack": 9
+        },
+        "add_static16": {
+          "rtl0_packed_add_calls": 1,
+          "pair_load": "int64",
+          "pair_store": "int64",
+          "packed_dataflow": true,
+          "tail_load": "int32",
+          "tail_store": "int32",
+          "neon_add_2s": 9,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 9,
+          "integer64_stores_nonstack": 9
+        },
+        "add_page": {
+          "rtl0_packed_add_calls": 1,
+          "pair_load": "int64",
+          "pair_store": "int64",
+          "packed_dataflow": true,
+          "tail_load": "int32",
+          "tail_store": "int32",
+          "neon_add_2s": 9,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 27,
+          "integer64_stores_nonstack": 9
+        },
+        "add_pointer": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 9,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_weak": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 6,
+          "integer64_stores_nonstack": 0
+        },
+        "add_odd": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_shifted": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_volatile": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_size": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        }
+      }
+    }
+  },
+  "clang_O2_assembly": {
+    "add_global8": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 5,
+      "neon_xor": 0,
+      "vector_loads": 3,
+      "vector_stores": 3,
+      "integer64_loads_nonstack": 1,
+      "integer64_stores_nonstack": 0
+    },
+    "add_static16": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 0,
+      "neon_xor": 5,
+      "vector_loads": 3,
+      "vector_stores": 3,
+      "integer64_loads_nonstack": 0,
+      "integer64_stores_nonstack": 0
+    },
+    "add_page": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 5,
+      "neon_xor": 0,
+      "vector_loads": 3,
+      "vector_stores": 3,
+      "integer64_loads_nonstack": 1,
+      "integer64_stores_nonstack": 0
+    }
+  },
+  "regular_cases": 1440,
+  "aligned_guard_cases": 4,
+  "unaligned_guard_cases": 18,
+  "negative_rtl_controls": 5,
+  "trusted_baseline_commit": "9222fcdceac9b6ae0d5375853423eaa83578bf76",
+  "trusted_source_sha256": {
+    "aarch64/Asm.v": "950ac8349bb188a216a8f7330f9aaed684c17a251b18376468e79fa8a9e13df9",
+    "aarch64/Builtins1.v": "f799effc950c89aad4968ccc7bc127fe67d50057f34b38e099d7e78458a4d1a4",
+    "aarch64/Asmexpand.ml": "77b214aa226bcccd582bd52c5f17cd2df3909324fc39a039fd1a6d53680e954e",
+    "aarch64/TargetPrinter.ml": "4c50ccc66c8340fb0ad095f3c9510c6c6a8ede1240e88e680970f76cfdd949ef",
+    "aarch64/Machregs.v": "f01561e5bec85901601f1880060d14c589720c8090bc3def5c4a3f80481b98d8",
+    "aarch64/CBuiltins.ml": "636bb314cee0df692219db7da6c8fcded152c832bb802942b888b3d927def4c3",
+    "common/Values.v": "da172d4ac0ae9524c545a8bb0ef3b3253e2d4fb49e5919b4dee2cbd38333fddc",
+    "common/Memory.v": "759aae974cd85f7a35e8ed43780bc7826720f0064a35b972e864eb4aea496541",
+    "common/Memdata.v": "138921b4cea350422b2cc34be3d32d79b646f4793b8b3b0f16ccfa184870962b",
+    "common/AST.v": "058ade1ff1d409c5d556e3e7f5b6048492615036771886cfa121dc2dfdcde4c7",
+    "common/Events.v": "24a7c5c76b8e908654c11303af7f81666e0b00325e4ab78502a98c0cbe2c017f",
+    "common/Builtins.v": "d2734040d13e67bbdde6d59e1557c59b3140ea825e6a00c800be4feabf2091ba",
+    "cfrontend/Clight.v": "53cef4b5c923084999949229c3fdb065a25833d7f3761a1285adbaeebaaf79d0",
+    "cfrontend/Cop.v": "adac91162faf39ef65202b6d45a6c95326a293fd4dad481dd2c232abf9369805"
+  },
+  "source_sha256": {
+    "cfrontend/ArrayPair.v": "d0ed9e6d45ba5f34ed12fb131922cf7b159ccc2387b7be47f6badadf97a0fddd",
+    "cfrontend/ArrayPairBase.v": "1423fc2a3cbc16562ee0c97d1194f12e9203f39d79ceb0ea716655fb8e8c5153",
+    "cfrontend/ArrayPairLocal.v": "b613e963e9984b158309c65812c6fc3bdd722d6baf9e8b38bad4fcb9a16392ea",
+    "cfrontend/ArrayPairLocalFacts.v": "79ce2bcd74a2c789e04ace6505a755566d459a301c786e1b3e1720169ec55586",
+    "cfrontend/ArrayPairLocalSource.v": "14e0a276736273b48b5b9559105d5ab8c1933eb89706c6789e6b68d7c35e1290",
+    "cfrontend/ArrayPairMatch.v": "c2f306063b11679ce4aedf2d12b187d3e738d06854730220dc4d821d17af6cc9",
+    "cfrontend/ArrayPairProgram.v": "9e79f3da6ac37a7d7f81d4b81161ff47ca96e2eda8c49f2cf6a8fa2b74fb8b5d",
+    "cfrontend/ArrayPairReplay.v": "10c8ffd2d9a24189b2a650643a530e64d94aefbfd30a9a8a4c5820876ef82978",
+    "cfrontend/ArrayPairTarget.v": "cb810d5827968cdec6f15b62aa2f420f80b981157db197b00d42d58d8c6ae201",
+    "cfrontend/ArrayPairTurn.v": "b5dd90d2db8eae9e47eca5dc22d7c54b35186a9b3ecc02bbc65f618e5c9ed68b",
+    "cfrontend/ArrayPairWide.v": "c8831e2cee64cb07970636fd5f3d448f27dcc8107e7b0a0fb90c79e96da8581c",
+    "perf/check_arraypair_wide.py": "0d2a75a39f5e5a62887a0b7d6822d0fecb2b2b1675d73be64a6e8adde48af7cb",
+    "perf/check_arraypair.py": "88f027e31a8a7425d0ad82ac72d7221a974bf365bfd16c8eaf692f738e65c4bd",
+    "perf/experiment-profiles.json": "fbf87a18f09355ab784ff0e05ccfc5e799aeb585af8444dcfaa453805facc602",
+    "driver/Compiler.v": "94b0986c8ea97e9710fde48effeecd858dc3e8aa64a56d0a01c8b1aa03a7cbde",
+    "compcert.ini": "6c34c08ea1c2be9f30cf2ab47392ab35d543027b33988a0e05cd7aecc7ae666c",
+    "ccomp": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2"
+  },
+  "clang_assembly_sha256": "6fd0d86a162cdef81779e47cfbb5706d1bdd20eb79eb34b6750a4ca52d300d24"
+}
