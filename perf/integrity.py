@@ -15,6 +15,9 @@ REVIEWED_FORMAL = {"backend/Linearize.v", "backend/Linearizeproof.v",
                    "aarch64/SelectOp.vp", "aarch64/SelectOpproof.v", "aarch64/SelectLong.vp", "aarch64/SelectLongproof.v", "aarch64/Builtins1.v", "aarch64/Machregs.v",
                    "aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml"}
 NEW_FORMAL = {"backend/AutoPairCounter.v", "backend/AutoPairMemory.v", "backend/AutoPair.v", "backend/AutoPairPack.v", "backend/AutoPairCodeFacts.v", "backend/AutoPairStepFacts.v", "backend/AutoPairproof.v", "backend/AutoPairProgram.v",
+              "cfrontend/ArrayPair.v", "cfrontend/ArrayPairMatch.v", "cfrontend/ArrayPairTurn.v",
+              "cfrontend/ArrayPairReplay.v", "cfrontend/ArrayPairTarget.v", "cfrontend/ArrayPairLocalFacts.v",
+              "cfrontend/ArrayPairLocalSource.v", "cfrontend/ArrayPairLocal.v", "cfrontend/ArrayPairProgram.v",
               "backend/PointerNeonFacts.v", "backend/PointerNeon.v", "backend/PointerNeonproof.v",
               "backend/MemoryLaneFacts.v", "backend/MemoryNeon.v", "backend/MemoryNeonBounds.v", "backend/MemoryNeonReplay.v", "backend/MemoryNeonproof.v",
               "backend/LoopTile2D.v", "backend/LoopTile2Dproof.v","backend/PeelTwo.v","backend/PeelTwoproof.v","backend/MemVector.v","backend/MemVectorproof.v","backend/LoopFusion.v","backend/LoopFusionproof.v","backend/LoopInterchange.v","backend/LoopInterchangeproof.v","backend/LoopTile.v","backend/LoopTileproof.v",
@@ -166,7 +169,8 @@ def reviewed_build_safe(original, current, path):
         inserted.extend(new[start:stop])
     addition = "".join(inserted)
     if path == "Makefile":
-        allowed = {name.rsplit("/", 1)[-1] for name in NEW_FORMAL if name.startswith("backend/")}
+        allowed = {name.rsplit("/", 1)[-1] for name in NEW_FORMAL
+                   if name.startswith(("backend/", "cfrontend/"))}
         return all(token in allowed or token == "\\" for token in addition.split())
     if path == "extraction/extraction.v":
         code = coq_code(addition)

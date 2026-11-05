@@ -77,7 +77,7 @@ Coq kernel.
 
 ### Default-disabled experiments
 
-This branch is `experiment/auto-pairs`; it has not been promoted to `fast`.
+This branch is `experiment/array-pairs`; it has not been promoted to `fast`.
 No speed improvement is claimed. The full option list, combined profiles and
 precise limits are in `perf/experiment-profiles.json`. For example:
 
@@ -159,6 +159,17 @@ The experiments currently implement:
   check surrounding cells and overlapping copies, and reject unsupported
   unrelated values, volatile accesses and arbitrary pointer bases. This is
   scalar memory widening across iterations, not general memory SIMD.
+* `ArrayPair`, under `memory-neon`, handles ordinary in-place `uint32_t`
+  updates by a constant. It recognizes `for (unsigned i=0; i<n; ++i) p[i]+=K`
+  and the corresponding countdown `while` and pointer-increment `for` forms.
+  The Clight proof uses the fact that a successful scalar addition has an
+  integer operand. A pair uses two ordinary 32-bit loads, one packed NEON
+  addition, and two 32-bit stores in source order. The second load can move
+  before the first store because the addresses are disjoint. An odd last
+  element uses the scalar addition. The proof covers variable 32-bit unsigned
+  bounds and four-byte-aligned pointer arguments. The recognizer checks the
+  complete function and its types. Tests check exact-length arrays, protected
+  boundary pages, modular wraparound, and assembly against Clang `-O2`.
 * `AutoPair`, under `memory-neon`, forms pairs automatically from the scalar
   step-one loop `while(n){x=p[0];y=p[1];if((int)x<(int)y)p[0]=x+K;++p;--n;}`.
   It dispatches two iterations to one packed NEON addition and retains the

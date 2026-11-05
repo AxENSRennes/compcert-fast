@@ -35,6 +35,7 @@ test-loops: compiler
 	$(PYTHON) perf/check_vectorize.py
 	$(PYTHON) perf/check_loop_optimizations.py
 test-memory-loops: compiler
+	$(PYTHON) perf/check_arraypair.py
 	$(PYTHON) perf/check_autopair.py
 	$(PYTHON) perf/check_pointerneon.py
 	$(PYTHON) perf/check_memoryneon.py

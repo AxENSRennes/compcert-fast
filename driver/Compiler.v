@@ -31,6 +31,7 @@ Require Asm.
 Require Initializers.
 Require SimplExpr.
 Require SimplLocals.
+Require ArrayPair.
 Require Cshmgen.
 Require Cminorgen.
 Require Selection.
@@ -74,6 +75,7 @@ Require Asmgen.
 (** Proofs of semantic preservation. *)
 Require SimplExprproof.
 Require SimplLocalsproof.
+Require ArrayPairProgram.
 Require Cshmgenproof.
 Require Cminorgenproof.
 Require Selectionproof.
@@ -274,6 +276,7 @@ Definition transf_clight_program (p: Clight.program) : res Asm.program :=
   OK p
    @@ print print_Clight
   @@@ time "Simplification of locals" SimplLocals.transf_program
+   @@ total_if Compopts.experimental_memoryneon (time "Clight array pairing" ArrayPair.transf_program)
   @@@ time "C#minor generation" Cshmgen.transl_program
   @@@ time "Cminor generation" Cminorgen.transl_program
   @@@ transf_cminor_program.
@@ -348,6 +351,7 @@ Local Open Scope linking_scope.
 Definition CompCert's_passes :=
       mkpass SimplExprproof.match_prog
   ::: mkpass SimplLocalsproof.match_prog
+  ::: mkpass (match_if Compopts.experimental_memoryneon ArrayPairProgram.match_prog)
   ::: mkpass Cshmgenproof.match_prog
   ::: mkpass Cminorgenproof.match_prog
   ::: mkpass Selectionproof.match_prog
@@ -422,8 +426,9 @@ Proof.
   unfold transf_c_program, time in T. simpl in T.
   destruct (SimplExpr.transl_program p) as [p1|e] eqn:P1; simpl in T; try discriminate.
   unfold transf_clight_program, time in T. rewrite ! compose_print_identity in T. simpl in T.
-  destruct (SimplLocals.transf_program p1) as [p2|e] eqn:P2; simpl in T; try discriminate.
-  destruct (Cshmgen.transl_program p2) as [p3|e] eqn:P3; simpl in T; try discriminate.
+  destruct (SimplLocals.transf_program p1) as [p2|e] eqn:P2; cbn [apply_total apply_partial] in T; try discriminate.
+  set (p2ap := total_if experimental_memoryneon ArrayPair.transf_program p2) in *.
+  destruct (Cshmgen.transl_program p2ap) as [p3|e] eqn:P3; simpl in T; try discriminate.
   destruct (Cminorgen.transl_program p3) as [p4|e] eqn:P4; simpl in T; try discriminate.
   unfold transf_cminor_program, time in T. rewrite ! compose_print_identity in T. simpl in T.
   destruct (Selection.sel_program p4) as [p5|e] eqn:P5; simpl in T; try discriminate.
@@ -484,6 +489,7 @@ Proof.
   unfold match_prog; simpl.
   exists p1; split. apply SimplExprproof.transf_program_match; auto.
   exists p2; split. apply SimplLocalsproof.match_transf_program; auto.
+  exists p2ap; split. apply total_if_match. apply ArrayPairProgram.transf_program_match.
   exists p3; split. apply Cshmgenproof.transf_program_match; auto.
   exists p4; split. apply Cminorgenproof.transf_program_match; auto.
   exists p5; split. apply Selectionproof.transf_program_match; auto.
@@ -586,12 +592,14 @@ Ltac DestructM :=
       destruct H as (p & M & MM)
   end.
   repeat DestructM. subst tp.
-  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p54)).
+  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p55)).
   {
   eapply compose_forward_simulations.
     eapply SimplExprproof.transl_program_correct; eassumption.
   eapply compose_forward_simulations.
     eapply SimplLocalsproof.transf_program_correct; eassumption.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact ArrayPairProgram.transf_program_correct.
   eapply compose_forward_simulations.
     eapply Cshmgenproof.transl_program_correct; eassumption.
   eapply compose_forward_simulations.
