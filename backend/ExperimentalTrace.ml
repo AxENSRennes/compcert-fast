@@ -67,7 +67,7 @@ let record pass before after =
     note "packed-builtins-before" !old_vectors; note "packed-builtins-after" !new_vectors;
     note "int32-stores-before" !old_narrow; note "int32-stores-after" !new_narrow;
     note "int64-stores-before" !old_wide; note "int64-stores-after" !new_wide;
-    if pass="memory-neon" || pass="pointer-neon" then begin
+    if pass="memory-neon" || pass="pointer-neon" || pass="auto-pairs" then begin
       let sum metric fns = List.fold_left (fun n (_,f)->n+metric f) 0 fns in
       note "int32-loads-before" (sum narrow_loads old_functions);
       note "int32-loads-after" (sum narrow_loads new_functions);
@@ -88,11 +88,12 @@ let record pass before after =
 let observe passno program =
   if ExperimentalOptions.flags <> [] then begin
     let stage=Camlcoq.Z.to_int passno in
-    if stage >= 50 && stage <= 79 then begin
+    if stage >= 50 && stage <= 80 then begin
       begin match !previous with
       | None -> ()
       | Some before ->
           begin match stage with
+          | 80 -> record "auto-pairs" before program
           | 78 -> record "pointer-neon" before program
           | 76 -> record "memory-neon" before program
           | 75 -> record "loop-tile2d" before program

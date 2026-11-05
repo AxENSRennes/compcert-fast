@@ -49,6 +49,7 @@ Require LoopTile2D.
 Require MemVector.
 Require MemoryNeon.
 Require PointerNeon.
+Require AutoPair.
 Require LoopInterchange.
 Require LoopTile.
 Require Vectorize.
@@ -91,6 +92,7 @@ Require LoopTile2Dproof.
 Require MemVectorproof.
 Require MemoryNeonproof.
 Require PointerNeonproof.
+Require AutoPairProgram.
 Require LoopInterchangeproof.
 Require LoopTileproof.
 Require Vectorizeproof.
@@ -177,6 +179,8 @@ Definition transf_rtl_program (f: RTL.program) : res Asm.program :=
   @@@ partial_if Compopts.optim_redundancy (time "Redundancy elimination" Deadcode.transf_program)
    @@ print (print_RTL 7)
    @@ print (print_RTL 50)
+   @@ total_if Compopts.experimental_memoryneon (time "Automatic scalar loop pairing" AutoPair.transf_program)
+   @@ print (print_RTL 80)
    @@ total_if Compopts.experimental_memoryneon (time "Guarded pointer NEON" PointerNeon.transf_program)
    @@ print (print_RTL 78)
    @@ total_if Compopts.experimental_memoryneon (time "Pointer NEON packing lowering" LowerLong.transf_program)
@@ -355,6 +359,7 @@ Definition CompCert's_passes :=
   ::: mkpass (match_if Compopts.optim_constprop Renumberproof.match_prog)
   ::: mkpass (match_if Compopts.optim_CSE CSEproof.match_prog)
   ::: mkpass (match_if Compopts.optim_redundancy Deadcodeproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memoryneon AutoPairProgram.match_prog)
   ::: mkpass (match_if Compopts.experimental_memoryneon PointerNeonproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_memoryneon LowerLongproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_memoryneon Renumberproof.match_prog)
@@ -432,7 +437,8 @@ Proof.
   set (p11 := total_if optim_constprop Renumber.transf_program p10) in *.
   destruct (partial_if optim_CSE CSE.transf_program p11) as [p12|e] eqn:P12; cbn [apply_total apply_partial] in T; try discriminate.
   destruct (partial_if optim_redundancy Deadcode.transf_program p12) as [p13|e] eqn:P13; cbn [apply_total apply_partial] in T; try discriminate.
-  set (p13ptr := total_if experimental_memoryneon PointerNeon.transf_program p13) in *.
+  set (p13ap := total_if experimental_memoryneon AutoPair.transf_program p13) in *.
+  set (p13ptr := total_if experimental_memoryneon PointerNeon.transf_program p13ap) in *.
   set (p13ptrL := total_if experimental_memoryneon LowerLong.transf_program p13ptr) in *.
   set (p13neN := total_if experimental_memoryneon Renumber.transf_program p13ptrL) in *.
   set (p13neP := total_if experimental_memoryneon PeelTwo.transf_program p13neN) in *.
@@ -489,6 +495,7 @@ Proof.
   exists p11; split. apply total_if_match. apply Renumberproof.transf_program_match.
   exists p12; split. eapply partial_if_match; eauto. apply CSEproof.transf_program_match.
   exists p13; split. eapply partial_if_match; eauto. apply Deadcodeproof.transf_program_match.
+  exists p13ap; split. apply total_if_match. apply AutoPairProgram.transf_program_match.
   exists p13ptr; split. apply total_if_match. apply PointerNeonproof.transf_program_match.
   exists p13ptrL; split. apply total_if_match. apply LowerLongproof.transf_program_match.
   exists p13neN; split. apply total_if_match. apply Renumberproof.transf_program_match.
@@ -579,7 +586,7 @@ Ltac DestructM :=
       destruct H as (p & M & MM)
   end.
   repeat DestructM. subst tp.
-  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p53)).
+  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p54)).
   {
   eapply compose_forward_simulations.
     eapply SimplExprproof.transl_program_correct; eassumption.
@@ -606,6 +613,8 @@ Ltac DestructM :=
     eapply match_if_simulation. eassumption. exact CSEproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact Deadcodeproof.transf_program_correct; eassumption.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact AutoPairProgram.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact PointerNeonproof.transf_program_correct.
   eapply compose_forward_simulations.

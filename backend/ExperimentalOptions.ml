@@ -25,8 +25,8 @@ let flags =
   end
 
 let enabled name =
-  (* Internal trace label for the local path of the public memory-neon option. *)
-  List.mem (if name="pointer-neon" then "memory-neon" else name) flags
+  (* Internal trace labels for paths of the public memory-neon option. *)
+  List.mem (if name="pointer-neon" || name="auto-pairs" then "memory-neon" else name) flags
 
 let memoryneon_enabled () = enabled "memory-neon"
 

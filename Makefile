@@ -213,6 +213,7 @@ BACKEND=\
   LoopTile2D.v LoopTile2Dproof.v MemVector.v MemVectorproof.v \
   MemoryLaneFacts.v MemoryNeon.v MemoryNeonBounds.v MemoryNeonReplay.v MemoryNeonproof.v \
   PointerNeonFacts.v PointerNeon.v PointerNeonproof.v \
+  AutoPairCounter.v AutoPairMemory.v AutoPair.v AutoPairPack.v AutoPairCodeFacts.v AutoPairStepFacts.v AutoPairproof.v AutoPairProgram.v \
   PeelTwo.v PeelTwoproof.v \
   LowerLong.v LowerLongproof.v PreheaderLICM.v PreheaderLICMproof.v \
   Vectorize.v Vectorizeproof.v \

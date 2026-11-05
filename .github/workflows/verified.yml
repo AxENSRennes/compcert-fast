@@ -49,6 +49,7 @@ jobs:
             perf/artifacts/memvector/
             perf/artifacts/memoryneon/
             perf/artifacts/pointerneon/
+            perf/artifacts/autopair/
             perf/artifacts/peeltwo/
             perf/artifacts/loopfusion/
             perf/artifacts/loopinterchange/

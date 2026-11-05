@@ -77,7 +77,7 @@ Coq kernel.
 
 ### Default-disabled experiments
 
-This branch is `experiment/pointer-neon`; it has not been promoted to `fast`.
+This branch is `experiment/auto-pairs`; it has not been promoted to `fast`.
 No speed improvement is claimed. The full option list, combined profiles and
 precise limits are in `perf/experiment-profiles.json`. For example:
 
@@ -159,7 +159,22 @@ The experiments currently implement:
   check surrounding cells and overlapping copies, and reject unsupported
   unrelated values, volatile accesses and arbitrary pointer bases. This is
   scalar memory widening across iterations, not general memory SIMD.
-* `memory-neon` now validates a local signed guard followed by two adjacent
+* `AutoPair`, under `memory-neon`, forms pairs automatically from the scalar
+  step-one loop `while(n){x=p[0];y=p[1];if((int)x<(int)y)p[0]=x+K;++p;--n;}`.
+  It dispatches two iterations to one packed NEON addition and retains the
+  original scalar loop for zero/one remaining iterations. Conditional writes
+  and all scalar reads remain in their original order; the second arithmetic
+  result is reused only after proving that the first store cannot change the
+  adjacent cell, including wrapped pointer offsets. The source already reads
+  `n+1` cells when `n>0`; the optimizer adds no array-length precondition.
+  No intrinsic, manual source pairing or hand-written scalar tail is needed.
+  This first recognizer checks the entire canonical ten-node RTL function,
+  its two parameters, void signature and zero stack size; `K` is any constant.
+  Matching `while` and pointer-increment `for` source forms are tested.
+  The first target keeps both original pointer/count updates and the mid-pair
+  count check. Its paired backedge consumes two scalar iterations; its cleanup
+  can run at most once. Unrecognized scalar loops are retained.
+* `memory-neon` also validates a local signed guard followed by two adjacent
   uint32 add-immediate operations. It packs their independent inputs, uses
   the existing packed uint32x2 NEON addition builtin and extracts both results.
   Its simulation covers arbitrary function signatures, parameters, registers,
@@ -268,6 +283,15 @@ original addresses and order, allowing four-byte-aligned pointer inputs and
 aliasing without widening memory accesses. Existing loop controls and odd
 scalar tails stay intact. Its tests check source, transformed and lowered
 execution, memory access order, memory bytes, live registers and fault paths.
+
+`AutoPair` adds the automatic paired-loop path for the scalar lookahead
+pattern above. Its complete positive-step simulation preserves original
+registers, memory and memory-access order at each matched source instruction.
+Tests compare both the production transform and `LowerLong`, including exact
+fault prefixes, wraparound data/pointers, partial write permissions, and a
+true/true pair with two scalar data additions replaced by one NEON addition.
+The source's signed data guards remain necessary. Other step-one loops and
+more general dependence analysis remain outside this initial recognizer.
 
 Alias-dependent memory LICM, general nested-region invariant motion,
 fusion/interchange/tiling of dynamic or memory-dependent nests, general
