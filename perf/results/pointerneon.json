@@ -737,14 +737,14 @@
     "whole-program production transformation uses the checked function"
   ],
   "check_count": 118,
-  "compiler_sha256": "9a9350a1c8da7d456117be26164ded4a08237cd972be4cb3c9da447f97301ad8",
+  "compiler_sha256": "6be94f9af31be91130b4cd22334bdc971df3c7f43af7ef60e818a5f5d604789a",
   "source_sha256": {
     "backend/PointerNeon.v": "7c6d3d1711c3ec4c9d15511dbc2a1e4d6af05d73b896a334ee96ee4f6cf28622",
     "backend/PointerNeonproof.v": "2f0e8a59179c75db1292895f9b8ec309cdbca1ddb4042dab4ae4fea08862ff54",
     "backend/PointerNeonFacts.v": "66dfe5c3870ae09077db276c168908d279d4af604b7f4b03c945b61df292ccec",
     "perf/test_pointerneon.ml": "1f11267cb09c440951b3f5f82d5c078d69852e47749d4a9856dc549c5fe4797e",
     "perf/check_pointerneon.py": "3e959292549de29f20629cb4cc1f226b9296af752d9da0a1e8ac2c2961358102",
-    "perf/experiment-profiles.json": "bf9ae3ef44ddcf711ae37873a5d25093ffa90d7dd7ffe9125546d47e56179d2e"
+    "perf/experiment-profiles.json": "20db25f8b229c2ff3e8585a08c1d0355d6220d68507e578b6c632c705d592d62"
   },
   "production_extraction_sha256": {
     "driver/Configuration.cmi": "e183d5d2079c35274908596bd657fbdc10b99c96635cc4a45135a806d9e07b16",

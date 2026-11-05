@@ -789,7 +789,7 @@
     "whole-program transformation uses the tested production function"
   ],
   "check_count": 171,
-  "compiler_sha256": "9a9350a1c8da7d456117be26164ded4a08237cd972be4cb3c9da447f97301ad8",
+  "compiler_sha256": "6be94f9af31be91130b4cd22334bdc971df3c7f43af7ef60e818a5f5d604789a",
   "source_sha256": {
     "backend/AutoPair.v": "00e8ca25ffc332474f5e8bcebb79170081d882b75216a1c0bdab32a925f213e9",
     "backend/AutoPairCodeFacts.v": "ebc4712955755f1b3bb6265b23e06a29c577d7f5fe88c73e02067eed3c1b836a",
@@ -801,7 +801,7 @@
     "backend/AutoPairproof.v": "55060c98696164159d6401172f1f6383448442f7942ed085bbe5d29dabd571fb",
     "perf/test_autopair.ml": "9956900a91e481a70943cc519b6b4f0ea691c05266ea92e3d53bc139ce026067",
     "perf/check_autopair.py": "c29206de1d32b95f77bfc8a7b6faae8e86303dee6408b30f027e414aad9a8cfe",
-    "perf/experiment-profiles.json": "bf9ae3ef44ddcf711ae37873a5d25093ffa90d7dd7ffe9125546d47e56179d2e"
+    "perf/experiment-profiles.json": "20db25f8b229c2ff3e8585a08c1d0355d6220d68507e578b6c632c705d592d62"
   },
   "production_extraction_sha256": {
     "driver/Configuration.cmi": "e183d5d2079c35274908596bd657fbdc10b99c96635cc4a45135a806d9e07b16",

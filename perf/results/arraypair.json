@@ -1,0 +1,505 @@
+{
+  "success": true,
+  "performance_measured": false,
+  "commands": [
+    [
+      "python3",
+      "/Users/axel2/Downloads/compcert-fast/perf/guard.py"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-fno-inline",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/clang.s"
+    ],
+    [
+      "clang",
+      "-O2",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/clang.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/clang.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-drtl",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/default.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/default.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/default.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-drtl",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/enabled.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/enabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/enabled.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "-drtl",
+      "-S",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/memory-loops.s"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-fno-inline",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/array_pair.c",
+      "-o",
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/memory-loops.exe"
+    ],
+    [
+      "/Users/axel2/Downloads/compcert-fast/perf/artifacts/arraypair/memory-loops.exe"
+    ],
+    [
+      "python3",
+      "/Users/axel2/Downloads/compcert-fast/perf/guard.py"
+    ]
+  ],
+  "c_configurations": {
+    "default": {
+      "flags": "",
+      "correctness_pass": true,
+      "stdout_sha256": "fd35231924ee6fb942bbdef98320a18059a33d76f2d4cfcffd20ae615471a95c",
+      "assembly_sha256": "f2e23431b90acf2bdc6973ef0951d2e0a5c0b5873b1f3f32ba13fa6b94a06a4f",
+      "functions": {
+        "add_while": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_for": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_index": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_volatile": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_signed": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_stride": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_postdec": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_end": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_size": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_from_next": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_break": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        }
+      }
+    },
+    "enabled": {
+      "flags": "memory-neon",
+      "correctness_pass": true,
+      "stdout_sha256": "fd35231924ee6fb942bbdef98320a18059a33d76f2d4cfcffd20ae615471a95c",
+      "assembly_sha256": "609224369ce4ffa61752b43852dd8fd4a6c1f08c1a1735652b1e0d52eba9238a",
+      "functions": {
+        "add_while": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 3,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_for": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 3,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_index": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 3,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_volatile": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_signed": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_stride": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_postdec": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_end": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_size": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_from_next": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_break": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        }
+      }
+    },
+    "memory-loops": {
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d,memory-neon",
+      "correctness_pass": true,
+      "stdout_sha256": "fd35231924ee6fb942bbdef98320a18059a33d76f2d4cfcffd20ae615471a95c",
+      "assembly_sha256": "672825bf0dfce2554a992dc6de11531e64f0587b19605750602825ccbf148c24",
+      "functions": {
+        "add_while": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 9,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_for": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 9,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_index": {
+          "rtl0_packed_add_calls": 1,
+          "rtl0_paired_store_lanes": [
+            "low",
+            "high"
+          ],
+          "neon_add_2s": 9,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_volatile": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_signed": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_stride": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_postdec": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_end": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_size": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_from_next": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        },
+        "add_break": {
+          "rtl0_packed_add_calls": 0,
+          "rtl0_paired_store_lanes": [],
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0
+        }
+      }
+    }
+  },
+  "clang_O2_assembly": {
+    "add_while": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 5,
+      "neon_xor": 0,
+      "vector_loads": 3,
+      "vector_stores": 3
+    },
+    "add_for": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 5,
+      "neon_xor": 0,
+      "vector_loads": 3,
+      "vector_stores": 3
+    },
+    "add_index": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 0,
+      "neon_xor": 5,
+      "vector_loads": 3,
+      "vector_stores": 3
+    }
+  },
+  "regular_cases": 3996,
+  "guard_page_cases": 204,
+  "null_length_functions": 3,
+  "negative_rtl_controls": 8,
+  "trusted_baseline_commit": "472feccc3b037e8294a1c299dd214350468f92bb",
+  "trusted_source_sha256": {
+    "aarch64/Asm.v": "950ac8349bb188a216a8f7330f9aaed684c17a251b18376468e79fa8a9e13df9",
+    "aarch64/Builtins1.v": "f799effc950c89aad4968ccc7bc127fe67d50057f34b38e099d7e78458a4d1a4",
+    "aarch64/Asmexpand.ml": "77b214aa226bcccd582bd52c5f17cd2df3909324fc39a039fd1a6d53680e954e",
+    "aarch64/TargetPrinter.ml": "4c50ccc66c8340fb0ad095f3c9510c6c6a8ede1240e88e680970f76cfdd949ef",
+    "aarch64/Machregs.v": "f01561e5bec85901601f1880060d14c589720c8090bc3def5c4a3f80481b98d8",
+    "aarch64/CBuiltins.ml": "636bb314cee0df692219db7da6c8fcded152c832bb802942b888b3d927def4c3",
+    "common/Values.v": "da172d4ac0ae9524c545a8bb0ef3b3253e2d4fb49e5919b4dee2cbd38333fddc",
+    "common/Memory.v": "759aae974cd85f7a35e8ed43780bc7826720f0064a35b972e864eb4aea496541",
+    "common/Memdata.v": "138921b4cea350422b2cc34be3d32d79b646f4793b8b3b0f16ccfa184870962b",
+    "common/AST.v": "058ade1ff1d409c5d556e3e7f5b6048492615036771886cfa121dc2dfdcde4c7",
+    "common/Events.v": "24a7c5c76b8e908654c11303af7f81666e0b00325e4ab78502a98c0cbe2c017f",
+    "common/Builtins.v": "d2734040d13e67bbdde6d59e1557c59b3140ea825e6a00c800be4feabf2091ba",
+    "cfrontend/Clight.v": "53cef4b5c923084999949229c3fdb065a25833d7f3761a1285adbaeebaaf79d0",
+    "cfrontend/Cop.v": "adac91162faf39ef65202b6d45a6c95326a293fd4dad481dd2c232abf9369805"
+  },
+  "source_sha256": {
+    "cfrontend/ArrayPair.v": "25f6f6c6887070b5a7d9e3b806d1e6740a6bdec15620503bd2352489872405f6",
+    "cfrontend/ArrayPairLocal.v": "77091ec6c3ad28b4a46d776888b6f2f5f477c879c36b1cadaf629e6578bf720c",
+    "cfrontend/ArrayPairLocalFacts.v": "79ce2bcd74a2c789e04ace6505a755566d459a301c786e1b3e1720169ec55586",
+    "cfrontend/ArrayPairLocalSource.v": "006d5009c681a1eef74bc709c793f5634785e6d7d18f8472c3492ae86df12f4e",
+    "cfrontend/ArrayPairMatch.v": "6834e15ec118609c35d6084c62abfb38faa4965351de11dc2ea6fc7eeee4306a",
+    "cfrontend/ArrayPairProgram.v": "244fa869fc77d37c20b56f0d37304a26e8369668499585041604ee6411f3dad3",
+    "cfrontend/ArrayPairReplay.v": "10c8ffd2d9a24189b2a650643a530e64d94aefbfd30a9a8a4c5820876ef82978",
+    "cfrontend/ArrayPairTarget.v": "34fc6cd0e19331d20528c77ff3b6f7e4a1fff3404cfaf428bd49c2873c1f2bf3",
+    "cfrontend/ArrayPairTurn.v": "fb97b0f1bc28ac2d67a39aad339af4eb9a880fb2ca17007ff1487ebc6eaa4911",
+    "perf/check_arraypair.py": "88f027e31a8a7425d0ad82ac72d7221a974bf365bfd16c8eaf692f738e65c4bd",
+    "perf/experiment-profiles.json": "20db25f8b229c2ff3e8585a08c1d0355d6220d68507e578b6c632c705d592d62",
+    "driver/Compiler.v": "94b0986c8ea97e9710fde48effeecd858dc3e8aa64a56d0a01c8b1aa03a7cbde",
+    "compcert.ini": "6c34c08ea1c2be9f30cf2ab47392ab35d543027b33988a0e05cd7aecc7ae666c",
+    "ccomp": "6be94f9af31be91130b4cd22334bdc971df3c7f43af7ef60e818a5f5d604789a"
+  },
+  "clang_assembly_sha256": "b5410651e234bc70c75ccaaffbc82591dcb743aaa9d678379bfb5690918298d0"
+}
