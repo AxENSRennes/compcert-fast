@@ -1,10 +1,10 @@
 {
   "schema_version": 1,
   "mode": "correctness",
-  "created_utc": "2026-11-05T01:04:56.502905+00:00",
+  "created_utc": "2026-11-05T02:33:20.701765+00:00",
   "suite_sha256": "610d36f8c304769184e9182982d10b8928cd0c31748e31747ce231b6d3a38f5d",
-  "revision": "e87a1a9ca5dd969e2216963d783bc41c1e6188de",
-  "tracked_changes": "perf/results/correctness-loops2.json  |    8 +-\n perf/results/correctness-scalar2.json |    8 +-\n perf/results/correctness-scalar4.json |    8 +-\n perf/results/correctness.json         |    8 +-\n perf/results/experiments.json         |   46 +-\n perf/results/heuristics.json          |    4 +-\n perf/results/loop-optimizations.json  |    4 +-\n perf/results/loopfusion.json          |    2 +-\n perf/results/loopinterchange.json     |    2 +-\n perf/results/looptile.json            |    2 +-\n perf/results/looptile2d.json          |    2 +-\n perf/results/memory-assembly.json     | 9161 ++++++++++++++++++++++++++++++---\n perf/results/memory-loops.json        |   22 +-\n perf/results/memoryneon.json          |   40 +-\n perf/results/packed-neon.json         |    4 +-\n perf/results/proofs.json              |   17 +-\n perf/results/select.json              |    2 +-\n perf/results/strengthreduce.json      |    2 +-\n perf/results/vectorize.json           |    4 +-\n 19 files changed, 8691 insertions(+), 655 deletions(-)",
+  "revision": "89a4f656d07a1ef4ffb47ad61612f621d76725c6",
+  "tracked_changes": "perf/results/correctness-loops2.json  |    8 +-\n perf/results/correctness-scalar2.json |    8 +-\n perf/results/correctness-scalar4.json |    8 +-\n perf/results/correctness.json         |    8 +-\n perf/results/experiments.json         |   46 +-\n perf/results/heuristics.json          |    4 +-\n perf/results/loop-optimizations.json  |    4 +-\n perf/results/loopfusion.json          |    2 +-\n perf/results/loopinterchange.json     |    2 +-\n perf/results/looptile.json            |    2 +-\n perf/results/looptile2d.json          |    2 +-\n perf/results/memory-assembly.json     | 6615 ++++++++++++++++++++++++++++++++-\n perf/results/memory-loops.json        |   22 +-\n perf/results/memoryneon.json          |   40 +-\n perf/results/packed-neon.json         |    4 +-\n perf/results/pointerneon.json         |   40 +-\n perf/results/proofs.json              |   22 +-\n perf/results/select.json              |    2 +-\n perf/results/strengthreduce.json      |    2 +-\n perf/results/vectorize.json           |    4 +-\n 20 files changed, 6760 insertions(+), 85 deletions(-)",
   "machine": {
     "cpu": "Apple M5",
     "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
@@ -14,7 +14,7 @@
   },
   "compiler": {
     "compcert": "The CompCert C verified compiler, version 3.17",
-    "compcert_sha256": "8f3890a059da955ad71e375bae215499e2804ba1310739b9e669b0a547d33e41",
+    "compcert_sha256": "9a9350a1c8da7d456117be26164ded4a08237cd972be4cb3c9da447f97301ad8",
     "clang": "Apple clang version 21.0.0 (clang-2100.4.1.1)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
   },
   "protocol": {

@@ -930,6 +930,24 @@
         "strength-reduce:enabled": 3,
         "trace-layout:enabled": 3,
         "small-inline:selected": 3,
+        "auto-pairs:integer-multiplies-before": 3,
+        "auto-pairs:integer-multiplies-after": 3,
+        "auto-pairs:packed-builtins-before": 0,
+        "auto-pairs:packed-builtins-after": 0,
+        "auto-pairs:int32-stores-before": 6,
+        "auto-pairs:int32-stores-after": 6,
+        "auto-pairs:int64-stores-before": 0,
+        "auto-pairs:int64-stores-after": 0,
+        "auto-pairs:int32-loads-before": 9,
+        "auto-pairs:int32-loads-after": 9,
+        "auto-pairs:int64-loads-before": 1,
+        "auto-pairs:int64-loads-after": 1,
+        "auto-pairs:changed-functions": 0,
+        "auto-pairs:retained-functions": 6,
+        "auto-pairs:nodes-before": 145,
+        "auto-pairs:nodes-after": 145,
+        "auto-pairs:loads-removed": 0,
+        "auto-pairs:stores-removed": 0,
         "pointer-neon:integer-multiplies-before": 3,
         "pointer-neon:integer-multiplies-after": 3,
         "pointer-neon:packed-builtins-before": 0,
@@ -3105,9 +3123,9 @@
   ],
   "source_sha256": {
     "perf/check_experiments.py": "b197b79d38044bb60326abe415df2e7053ff219c475faefbe0ce38318c8849de",
-    "perf/experiment-profiles.json": "cc6528bd906ab8891df6a05ec37ef49aa45d6984dd5b212de64674036e0b277b"
+    "perf/experiment-profiles.json": "bf9ae3ef44ddcf711ae37873a5d25093ffa90d7dd7ffe9125546d47e56179d2e"
   },
-  "compiler_sha256": "8f3890a059da955ad71e375bae215499e2804ba1310739b9e669b0a547d33e41",
+  "compiler_sha256": "9a9350a1c8da7d456117be26164ded4a08237cd972be4cb3c9da447f97301ad8",
   "frozen_suite": {
     "scalar2": {
       "correctness_pass": true,

@@ -278,7 +278,7 @@
       ]
     }
   },
-  "compiler_sha256": "8f3890a059da955ad71e375bae215499e2804ba1310739b9e669b0a547d33e41",
+  "compiler_sha256": "9a9350a1c8da7d456117be26164ded4a08237cd972be4cb3c9da447f97301ad8",
   "source_sha256": {
     "backend/StrengthReduce.v": "bd69199597f093a3d4991892d9fa9ea2c0bf76d00b5df2b171b11ef216d7bead",
     "backend/StrengthReduceproof.v": "0a689a135b21991d9518311f3a2a342b1a992ad56d79a79d18ed71f824e7e625",
