@@ -41,10 +41,6 @@ let unswitch_enabled () = enabled "loop-unswitch"
 let storeelim_enabled () = enabled "store-elim"
 let packed_neon_enabled () = enabled "neon-packed"
 
-let packed_neon_names =
-  ["__builtin_cc_neon_add_u32x2"; "__builtin_cc_neon_sub_u32x2";
-   "__builtin_cc_neon_mul_u32x2"]
-
 let counters : ((string * string), int) Hashtbl.t = Hashtbl.create 17
 
 let write_event channel pass event count =

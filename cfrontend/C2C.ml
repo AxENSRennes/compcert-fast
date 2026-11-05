@@ -304,8 +304,10 @@ let builtins = {
 }
 
 let packed_neon_names =
-  List.filter (fun name -> List.mem_assoc name CBuiltins.builtins.builtin_functions)
-    ExperimentalOptions.packed_neon_names
+  let prefix = Str.regexp_string "__builtin_cc_neon_" in
+  List.filter_map (fun (name, _) ->
+    if Str.string_match prefix name 0 then Some name else None)
+    CBuiltins.builtins.builtin_functions
 
 let is_packed_neon_intrinsic id =
   List.mem id.name packed_neon_names && List.mem id (Env.initial_identifiers ())

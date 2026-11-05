@@ -43,7 +43,8 @@ let builtins = {
   builtin_functions = (if ExperimentalOptions.packed_neon_enabled () then
     List.map (fun name -> name,
       (TInt(IULongLong, []), [TInt(IULongLong, []); TInt(IULongLong, [])], false))
-      ExperimentalOptions.packed_neon_names
+      ["__builtin_cc_neon_add_u32x2"; "__builtin_cc_neon_sub_u32x2";
+       "__builtin_cc_neon_mul_u32x2"]
     else []) @ [
     (* Integer arithmetic *)
     "__builtin_cls",
