@@ -3,6 +3,7 @@
    proved transformations and validators remain responsible for correctness. *)
 
 let known_flags = ["small-inline"; "loop-spill"; "trace-layout";
+                   "memory-neon";
                    "rtl-unroll2"; "rtl-unroll4"; "memory-cleanup";
                    "schedule-pure"; "hoist-constant"; "load-forward";
                    "arm64-combine"; "loop-unswitch"; "store-elim";
@@ -24,6 +25,8 @@ let flags =
   end
 
 let enabled name = List.mem name flags
+
+let memoryneon_enabled () = enabled "memory-neon"
 
 let scalar_enabled () = enabled "rtl-unroll2" || enabled "rtl-unroll4"
 let unroll4_enabled () = enabled "rtl-unroll4"

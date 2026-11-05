@@ -77,12 +77,13 @@ Coq kernel.
 
 ### Default-disabled experiments
 
-This branch is `experiment/memory-loops`; it has not been promoted to `fast`.
+This branch is `experiment/neon-memory`; it has not been promoted to `fast`.
 No speed improvement is claimed. The full option list, combined profiles and
 precise limits are in `perf/experiment-profiles.json`. For example:
 
 ```sh
 COMPCERT_EXPERIMENTS=rtl-unroll2,memory-cleanup ./ccomp -stdlib runtime program.c
+COMPCERT_EXPERIMENTS=memory-neon ./ccomp -stdlib runtime program.c
 COMPCERT_EXPERIMENTS=loop-spill,trace-layout COMPCERT_EXPERIMENT_TRACE=/tmp/compcert-trace.jsonl ./ccomp -stdlib runtime program.c
 make -f Makefile.fast test-experiments
 make -f Makefile.fast test-loops
@@ -158,6 +159,17 @@ The experiments currently implement:
   check surrounding cells and overlapping copies, and reject unsupported
   unrelated values, volatile accesses and arbitrary pointer bases. This is
   scalar memory widening across iterations, not general memory SIMD.
+* `memory-neon` recognizes a canonical, fixed two-iteration uint32 memory
+  loop whose existing signed comparison establishes that both input lanes
+  are integers. It uses the existing peeling/cleanup passes before other experiments, then emits
+  a 64-bit load, the existing packed uint32x2 NEON addition builtin, and a
+  64-bit store. The source guard is retained; no speculative wide access is
+  introduced on its false path. The initial shape is a void function without
+  parameters or stack storage, a global array at offsets zero/four, and the
+  canonical RTL layout produced by `guarded_pair` in the correctness fixture.
+  It is deliberately conservative: other layouts, unguarded loops, volatile
+  memory, arbitrary pointer bases and dynamic bounds remain unchanged.
+  The source needs no intrinsic or manually packed 64-bit C value.
 * `loop-fusion` proposes interleaving two adjacent pure counted loops, with
   shared or separate counters. A reusable proved symbolic validator checks
   both whole functions: only total, memory-independent operations and known
@@ -225,6 +237,20 @@ lowering each have a whole-program correctness proof. Native tests inspect
 NEON inside both ordinary C functions and ordinary C loops; source intrinsics
 are not required. This is correlated-lane SLP, not general vector loads/stores
 or vectorization across loop iterations.
+
+The separate `memory-neon` pass handles two independent memory lanes under
+the source's existing signed guard. Four exact byte-level lemmas establish
+wide reads/writes from explicit integer and alignment witnesses. The whole
+function simulation delays target execution while the finite source region
+executes, then replays the target from the same initial memory. This covers
+partial undefined lanes and memory faults without assuming them away.
+The existing `Asm.v`, value/memory model, builtin specification and hardware
+expansion are unchanged from `7bb08b94`; the new checker verifies those Git
+hashes. The pre-existing hardware expansion remains trusted as described
+above. Tests require actual NEON arithmetic plus 64-bit memory operations,
+compare independent random/boundary lanes and sentinel bytes, and compare
+ordinary C outputs with clang. There is no general alias analysis, arbitrary
+trip-count vectorization or scalar-remainder construction in this pass.
 
 Alias-dependent memory LICM, general nested-region invariant motion,
 fusion/interchange/tiling of dynamic or memory-dependent nests, general

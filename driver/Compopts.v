@@ -66,3 +66,4 @@ Parameter experimental_fusion: unit -> bool.
 Parameter experimental_interchange: unit -> bool.
 Parameter experimental_tile: unit -> bool.
 Parameter experimental_tile2d: unit -> bool.
+Parameter experimental_memoryneon: unit -> bool.

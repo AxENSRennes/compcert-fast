@@ -85,6 +85,7 @@ Extract Constant SimplExpr.first_unused_ident => "Camlcoq.first_unused_ident".
 Extraction Inline SimplExpr.ret SimplExpr.error SimplExpr.bind SimplExpr.bind2.
 
 (* Compopts *)
+Extract Constant Compopts.experimental_memoryneon => "ExperimentalOptions.memoryneon_enabled".
 Extract Constant Compopts.experimental_fusion => "ExperimentalOptions.fusion_enabled".
 Extract Constant Compopts.experimental_interchange => "ExperimentalOptions.interchange_enabled".
 Extract Constant Compopts.experimental_tile => "ExperimentalOptions.tile_enabled".

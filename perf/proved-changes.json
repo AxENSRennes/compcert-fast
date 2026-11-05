@@ -1,5 +1,5 @@
 {
-  "Makefile": "e4e51822ebbf02e665990a8995dbeef915d15d1440fadd1293f9b2e5dcd7f6f8",
+  "Makefile": "b5f629c4cfa1c95e7f6c1ab7e7998fd29249601a7b9153ee286475ea7556e96e",
   "aarch64/Asmexpand.ml": "77b214aa226bcccd582bd52c5f17cd2df3909324fc39a039fd1a6d53680e954e",
   "aarch64/Builtins1.v": "f799effc950c89aad4968ccc7bc127fe67d50057f34b38e099d7e78458a4d1a4",
   "aarch64/CBuiltins.ml": "636bb314cee0df692219db7da6c8fcded152c832bb802942b888b3d927def4c3",
@@ -38,6 +38,11 @@
   "backend/LowerLongproof.v": "babf252543229cf7abf4b6e09ae14771be8075d018aba539949ba33a154d70c0",
   "backend/MemVector.v": "e5d9356529f979dabe05ed0d54de95880f1fdeeb5b2ff770ac167aec9b76a7dc",
   "backend/MemVectorproof.v": "8dd4d4f0b0b0451975e01482fd8e45fed4c97fafad9933d58f9b5de6f26d7a1e",
+  "backend/MemoryLaneFacts.v": "cd000d294ac2cb5c98b5ef60a19838a5067ea1c124cc449333e5c004454216c8",
+  "backend/MemoryNeon.v": "f879e0fd24d74182fb80144d00762cbc1ef911ee95b22cfd7291eb1b4fe81885",
+  "backend/MemoryNeonBounds.v": "cddb5d77cde094cfd1a838a61714c1b330405e235ace511f8ee668170f9a979a",
+  "backend/MemoryNeonReplay.v": "c26e69f873782ba2635c087e14c540ba2b82303b653f7aeb24d274d5d7cee2a2",
+  "backend/MemoryNeonproof.v": "8eacf5ddd0a215f1b0ec9d6c89fa72cae971267e24e2f7e378a2217a96cb96b1",
   "backend/PeelTwo.v": "021db6f2ddf58b08776ef7ca8caba21fafba979c5a23cd11d4568d6c6fa14322",
   "backend/PeelTwoproof.v": "e45756cc7e4d0efb0bdb52f5793feeabcd3edf21d16acb3f333f8e477382ce3e",
   "backend/PreheaderLICM.v": "ebea1b43927d4f41d5478ec6edb66ef4710ecf61e582d425acd5ad7cccf025c8",
@@ -53,8 +58,8 @@
   "backend/Unswitchproof.v": "1862862fb776cc7d8946a0c406798c985e308dfa31511e27c4dc36bf03af7a81",
   "backend/Vectorize.v": "d051ddba3f80653e67f90ec1248d119fcb52956c1e92544754ae52570e1a2730",
   "backend/Vectorizeproof.v": "20d4af8ae7d45b930abc89c3d8c5e2dd622ee5b7bb60c506de197a1516722326",
-  "driver/Compiler.v": "43d744ecfa9004095c73877e6c1c85817a76e42e24c23846e7fda8a0a86693d0",
-  "driver/Compopts.v": "cc4acc3ee44c3dca61b545e785c7fe236901cf8f1a8a394da3656dd6b770430f",
-  "extraction/extraction.v": "67e98bb3092c838f59d8cdfc99a1e905c0bf3fff442c9deb35829460f355d25e",
+  "driver/Compiler.v": "ddb4cfc9e3bd70305bddc2af723ca486ce036ebbd381dac2309297a40e08cac5",
+  "driver/Compopts.v": "59eae41f0d882474482812dd0692c15fc45a1cd0c2dd1be600c222a9fe9e37a1",
+  "extraction/extraction.v": "30ebb55e1cdfba3d4a6b3fac1d241ca086138ac9fab81c7ef63e9e5ebaefac14",
   "perf/neon/Extract.v": "57671dac176b52fd47b7200ea177e9370ddae02de05068060df606ee5d962a8d"
 }

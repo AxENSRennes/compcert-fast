@@ -47,6 +47,7 @@ jobs:
             perf/artifacts/memory-assembly/
             perf/artifacts/memory-loops/
             perf/artifacts/memvector/
+            perf/artifacts/memoryneon/
             perf/artifacts/peeltwo/
             perf/artifacts/loopfusion/
             perf/artifacts/loopinterchange/

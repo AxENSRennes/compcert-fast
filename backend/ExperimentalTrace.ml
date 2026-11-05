@@ -15,6 +15,8 @@ let nodes = count (fun _ -> true)
 let loads = count (function RTL.Iload _ -> true | _ -> false)
 let narrow_stores = count (function RTL.Istore (Mint32,_,_,_,_) -> true | _ -> false)
 let wide_stores = count (function RTL.Istore (Mint64,_,_,_,_) -> true | _ -> false)
+let narrow_loads = count (function RTL.Iload (Mint32,_,_,_,_) -> true | _ -> false)
+let wide_loads = count (function RTL.Iload (Mint64,_,_,_,_) -> true | _ -> false)
 let multiplies = count (function RTL.Iop ((Op.Omul | Op.Omull),_,_,_) -> true | _ -> false)
 let vectors = count (function RTL.Ibuiltin (EF_builtin (name,_),_,_,_) ->
   List.mem name ["__builtin_cc_neon_add_u32x2"; "__builtin_cc_neon_sub_u32x2"; "__builtin_cc_neon_mul_u32x2"] | _ -> false)
@@ -43,7 +45,7 @@ let record pass before after =
       | Some current ->
           (* Mandatory LowerLong also renumbers unchanged functions. For the
              memory pass, count actual widening, not that renumbering. *)
-          let transformed = if pass="memory-vector" then
+          let transformed = if pass="memory-vector" || pass="memory-neon" then
             wide_stores current > wide_stores old && narrow_stores current < narrow_stores old
             else old<>current in
           if transformed then incr changed else incr retained;
@@ -65,6 +67,12 @@ let record pass before after =
     note "packed-builtins-before" !old_vectors; note "packed-builtins-after" !new_vectors;
     note "int32-stores-before" !old_narrow; note "int32-stores-after" !new_narrow;
     note "int64-stores-before" !old_wide; note "int64-stores-after" !new_wide;
+    if pass="memory-neon" then begin
+      let sum metric fns = List.fold_left (fun n (_,f)->n+metric f) 0 fns in
+      note "int32-loads-before" (sum narrow_loads old_functions);
+      note "int32-loads-after" (sum narrow_loads new_functions);
+      note "int64-loads-before" (sum wide_loads old_functions);
+      note "int64-loads-after" (sum wide_loads new_functions) end;
     note "changed-functions" !changed; note "retained-functions" !retained;
     note "nodes-before" !old_nodes; note "nodes-after" !new_nodes;
     note "loads-removed" (max 0 (!old_loads - !new_loads));
@@ -80,11 +88,12 @@ let record pass before after =
 let observe passno program =
   if ExperimentalOptions.flags <> [] then begin
     let stage=Camlcoq.Z.to_int passno in
-    if stage >= 50 && stage <= 75 then begin
+    if stage >= 50 && stage <= 77 then begin
       begin match !previous with
       | None -> ()
       | Some before ->
           begin match stage with
+          | 76 -> record "memory-neon" before program
           | 75 -> record "loop-tile2d" before program
           | 74 -> record "memory-vector" before program
           | 71 -> record "loop-fusion" before program
