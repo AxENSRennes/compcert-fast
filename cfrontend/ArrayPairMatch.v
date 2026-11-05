@@ -66,12 +66,16 @@ Lemma selected_sound : forall f p, selected f = Some p ->
 Proof.
   intros f p. unfold selected.
   destruct (fn_params f) as [|[ptr t] [|[n t'] [|a rest]]]; try discriminate.
-  destruct (find_increment (fn_body f)) as [[k sign]|]; try discriminate.
-  destruct (fn_temps f) as [|[i ti] [|a rest]]; try discriminate.
-  - destruct (checked f (Plan ptr n WhilePointer k sign)) eqn:H.
-    + intros E; inv E. eapply checked_sound; eauto.
+  - destruct (find_increment (fn_body f)) as [[k sign]|]; try discriminate.
+    destruct (fn_temps f) as [|[i ti] [|a rest]]; try discriminate.
+    destruct (find_array (fn_body f)) as [[base ty]|]; try discriminate.
+    apply checked_sound.
+  - destruct (find_increment (fn_body f)) as [[k sign]|]; try discriminate.
+    destruct (fn_temps f) as [|[i ti] [|a rest]]; try discriminate.
+    + destruct (checked f (Plan ptr n WhilePointer k sign None)) eqn:H.
+      * intros E; inv E. eapply checked_sound; eauto.
+      * apply checked_sound.
     + apply checked_sound.
-  - apply checked_sound.
 Qed.
 
 Lemma scratch_pointer : forall p, scratch p <> pointer p.

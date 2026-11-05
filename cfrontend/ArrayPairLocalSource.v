@@ -10,7 +10,7 @@
 
 (** Extract the semantic effects of one recognised Clight loop iteration. *)
 Require Import Coqlib AST Integers Values Memory Events Maps Smallstep.
-Require Import Ctypes Cop Clight ClightBigstep ArrayPair ArrayPairLocalFacts.
+Require Import Ctypes Cop Clight ClightBigstep ArrayPair ArrayPairBase ArrayPairLocalFacts.
 
 Definition source_first (p: plan) : statement :=
   match source_loop p with Sloop body _ => body | _ => Sskip end.
@@ -20,12 +20,12 @@ Definition source_second (p: plan) : statement :=
 
 Lemma source_loop_parts:
   forall p, source_loop p = Sloop (source_first p) (source_second p).
-Proof. intros [ptr n shape c sign]; destruct shape; reflexivity. Qed.
+Proof. intros [ptr n shape c sign base]; destruct shape; reflexivity. Qed.
 
 Lemma source_plain:
   forall p, plain_statement (source_first p) = true /\
             plain_statement (source_second p) = true.
-Proof. intros [ptr n shape c sign]; destruct shape; split; reflexivity. Qed.
+Proof. intros [ptr n shape c sign base]; destruct shape; split; reflexivity. Qed.
 
 Definition test_value (ge: genv) (e: env) (le: temp_env) (m: mem)
     (test: expr) (choice: bool) : Prop :=
@@ -105,13 +105,18 @@ Lemma addr0_determinate:
   eval_expr ge e le m (addr p 0) y ->
   x = y.
 Proof.
-  intros ge [ptr n shape c sign] e le m x y A B.
-  destruct shape; cbn [addr layout] in A, B; unfold pointer_expr in A, B; cbn [pointer] in A, B.
-  - inversion A; inversion B; subst; try reject_non_lvalue; congruence.
-  - inversion A; inversion B; subst; try reject_non_lvalue; congruence.
+  intros ge p e le m x y A B.
+  unfold addr in A, B. destruct (layout p).
+  - eapply pointer_expr_determinate; eauto.
+  - eapply pointer_expr_determinate; eauto.
   - inversion A; inversion B; subst; try reject_non_lvalue.
     repeat match goal with
     | H: eval_expr _ _ _ _ (Etempvar _ _) _ |- _ => inversion H; clear H; subst; try reject_non_lvalue
+    end.
+    match goal with
+    | U: eval_expr _ _ _ _ (pointer_expr p) ?v,
+      V: eval_expr _ _ _ _ (pointer_expr p) ?w |- _ =>
+        pose proof (pointer_expr_determinate _ _ _ _ _ _ _ U V); subst
     end.
     repeat match goal with
     | H: ?le ! ?r = Some ?a, J: ?le ! ?r = Some ?b |- _ =>
@@ -208,7 +213,7 @@ Lemma source_finish_turn:
   Clight2.exec_stmt ge e l z (source_second p) E0 le' m' Out_normal ->
   source_turn ge p e le m le' m'.
 Proof.
-  intros ge [ptr n shape c sign] e le m l z le' m' FIRST SECOND.
+  intros ge [ptr n shape c sign base] e le m l z le' m' FIRST SECOND.
   destruct shape; cbn [source_first source_second source_loop layout] in FIRST, SECOND;
     unpack_normal.
   all: match goal with
@@ -249,7 +254,7 @@ Lemma source_finish_exit:
   Clight2.exec_stmt ge e le m (source_first p) E0 le' m' Out_break ->
   le' = le /\ m' = m /\ test_value ge e le m (loop_test p) false.
 Proof.
-  intros ge [ptr n shape c sign] e le m le' m' FIRST.
+  intros ge [ptr n shape c sign base] e le m le' m' FIRST.
   destruct shape; cbn [source_first source_loop layout] in FIRST; unpack_break.
   all: match goal with
   | H: Clight2.exec_stmt _ _ _ _ (guard _) E0 _ _ Out_break |- _ =>
@@ -261,6 +266,6 @@ Lemma source_second_cannot_break:
   forall ge p e le m le' m',
   ~ Clight2.exec_stmt ge e le m (source_second p) E0 le' m' Out_break.
 Proof.
-  intros ge [ptr n shape c sign] e le m le' m' RUN.
+  intros ge [ptr n shape c sign base] e le m le' m' RUN.
   destruct shape; cbn [source_second source_loop layout] in RUN; unpack_break.
 Qed.

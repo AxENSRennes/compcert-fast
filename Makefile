@@ -241,7 +241,8 @@ CFRONTEND=Ctypes.v Cop.v Csyntax.v Csem.v Ctyping.v Cstrategy.v Cexec.v \
   Initializers.v Initializersproof.v \
   SimplExpr.v SimplExprspec.v SimplExprproof.v \
   Clight.v ClightBigstep.v SimplLocals.v SimplLocalsproof.v \
-  ArrayPair.v ArrayPairMatch.v ArrayPairTurn.v ArrayPairReplay.v ArrayPairTarget.v \
+  ArrayPair.v ArrayPairMatch.v ArrayPairBase.v ArrayPairWide.v \
+  ArrayPairTurn.v ArrayPairReplay.v ArrayPairTarget.v \
   ArrayPairLocalFacts.v ArrayPairLocalSource.v ArrayPairLocal.v ArrayPairProgram.v \
   Cshmgen.v Cshmgenproof.v \
   Csharpminor.v Cminorgen.v Cminorgenproof.v

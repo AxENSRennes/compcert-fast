@@ -9,10 +9,10 @@
 (* *********************************************************************)
 
 (** Relate successful scalar turns to the corresponding target branch. *)
-Require Import Coqlib Maps AST Integers Values Memory Events Smallstep.
+Require Import Coqlib Maps AST Integers Values Memory Events Globalenvs Smallstep.
 Require Import Ctypes Cop Clight ClightBigstep.
 Require Import PointerNeonFacts AutoPairMemory ArrayPair ArrayPairMatch.
-Require Import ArrayPairLocalSource ArrayPairTarget.
+Require Import ArrayPairBase ArrayPairLocalSource ArrayPairTarget.
 
 Local Open Scope Z_scope.
 
@@ -74,20 +74,22 @@ Lemma addr0_effect:
   forall ge p e le m b ofs i,
   index_value p le i ->
   eval_expr ge e le m (addr p 0) (Vptr b ofs) ->
-  exists base, le!(pointer p) = Some (Vptr b base) /\
+  exists base, pointer_value ge e p le b base /\
     ofs = lane_offset p base i 0.
 Proof.
   intros ge p e le m b ofs i IDX ADDR.
-  unfold addr, pointer_expr, index_value, lane_offset in *.
+  unfold addr, index_value, lane_offset in *.
   destruct (layout p) as [| |id].
-  - apply eval_temp_inv in ADDR. exists ofs; auto.
-  - apply eval_temp_inv in ADDR. exists ofs; auto.
+  - exists ofs; split; [eapply pointer_value_inv; exact ADDR|reflexivity].
+  - exists ofs; split; [eapply pointer_value_inv; exact ADDR|reflexivity].
   - apply eval_binop_inv in ADDR as (vp & vi & EP & EI & OP).
-    apply eval_temp_inv in EP, EI.
+    apply eval_temp_inv in EI.
     rewrite IDX in EI. inversion EI; subst vi.
+    cbn [sem_binary_operation] in OP. unfold sem_add, classify_add in OP.
+    rewrite pointer_expr_typeconv in OP.
     destruct vp; try discriminate.
     cbn in OP. inversion OP; subst.
-    eexists; split; [exact EP|reflexivity].
+    eexists; split; [eapply pointer_value_inv; exact EP|reflexivity].
 Qed.
 
 Local Lemma eval_sint_inv:
@@ -100,14 +102,15 @@ Qed.
 
 Local Lemma advance_pointer_effect:
   forall ge p e le m b ofs le' m' step,
+  array_anchor p = None ->
   le!(pointer p) = Some (Vptr b ofs) ->
   Clight2.exec_stmt ge e le m (advance_pointer p step) E0 le' m' Out_normal ->
   le' = PTree.set (pointer p)
     (Vptr b (Ptrofs.add ofs (Ptrofs.mul (Ptrofs.repr 4) (Ptrofs.of_ints (Int.repr step))))) le
   /\ m' = m.
 Proof.
-  intros ge p e le m b ofs le' m' step PTR EXEC.
-  unfold advance_pointer in EXEC.
+  intros ge p e le m b ofs le' m' step NARROW PTR EXEC.
+  unfold advance_pointer, pointer_expr in EXEC. rewrite NARROW in EXEC.
   apply exec_set_inv in EXEC as (v & EVAL & -> & ->).
   apply eval_binop_inv in EVAL as (vp & vn & EP & EN & OP).
   apply eval_temp_inv in EP. rewrite PTR in EP. inversion EP; subst vp.
@@ -147,6 +150,7 @@ Qed.
 
 Local Lemma advance_pointer_count_effect:
   forall ge p e le m b ofs n le' m' step,
+  array_anchor p = None ->
   pointer p <> bound p ->
   le!(pointer p) = Some (Vptr b ofs) ->
   le!(bound p) = Some (Vint n) ->
@@ -157,9 +161,9 @@ Local Lemma advance_pointer_count_effect:
       (Vptr b (Ptrofs.add ofs (Ptrofs.mul (Ptrofs.repr 4) (Ptrofs.of_ints (Int.repr step))))) le)
   /\ m' = m.
 Proof.
-  intros ge p e le m b ofs n le' m' step DISTINCT PTR COUNT EXEC.
+  intros ge p e le m b ofs n le' m' step NARROW DISTINCT PTR COUNT EXEC.
   apply exec_sequence_normal in EXEC as (le1 & m1 & ADV & DEC).
-  apply (advance_pointer_effect _ _ _ _ _ _ _ _ _ _ PTR) in ADV as [-> ->].
+  apply (advance_pointer_effect _ _ _ _ _ _ _ _ _ _ NARROW PTR) in ADV as [-> ->].
   eapply decrease_count_effect; [|exact DEC].
   rewrite PTree.gso by congruence. exact COUNT.
 Qed.
@@ -167,7 +171,7 @@ Qed.
 Lemma advance_effect:
   forall ge p e le m b ofs i n le' m' step,
   pointer p <> bound p ->
-  le!(pointer p) = Some (Vptr b ofs) ->
+  pointer_value ge e p le b ofs ->
   le!(bound p) = Some (Vint n) ->
   index_value p le i ->
   Clight2.exec_stmt ge e le m (advance p step) E0 le' m' Out_normal ->
@@ -175,7 +179,14 @@ Lemma advance_effect:
 Proof.
   intros ge p e le m b ofs i n le' m' step DISTINCT PTR COUNT IDX EXEC.
   unfold advance, advanced_env, index_value in *.
-  destruct (layout p); eauto using advance_pointer_count_effect, advance_index_effect.
+  destruct (layout p) eqn:L.
+  - assert (NARROW: array_anchor p = None) by (unfold array_anchor; now rewrite L).
+    apply pointer_value_narrow in PTR; auto.
+    eapply advance_pointer_count_effect; eauto.
+  - assert (NARROW: array_anchor p = None) by (unfold array_anchor; now rewrite L).
+    apply pointer_value_narrow in PTR; auto.
+    eapply advance_pointer_count_effect; eauto.
+  - eapply advance_index_effect; eauto.
 Qed.
 
 Definition next_base (p: plan) (ofs: ptrofs) : ptrofs :=
@@ -186,23 +197,32 @@ Definition next_count (p: plan) (n: int) : int :=
   match layout p with Indexed _ => n | _ => Int.sub n Int.one end.
 
 Lemma advanced_env_one_values:
-  forall p le b ofs i n,
+  forall ge e p le b ofs i n,
   well_formed p ->
-  le!(pointer p) = Some (Vptr b ofs) ->
+  pointer_value ge e p le b ofs ->
   le!(bound p) = Some (Vint n) ->
   index_value p le i ->
   let le' := advanced_env p le b ofs i n 1 in
-  le'!(pointer p) = Some (Vptr b (next_base p ofs)) /\
+  pointer_value ge e p le' b (next_base p ofs) /\
   le'!(bound p) = Some (Vint (next_count p n)) /\
   index_value p le' (next_index p i).
 Proof.
-  intros p le b ofs i n [DISTINCT W] PTR COUNT IDX.
+  intros ge e p le b ofs i n [DISTINCT W] PTR COUNT IDX.
   unfold advanced_env, next_base, next_count, next_index, index_value in *.
-  destruct (layout p) as [| |id]; cbn zeta.
-  - rewrite PTree.gso by congruence. rewrite !PTree.gss. repeat split; reflexivity.
-  - rewrite PTree.gso by congruence. rewrite !PTree.gss. repeat split; reflexivity.
-  - destruct W. rewrite !PTree.gso by congruence. rewrite PTree.gss.
-    repeat split; assumption || reflexivity.
+  destruct (layout p) as [| |id] eqn:L; cbn zeta.
+  - assert (NARROW: array_anchor p = None) by (unfold array_anchor; now rewrite L).
+    split.
+    + apply pointer_value_narrow; [exact NARROW|].
+      rewrite PTree.gso by congruence. rewrite PTree.gss. reflexivity.
+    + rewrite PTree.gss. split; reflexivity.
+  - assert (NARROW: array_anchor p = None) by (unfold array_anchor; now rewrite L).
+    split.
+    + apply pointer_value_narrow; [exact NARROW|].
+      rewrite PTree.gso by congruence. rewrite PTree.gss. reflexivity.
+    + rewrite PTree.gss. split; reflexivity.
+  - destruct W as [IDPTR IDCOUNT]. split.
+    + apply pointer_value_set_other; assumption.
+    + rewrite PTree.gso by congruence. rewrite PTree.gss. auto.
 Qed.
 
 Local Lemma set_commute:
@@ -350,10 +370,13 @@ Qed.
 Definition scratch_env (p: plan) (le tle: temp_env) : Prop :=
   exists v, tle = PTree.set (scratch p) v le.
 
-Local Lemma scratch_ptr_value:
-  forall p (le: temp_env) v,
-  (PTree.set (scratch p) v le)!(pointer p) = le!(pointer p).
-Proof. intros; apply PTree.gso; pose proof (scratch_pointer p); congruence. Qed.
+Local Lemma scratch_pointer_value:
+  forall ge e p le b ofs v,
+  pointer_value ge e p le b ofs ->
+  pointer_value ge e p (PTree.set (scratch p) v le) b ofs.
+Proof.
+  intros. apply pointer_value_set_other; auto using scratch_pointer.
+Qed.
 
 Local Lemma scratch_count_value:
   forall p (le: temp_env) v,
@@ -421,7 +444,7 @@ Local Lemma source_turn_effect:
   well_formed p ->
   source_turn ge p e le m le' m' ->
   exists b ofs i n lo,
-    le!(pointer p) = Some (Vptr b ofs) /\
+    pointer_value ge e p le b ofs /\
     le!(bound p) = Some (Vint n) /\
     index_value p le i /\
     loop_flag p i n = true /\
@@ -450,7 +473,7 @@ Proof.
     as (b & ofs & i & n & lo & PTR & COUNT & IDX & GO & LOAD & STORE & ->).
   destruct (pair_flag p i n) eqn:PAIR.
   - right. intros EXIT.
-    destruct (advanced_env_one_values _ _ _ _ _ _ WF PTR COUNT IDX) as (PTR1 & COUNT1 & IDX1).
+    destruct (advanced_env_one_values _ _ _ _ _ _ _ _ WF PTR COUNT IDX) as (PTR1 & COUNT1 & IDX1).
     pose proof (test_loop_flag _ _ _ _ _ _ _ _ COUNT1 IDX1 EXIT) as STOP.
     rewrite (pair_flag_next _ _ _ GO), STOP in PAIR. discriminate.
   - left. destruct (eval_target_pair_test ge p e le m i n COUNT IDX) as [EVAL BOOL].
@@ -458,9 +481,82 @@ Proof.
     rewrite BOOL. now rewrite PAIR.
 Qed.
 
+Local Lemma wide_ready_tail:
+  forall ge p e le b ofs i n,
+  well_formed p ->
+  pointer_value ge e p le b ofs ->
+  le!(bound p) = Some (Vint n) ->
+  index_value p le i ->
+  loop_flag p i n = true ->
+  pair_flag p i n = false ->
+  wide_ready p (advanced_env p le b ofs i n 1).
+Proof.
+  intros ge p e le b ofs i n WF PTR COUNT IDX GO SINGLE j n'
+    WIDE COUNT' IDX' NEXT.
+  destruct (wide_indexed p WIDE) as [id L].
+  destruct (advanced_env_one_values ge e p le b ofs i n WF PTR COUNT IDX)
+    as [_ [COUNT1 IDX1]].
+  assert (N: n' = next_count p n) by congruence.
+  assert (J: j = next_index p i).
+  { unfold index_value in IDX', IDX1. rewrite L in IDX', IDX1. congruence. }
+  rewrite N, J in NEXT. rewrite <- (pair_flag_next p i n GO) in NEXT.
+  congruence.
+Qed.
+
+Local Lemma wide_ready_next_pair:
+  forall p le b ofs i n,
+  wide_ready p le ->
+  le!(bound p) = Some (Vint n) ->
+  index_value p le i ->
+  loop_flag p i n = true ->
+  pair_flag p i n = true ->
+  wide_ready p (advanced_env p le b ofs i n 2).
+Proof.
+  intros p le b ofs i n READY COUNT IDX GO BOTH j n'
+    WIDE _ IDX' _.
+  destruct (wide_indexed p WIDE) as [id L].
+  destruct (READY i n WIDE COUNT IDX GO) as [q EVEN].
+  unfold index_value, advanced_env in IDX'.
+  rewrite L, PTree.gss in IDX'. injection IDX' as <-.
+  pose proof (proj1 (pair_flag_spec p i n GO) BOTH) as TWO.
+  unfold remaining in TWO. rewrite L in TWO.
+  pose proof (Int.unsigned_range_2 i).
+  pose proof (Int.unsigned_range_2 n).
+  unfold Int.add. change (Int.unsigned (Int.repr 2)) with 2.
+  rewrite Int.unsigned_repr by lia.
+  exists (q + 1). lia.
+Qed.
+
+Local Lemma wide_lane_alignment:
+  forall ge p e le b ofs i n,
+  wide_ready p le ->
+  wide p = true ->
+  pointer_value ge e p le b ofs ->
+  le!(bound p) = Some (Vint n) ->
+  index_value p le i ->
+  loop_flag p i n = true ->
+  (8 | Ptrofs.unsigned (lane_offset p ofs i 0)).
+Proof.
+  intros ge p e le b ofs i n READY WIDE PTR COUNT IDX GO.
+  destruct (wide_indexed p WIDE) as [id L].
+  pose proof (pointer_value_anchor_zero ge e p le b ofs WIDE PTR) as ZERO.
+  subst ofs. unfold lane_offset. rewrite L, Ptrofs.add_zero_l.
+  unfold Ptrofs.mul, Ptrofs.of_intu, Ptrofs.of_int.
+  change (Ptrofs.unsigned (Ptrofs.repr 4)) with 4.
+  pose proof (Int.unsigned_range_2 i) as RANGE.
+  change Int.max_unsigned with 4294967295 in RANGE.
+  rewrite (Ptrofs.unsigned_repr (Int.unsigned i)) by
+    (change Ptrofs.max_unsigned with 18446744073709551615; lia).
+  rewrite Ptrofs.unsigned_repr by
+    (change Ptrofs.max_unsigned with 18446744073709551615; lia).
+  destruct (READY i n WIDE COUNT IDX GO) as [q EVEN].
+  exists q. lia.
+Qed.
+
 Section TARGET.
 Variables (ge: genv) (tprog: Clight.program).
 Let tge := Clight.globalenv tprog.
+Hypothesis SYMBOLS: forall id, Genv.find_symbol tge id = Genv.find_symbol ge id.
 
 Lemma target_turn_zero:
   forall p f k e le tle m,
@@ -486,17 +582,19 @@ Lemma target_turn_tail:
   exists tle1,
     plus Clight.step2 tge (State f (target_loop p) k e tle m)
       E0 (State f (target_loop p) k e tle1 m1) /\
-    scratch_env p le1 tle1.
+    scratch_env p le1 tle1 /\ wide_ready p le1.
 Proof.
   intros p f k e le tle m le1 m1 WF (saved & ->) TURN TAIL.
   destruct (source_turn_effect _ _ _ _ _ _ _ WF TURN)
     as (b & ofs & i & n & lo & PTR & COUNT & IDX & GO & LOAD & STORE & ->).
   pose proof (test_pair_flag _ _ _ _ _ _ _ _ COUNT IDX TAIL) as SINGLE.
-  rewrite <- (scratch_ptr_value p le saved) in PTR.
-  rewrite <- (scratch_count_value p le saved) in COUNT.
-  apply (scratch_index_value _ _ _ saved) in IDX.
-  destruct (eval_target_loop_test tge p e _ m i n COUNT IDX) as (v0 & TEST & BOOL0).
-  destruct (eval_target_pair_test tge p e _ m i n COUNT IDX) as (PAIR & BOOL1).
+  assert (TPTR: pointer_value tge e p (PTree.set (scratch p) saved le) b ofs).
+  { apply pointer_value_symbols with (ge := ge); auto using scratch_pointer_value. }
+  assert (TCOUNT: (PTree.set (scratch p) saved le)!(bound p) = Some (Vint n)).
+  { rewrite scratch_count_value. exact COUNT. }
+  pose proof (scratch_index_value _ _ _ saved IDX) as TIDX.
+  destruct (eval_target_loop_test tge p e _ m i n TCOUNT TIDX) as (v0 & TEST & BOOL0).
+  destruct (eval_target_pair_test tge p e _ m i n TCOUNT TIDX) as (PAIR & BOOL1).
   rewrite GO in BOOL0.
   assert (SINGLE_BOOL: bool_val (Val.of_bool (pair_flag p i n)) (typeof (pair_test p)) m = Some false).
   { now rewrite BOOL1, SINGLE. }
@@ -505,31 +603,35 @@ Proof.
     + apply eval_target_addr; auto.
     + rewrite <- advanced_env_scratch.
       apply target_advance_exec; auto. exact (proj1 WF).
-  - now exists saved.
+  - split.
+    + now exists saved.
+    + eapply wide_ready_tail; eauto.
 Qed.
 
 Lemma target_turn_pair:
   forall p f k e le tle m le1 m1 le2 m2,
   well_formed p ->
+  wide_ready p le ->
   scratch_env p le tle ->
   source_turn ge p e le m le1 m1 ->
   source_turn ge p e le1 m1 le2 m2 ->
   exists tle2,
     plus Clight.step2 tge (State f (target_loop p) k e tle m)
       E0 (State f (target_loop p) k e tle2 m2) /\
-    scratch_env p le2 tle2.
+    scratch_env p le2 tle2 /\ wide_ready p le2.
 Proof.
-  intros p f k e le tle m le1 m1 le2 m2 WF (saved & ->) TURN0 TURN1.
+  intros p f k e le tle m le1 m1 le2 m2 WF READY (saved & ->) TURN0 TURN1.
   destruct (source_turn_effect _ _ _ _ _ _ _ WF TURN0)
     as (b & ofs & i & n & lo & PTR & COUNT & IDX & GO & LOAD0 & STORE0 & ->).
-  destruct (advanced_env_one_values _ _ _ _ _ _ WF PTR COUNT IDX) as (PTR1 & COUNT1 & IDX1).
+  destruct (advanced_env_one_values _ _ _ _ _ _ _ _ WF PTR COUNT IDX) as (PTR1 & COUNT1 & IDX1).
   destruct TURN1 as (NEXT & UPDATE1 & ADVANCE1).
   pose proof (test_loop_flag _ _ _ _ _ _ _ _ COUNT1 IDX1 NEXT) as GO1.
   pose proof (eq_trans (pair_flag_next _ _ _ GO) GO1) as BOTH.
   destruct (exec_scalar_update_inv _ _ _ _ _ _ UPDATE1)
     as (b1 & ofs1 & hi & ADDR1 & LOAD1 & STORE1).
   destruct (addr0_effect _ _ _ _ _ _ _ _ IDX1 ADDR1) as (base1 & PTR1' & OFF1).
-  rewrite PTR1 in PTR1'. inversion PTR1'; subst b1 base1.
+  destruct (pointer_value_unique _ _ _ _ _ _ _ _ PTR1 PTR1') as [BLOCK BASE].
+  subst b1 base1.
   rewrite lane_offset_next in OFF1. subst ofs1.
   assert (EARLY_LOAD1: Mem.loadv Mint32 m (Vptr b (lane_offset p ofs i 1)) = Some (Vint hi)).
   {
@@ -543,31 +645,52 @@ Proof.
     as [LE2 _].
   rewrite (advanced_env_two _ _ _ _ _ _ WF) in LE2. subst le2.
   set (packed := packed_add_result lo hi (increment p) (increment p)).
+  set (initial_env := PTree.set (scratch p) saved le).
+  set (packed_env := PTree.set (scratch p) packed initial_env).
+  assert (TPTR: pointer_value tge e p initial_env b ofs).
+  {
+    unfold initial_env. apply pointer_value_symbols with (ge := ge);
+      auto using scratch_pointer_value.
+  }
+  assert (TCOUNT: initial_env!(bound p) = Some (Vint n)).
+  { unfold initial_env. rewrite scratch_count_value. exact COUNT. }
+  pose proof (scratch_index_value _ _ _ saved IDX) as TIDX.
+  destruct (eval_target_loop_test tge p e _ m i n TCOUNT TIDX) as (v0 & TEST & BOOL0).
+  destruct (eval_target_pair_test tge p e _ m i n TCOUNT TIDX) as (PAIR & BOOL1).
+  rewrite GO in BOOL0.
+  assert (BOTH_BOOL: bool_val (Val.of_bool (pair_flag p i n)) (typeof (pair_test p)) m = Some true).
+  { now rewrite BOOL1, BOTH. }
+  assert (ADDR: forall lane mm,
+      eval_expr tge e initial_env mm (addr p lane) (Vptr b (lane_offset p ofs i lane))).
+  { intros; apply eval_target_addr; assumption. }
+  assert (PACKED_ADDR: forall lane mm,
+      eval_expr tge e packed_env mm (addr p lane) (Vptr b (lane_offset p ofs i lane))).
+  {
+    intros; unfold packed_env. apply eval_target_addr.
+    - apply scratch_pointer_value. exact TPTR.
+    - apply scratch_index_value. exact TIDX.
+  }
+  assert (ADVANCE: Clight2.exec_stmt tge e packed_env m2 (packed_advance p) E0
+      (PTree.set (scratch p) packed (advanced_env p le b ofs i n 2)) m2 Out_normal).
+  {
+    unfold packed_env, initial_env. rewrite set_twice, <- advanced_env_scratch.
+    apply target_advance_exec; [exact (proj1 WF)| | |].
+    - apply pointer_value_symbols with (ge := ge); auto using scratch_pointer_value.
+    - rewrite scratch_count_value. exact COUNT.
+    - apply scratch_index_value. exact IDX.
+  }
   exists (PTree.set (scratch p) packed (advanced_env p le b ofs i n 2)). split.
-  - assert (TPTR: (PTree.set (scratch p) saved le)!(pointer p) = Some (Vptr b ofs)).
-    { rewrite scratch_ptr_value. exact PTR. }
-    assert (TCOUNT: (PTree.set (scratch p) saved le)!(bound p) = Some (Vint n)).
-    { rewrite scratch_count_value. exact COUNT. }
-    pose proof (scratch_index_value _ _ _ saved IDX) as TIDX.
-    destruct (eval_target_loop_test tge p e _ m i n TCOUNT TIDX) as (v0 & TEST & BOOL0).
-    destruct (eval_target_pair_test tge p e _ m i n TCOUNT TIDX) as (PAIR & BOOL1).
-    rewrite GO in BOOL0.
-    assert (BOTH_BOOL: bool_val (Val.of_bool (pair_flag p i n)) (typeof (pair_test p)) m = Some true).
-    { now rewrite BOOL1, BOTH. }
-    eapply target_loop_pair with (m1 := m1) (lo := lo) (hi := hi)
-      (b0 := b) (ofs0 := lane_offset p ofs i 0) (b1 := b) (ofs1 := lane_offset p ofs i 1); eauto.
-    + apply eval_target_addr; auto.
-    + apply eval_target_addr; auto.
-    + apply eval_target_addr; [rewrite scratch_ptr_value; exact TPTR|].
-      apply scratch_index_value. exact TIDX.
-    + apply eval_target_addr; [rewrite scratch_ptr_value; exact TPTR|].
-      apply scratch_index_value. exact TIDX.
-    + rewrite set_twice. rewrite <- advanced_env_scratch.
-      apply target_advance_exec; [exact (proj1 WF)| | |].
-      * rewrite scratch_ptr_value. exact PTR.
-      * rewrite scratch_count_value. exact COUNT.
-      * apply scratch_index_value. exact IDX.
-  - now exists packed.
+  - destruct (wide p) eqn:WIDE.
+    + assert (ALIGNED: (8 | Ptrofs.unsigned (lane_offset p ofs i 0))).
+      { eapply wide_lane_alignment; eauto. }
+      rewrite (lane_offset_adjacent _ _ _ _ GO) in EARLY_LOAD1, STORE1.
+      eapply target_loop_pair_wide with (m1 := m1) (lo := lo) (hi := hi)
+        (b := b) (ofs := lane_offset p ofs i 0); eauto.
+    + eapply target_loop_pair with (m1 := m1) (lo := lo) (hi := hi)
+        (b0 := b) (ofs0 := lane_offset p ofs i 0) (b1 := b) (ofs1 := lane_offset p ofs i 1); eauto.
+  - split.
+    + now exists packed.
+    + eapply wide_ready_next_pair; eauto.
 Qed.
 
 End TARGET.

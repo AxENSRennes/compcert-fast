@@ -24,14 +24,27 @@ Record plan := Plan {
   bound: ident;
   layout: traversal;
   increment: int;
-  increment_signedness: signedness
+  increment_signedness: signedness;
+  anchor: option (Z * N)
 }.
+
+Definition array_anchor (p: plan) : option (Z * N) :=
+  match layout p with Indexed _ => anchor p | _ => None end.
+
+Definition wide (p: plan) : bool :=
+  match array_anchor p with Some _ => true | None => false end.
 
 Definition scratch (p: plan) : ident :=
   Pos.succ (Pos.max (pointer p) (Pos.max (bound p)
     (match layout p with Indexed i => i | _ => xH end))).
 
-Definition pointer_expr (p: plan) := Etempvar (pointer p) tuint_ptr.
+Definition array_type (len: Z) (log_alignment: N) : type :=
+  Tarray tuint len (mk_attr false (Some log_alignment)).
+Definition pointer_expr (p: plan) :=
+  match array_anchor p with
+  | Some (len, log_alignment) => Evar (pointer p) (array_type len log_alignment)
+  | None => Etempvar (pointer p) tuint_ptr
+  end.
 Definition count_expr (p: plan) := Etempvar (bound p) tuint.
 Definition sint (n: Z) := Econst_int (Int.repr n) tint.
 Definition uint (n: Z) := Econst_int (Int.repr n) tuint.
@@ -114,15 +127,27 @@ Definition packed_update (tmp: ident) (addr0 addr1: expr) (k: int) : statement :
     (Ssequence (Sassign lo (Ecast res tuint))
       (Sassign hi (Ecast (Ebinop Oshr res shift tulong) tuint))).
 
+Definition wide_cell (a: expr) : expr :=
+  Ederef (Ecast a (Tpointer tulong noattr)) tulong.
+
+Definition wide_update (tmp: ident) (a: expr) (k: int) : statement :=
+  Ssequence
+    (Sbuiltin (Some tmp) MemoryNeon.packed_builtin (tulong :: tulong :: nil)
+      (wide_cell a :: Econst_long (Int64.ofwords k k) tulong :: nil))
+    (Sassign (wide_cell a) (Etempvar tmp tulong)).
+
 Definition pair_branch (p: plan) := Ssequence
-  (packed_update (scratch p) (addr p 0) (addr p 1) (increment p))
+  (if wide p then wide_update (scratch p) (addr p 0) (increment p)
+   else packed_update (scratch p) (addr p 0) (addr p 1) (increment p))
   (packed_advance p).
 Definition scalar_branch (p: plan) := Ssequence (scalar_update p) (scalar_advance p).
 Definition target_loop (p: plan) := Sloop
   (Ssequence (guard p) (Sifthenelse (pair_test p) (pair_branch p) (scalar_branch p))) Sskip.
 Definition target_body (p: plan) := with_init p (target_loop p).
 
-Definition parameters (p: plan) := (pointer p, tuint_ptr) :: (bound p, tuint) :: nil.
+Definition parameters (p: plan) :=
+  if wide p then (bound p, tuint) :: nil
+  else (pointer p, tuint_ptr) :: (bound p, tuint) :: nil.
 Definition scalar_temps (p: plan) := match layout p with Indexed i => (i, tuint) :: nil | _ => nil end.
 Definition source_template (p: plan) :=
   mkfunction Tvoid cc_default (parameters p) nil (scalar_temps p) (source_body p).
@@ -137,7 +162,7 @@ Proof. decide equality. Defined.
 Fixpoint same_expr (a b: expr) : bool :=
   match a, b with
   | Econst_int v t, Econst_int v' t' => Int.eq_dec v v' && type_eq t t'
-  | Etempvar id t, Etempvar id' t' => peq id id' && type_eq t t'
+  | Etempvar id t, Etempvar id' t' | Evar id t, Evar id' t' => peq id id' && type_eq t t'
   | Ederef x t, Ederef x' t' => same_expr x x' && type_eq t t'
   | Ebinop op x y t, Ebinop op' x' y' t' =>
       binop_eq op op' && same_expr x x' && same_expr y y' && type_eq t t'
@@ -179,16 +204,37 @@ Definition checked (f: function) (p: plan) : option plan :=
   if match layout p with Indexed i => peq i (pointer p) || peq i (bound p) | _ => false end
   then None else if matches f p then Some p else None.
 
+(** A named, explicitly aligned array supplies an offset-zero base. The
+    recognizer checks its full type and the loop starting at index zero. *)
+Fixpoint find_array (s: statement) : option (ident * (Z * N)) :=
+  match s with
+  | Sassign (Ederef (Ebinop Oadd (Evar id (Tarray _ len att)) _ _) _) _ =>
+      match attr_alignas att with
+      | Some log_alignment =>
+          if N.leb 3 log_alignment && Z.leb 2 len
+          then Some (id, (len, log_alignment)) else None
+      | None => None
+      end
+  | Ssequence a b | Sloop a b =>
+      match find_array a with Some base => Some base | None => find_array b end
+  | _ => None
+  end.
+
 Definition selected (f: function) : option plan :=
   match fn_params f, find_increment (fn_body f) with
   | (ptr, _) :: (n, _) :: nil, Some (k, sign) =>
       match fn_temps f with
-      | nil => match checked f (Plan ptr n WhilePointer k sign) with
+      | nil => match checked f (Plan ptr n WhilePointer k sign None) with
                | Some p => Some p
-               | None => checked f (Plan ptr n ForPointer k sign)
+               | None => checked f (Plan ptr n ForPointer k sign None)
                end
-      | (i, _) :: nil => checked f (Plan ptr n (Indexed i) k sign)
+      | (i, _) :: nil => checked f (Plan ptr n (Indexed i) k sign None)
       | _ => None
+      end
+  | (n, _) :: nil, Some (k, sign) =>
+      match fn_temps f, find_array (fn_body f) with
+      | (i, _) :: nil, Some (base, ty) => checked f (Plan base n (Indexed i) k sign (Some ty))
+      | _, _ => None
       end
   | _, _ => None
   end.

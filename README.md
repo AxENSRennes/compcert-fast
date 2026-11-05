@@ -77,7 +77,7 @@ Coq kernel.
 
 ### Default-disabled experiments
 
-This branch is `experiment/array-pairs`; it has not been promoted to `fast`.
+This branch is `experiment/wide-array-pairs`; it has not been promoted to `fast`.
 No speed improvement is claimed. The full option list, combined profiles and
 precise limits are in `perf/experiment-profiles.json`. For example:
 
@@ -170,6 +170,15 @@ The experiments currently implement:
   bounds and four-byte-aligned pointer arguments. The recognizer checks the
   complete function and its types. Tests check exact-length arrays, protected
   boundary pages, modular wraparound, and assembly against Clang `-O2`.
+  A second form indexes a named global or static `uint32_t` array declared
+  with `_Alignas(8)` or greater. Its index starts at zero and advances by two
+  per pair. The declaration specifies the machine base alignment. Coq checks
+  the offset within the block from the even index and proves that a single
+  `Mint64` load and store produce the
+  same result as the two scalar iterations. An odd final element still uses
+  a 32-bit load and store. The pointer-parameter path retains 32-bit memory
+  accesses. Tests check the widened load and store through the NEON result,
+  aligned page boundaries, and four-byte-only alignment on the pointer path.
 * `AutoPair`, under `memory-neon`, forms pairs automatically from the scalar
   step-one loop `while(n){x=p[0];y=p[1];if((int)x<(int)y)p[0]=x+K;++p;--n;}`.
   It dispatches two iterations to one packed NEON addition and retains the

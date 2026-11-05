@@ -85,9 +85,11 @@ Lemma entry_selected : forall ge tge p args m e le m',
 Proof.
   intros ge tge p args m e le m' ENTRY. inversion ENTRY as [VARS PARAMS DISJOINT ALLOC BIND]; subst.
   assert (FRESH: ~ In (scratch p) (var_names (parameters p))).
-  { cbn [parameters var_names map fst]. intros [E | [E | []]].
-    - apply (scratch_pointer p); symmetry; exact E.
-    - apply (scratch_bound p); symmetry; exact E. }
+  { unfold parameters. destruct (wide p); cbn [var_names map fst].
+    - intros [E | []]. apply (scratch_bound p); symmetry; exact E.
+    - intros [E | [E | []]].
+      + apply (scratch_pointer p); symmetry; exact E.
+      + apply (scratch_bound p); symmetry; exact E. }
   cbn [source_template fn_vars] in ALLOC. inv ALLOC.
   constructor; try assumption.
   - change (list_disjoint (var_names (parameters p)) (scratch p :: var_names (scalar_temps p))).
@@ -323,6 +325,6 @@ Proof.
     (loop_match := fun p k => ArrayPairLocal.local_match (globalenv prog) (globalenv tprog) p k k).
   - exact MATCH.
   - apply ArrayPairLocal.local_init.
-  - intros. eapply ArrayPairLocal.local_step; eauto using blocks_preserved.
+  - intros. eapply ArrayPairLocal.local_step; eauto using blocks_preserved, symbols_preserved.
   - intros p k rank s ts r LOCAL FINAL. inv FINAL. inv LOCAL.
 Qed.

@@ -16,6 +16,7 @@ REVIEWED_FORMAL = {"backend/Linearize.v", "backend/Linearizeproof.v",
                    "aarch64/Asmexpand.ml", "aarch64/TargetPrinter.ml", "aarch64/CBuiltins.ml"}
 NEW_FORMAL = {"backend/AutoPairCounter.v", "backend/AutoPairMemory.v", "backend/AutoPair.v", "backend/AutoPairPack.v", "backend/AutoPairCodeFacts.v", "backend/AutoPairStepFacts.v", "backend/AutoPairproof.v", "backend/AutoPairProgram.v",
               "cfrontend/ArrayPair.v", "cfrontend/ArrayPairMatch.v", "cfrontend/ArrayPairTurn.v",
+              "cfrontend/ArrayPairBase.v", "cfrontend/ArrayPairWide.v",
               "cfrontend/ArrayPairReplay.v", "cfrontend/ArrayPairTarget.v", "cfrontend/ArrayPairLocalFacts.v",
               "cfrontend/ArrayPairLocalSource.v", "cfrontend/ArrayPairLocal.v", "cfrontend/ArrayPairProgram.v",
               "backend/PointerNeonFacts.v", "backend/PointerNeon.v", "backend/PointerNeonproof.v",
