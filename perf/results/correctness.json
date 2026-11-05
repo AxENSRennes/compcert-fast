@@ -1,20 +1,20 @@
 {
   "schema_version": 1,
   "mode": "correctness",
-  "created_utc": "2026-11-05T15:53:08.500725+00:00",
+  "created_utc": "2026-11-05T17:01:59.777378+00:00",
   "suite_sha256": "610d36f8c304769184e9182982d10b8928cd0c31748e31747ce231b6d3a38f5d",
-  "revision": "1e43447f1fbf78d246798ef38d34377fa2c0423b",
-  "tracked_changes": "perf/results/arraypair-wide.json | 403 +++++++++++++++++++++++++++++++++++++--\n perf/results/proofs.json         |  22 ++-\n 2 files changed, 397 insertions(+), 28 deletions(-)",
+  "revision": "3f1e85e6b08145ba59a0703c415b0967085748c1",
+  "tracked_changes": "perf/results/arraypair-wide.json     |  4 ++--\n perf/results/arraypair.json          |  4 ++--\n perf/results/autopair.json           |  4 ++--\n perf/results/correctness.json        | 10 +++++-----\n perf/results/heuristics.json         |  6 +++---\n perf/results/loop-optimizations.json |  4 ++--\n perf/results/loopfusion.json         |  2 +-\n perf/results/loopinterchange.json    |  2 +-\n perf/results/looptile.json           |  2 +-\n perf/results/looptile2d.json         |  2 +-\n perf/results/memory-loops.json       |  4 ++--\n perf/results/memoryneon.json         |  4 ++--\n perf/results/pointerneon.json        |  4 ++--\n perf/results/strengthreduce.json     |  2 +-\n perf/results/vectorize.json          |  4 ++--\n 15 files changed, 29 insertions(+), 29 deletions(-)",
   "machine": {
     "cpu": "Apple M5",
     "os": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83",
-    "power": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=22937699)\t92%; charging; 0:42 remaining present: true",
+    "power": "Now drawing from 'Battery Power'\n -InternalBattery-0 (id=22937699)\t89%; discharging; 1:20 remaining present: true",
     "p_cores": "4",
     "scheduling": "QOS_CLASS_USER_INTERACTIVE; advisory, P-core placement NOT verified"
   },
   "compiler": {
     "compcert": "The CompCert C verified compiler, version 3.17",
-    "compcert_sha256": "05524bdc941b72b66fb60029020fbc96fa7a93a9b6bd8fe364618d0cdc059d5e",
+    "compcert_sha256": "a4ba8da8a044366526289174e710c378b2a79b9b1e4a1c656f83f6a5407d9cca",
     "clang": "Apple clang version 21.0.0 (clang-2100.4.1.1)\nTarget: arm64-apple-darwin25.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin"
   },
   "protocol": {

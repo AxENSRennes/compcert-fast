@@ -210,6 +210,7 @@
       "/Users/axel2/Downloads/compcert-fast/runtime",
       "-fno-inline",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c",
       "-o",
       "/Users/axel2/Downloads/compcert-fast/perf/artifacts/packed-neon/enabled.exe"
@@ -223,6 +224,7 @@
       "/Users/axel2/Downloads/compcert-fast/runtime",
       "-fno-inline",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c",
       "-o",
       "/Users/axel2/Downloads/compcert-fast/perf/artifacts/packed-neon/scalar2.exe"
@@ -236,6 +238,7 @@
       "/Users/axel2/Downloads/compcert-fast/runtime",
       "-fno-inline",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c",
       "-o",
       "/Users/axel2/Downloads/compcert-fast/perf/artifacts/packed-neon/scalar4.exe"
@@ -249,6 +252,7 @@
       "/Users/axel2/Downloads/compcert-fast/runtime",
       "-fno-inline",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c",
       "-o",
       "/Users/axel2/Downloads/compcert-fast/perf/artifacts/packed-neon/loops2.exe"
@@ -262,6 +266,7 @@
       "/Users/axel2/Downloads/compcert-fast/runtime",
       "-fno-inline",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c",
       "-o",
       "/Users/axel2/Downloads/compcert-fast/perf/artifacts/packed-neon/loops4.exe"
@@ -275,6 +280,7 @@
       "/Users/axel2/Downloads/compcert-fast/runtime",
       "-fno-inline",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c",
       "-o",
       "/Users/axel2/Downloads/compcert-fast/perf/artifacts/packed-neon/memory-loops.exe"
@@ -299,6 +305,7 @@
       "/Users/axel2/Downloads/compcert-fast/runtime",
       "-fno-inline",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "-S",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c",
       "-o",
@@ -323,6 +330,7 @@
       "-interp",
       "-quiet",
       "-DUSE_NEON=1",
+      "-DUSE_IMPLICIT_NEON=1",
       "-DTEST_ROUNDS=0",
       "/Users/axel2/Downloads/compcert-fast/perf/test_packed_neon.c"
     ]
@@ -450,10 +458,10 @@
     "aarch64/Machregs.v": "f01561e5bec85901601f1880060d14c589720c8090bc3def5c4a3f80481b98d8",
     "aarch64/Asmexpand.ml": "77b214aa226bcccd582bd52c5f17cd2df3909324fc39a039fd1a6d53680e954e",
     "aarch64/TargetPrinter.ml": "4c50ccc66c8340fb0ad095f3c9510c6c6a8ede1240e88e680970f76cfdd949ef",
-    "backend/ExperimentalOptions.ml": "8a059b855ad179b34a704f18dfdf5a772848a518a1650e3d9449dfc87b482255",
+    "backend/ExperimentalOptions.ml": "c3f8bce67ae2024eb15aa19d1ea7ab847b0a9d55787f78434af90ae2f405b33f",
     "perf/test_packed_neon.ml": "386221a313f62a9e0b60dcf8c344cb707d36129fd40f632084963f5640533ba2",
-    "perf/test_packed_neon.c": "d21d900b09b7ea1a3b54808b5e23266e9995ccbdc69a2a0124222c8d97df28d6",
-    "perf/check_packed_neon.py": "fc69d8231482b6896e83031fcc1e8611cc111fd84b586c897708fe69462337c5",
-    "perf/experiment-profiles.json": "233d96e4095e9c22a340169131918dbeb2e11ff4acb9ff8d80ec55993264466c"
+    "perf/test_packed_neon.c": "6d8fc607e8c00d3fdb8c8ac38d44b9814e4360a7b11b3dffad0e4910a1c2ef37",
+    "perf/check_packed_neon.py": "eb725a4a602300c83d88de52ccf3d75cb926ab90ce3b2cf7623c7459cb9cbafd",
+    "perf/experiment-profiles.json": "9285246ef8d6d3900508e2e7fa9753c90b614d986593123dffa5bbc8070469b8"
   }
 }

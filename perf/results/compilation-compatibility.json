@@ -1,0 +1,998 @@
+{
+  "success": true,
+  "performance_measured": false,
+  "strict_regressions": {
+    "packed-builtin-name": {
+      "stage": "C frontend elaboration",
+      "source": "int __builtin_cc_neon_add_u32x2(void) { return 0; }\n",
+      "source_sha256": "ce578d0031b9d5b8e47f02a6c193d2f130c16d8e07bb268fe60a856865f60744",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/packed-builtin-name",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "98ba80a5736bd6b09cbb0fdc07404a32d16fd4ac6c8d5d368eb2504aee7e803a"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c:1: error: definition of builtin function '__builtin_cc_neon_add_u32x2'\n1 error detected.",
+          "flags": "neon-packed",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "neon-packed",
+              "event": "enabled",
+              "count": 1
+            }
+          ]
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "neon-packed",
+          "automatic_fallback": true,
+          "output_sha256": "98ba80a5736bd6b09cbb0fdc07404a32d16fd4ac6c8d5d368eb2504aee7e803a"
+        }
+      }
+    },
+    "preheader-stack-limit": {
+      "stage": "Stacking.transf_function",
+      "source": "/* Compile only. These arrays total 2^64 - 64 bytes. */\nextern void use_arrays(char *, char *, char *, char *);\nextern void observe(int, int);\nint frame_limit(int n, int x, int d)\n{\n    char a[4611686018427387888UL], b[4611686018427387888UL];\n    char c[4611686018427387888UL], e[4611686018427387888UL];\n    int sum = 0;\n    use_arrays(a, b, c, e);\n    while (n > 0) {\n        observe(x, d);\n        sum += x / d;\n        --n;\n    }\n    return x + sum;\n}\n",
+      "source_sha256": "b01e74ca1ac7b595170deec97e84212200d50c45f6afa34d256516ac8c36fb9e",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/preheader-stack-limit",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-dltl",
+        "-dmach",
+        "-fno-inline",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "eeef552ce456685b9a6142d0a6eab31f1a1a1526d1e0b0136295bc246c394589",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "2fdc0a0d240c0a85164dd543bac2518a1b4fd1d065241893b946a48058ce898c",
+          "mach_sha256": "6755c9f887904ebfe171fa4002f021169a267ce5bd7a61015b256b3c90da51e5"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function frame_limit: Too many spilled variables, stack size exceeded\n1 error detected.",
+          "flags": "licm-preheader",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "licm-preheader",
+              "event": "changed-functions",
+              "count": 1
+            }
+          ],
+          "ltl_dump": true,
+          "mach_dump": false,
+          "ltl_sha256": "67b35d7ca31c910c556c5e92424d283c5a66af19e29246e502fdf55cca9dbdea"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "licm-preheader",
+          "automatic_fallback": true,
+          "output_sha256": "eeef552ce456685b9a6142d0a6eab31f1a1a1526d1e0b0136295bc246c394589",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "2fdc0a0d240c0a85164dd543bac2518a1b4fd1d065241893b946a48058ce898c",
+          "mach_sha256": "6755c9f887904ebfe171fa4002f021169a267ce5bd7a61015b256b3c90da51e5"
+        }
+      }
+    },
+    "pure-licm-stack-limit": {
+      "stage": "Stacking.transf_function",
+      "source": "/* Compile only. These arrays total 2^64 - 64 bytes. */\nextern void use_arrays(char *, char *, char *, char *);\nextern void observe(int, int);\nint frame_limit(int n, int x, int d)\n{\n    char a[4611686018427387888UL], b[4611686018427387888UL];\n    char c[4611686018427387888UL], e[4611686018427387888UL];\n    int sum = 0;\n    use_arrays(a, b, c, e);\n    while (n > 0) {\n        observe(x, d);\n        sum ^= x * d;\n        --n;\n    }\n    return x + sum;\n}\n",
+      "source_sha256": "082725a887a450c53ee60257e76728e45abcb438914b62b8a635c5e7f6126508",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/pure-licm-stack-limit",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-dltl",
+        "-dmach",
+        "-fno-inline",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "5ad592114007259af151a2977d23395800ee9248338c47b3c12de5df97f96813",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "fd7a11f367a3186c95d2fc6fb9701203e5b5ec2e0d0eb80ccbc0aa7f61f0161d",
+          "mach_sha256": "c92ac282dda3dc4cda0b6541ba55de2c267db24c95f5ac01c325f7aaaebd819d"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function frame_limit: Too many spilled variables, stack size exceeded\n1 error detected.",
+          "flags": "licm-pure",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "licm-pure",
+              "event": "changed-functions",
+              "count": 1
+            }
+          ],
+          "ltl_dump": true,
+          "mach_dump": false,
+          "ltl_sha256": "ffd8732cd53cf9d11e554aa6a6ae2793e2c15672ffbfb6367b7b6c739aeeac90"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "licm-pure",
+          "automatic_fallback": true,
+          "output_sha256": "5ad592114007259af151a2977d23395800ee9248338c47b3c12de5df97f96813",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "fd7a11f367a3186c95d2fc6fb9701203e5b5ec2e0d0eb80ccbc0aa7f61f0161d",
+          "mach_sha256": "c92ac282dda3dc4cda0b6541ba55de2c267db24c95f5ac01c325f7aaaebd819d"
+        }
+      }
+    },
+    "hoist-constant-stack-limit": {
+      "stage": "Stacking.transf_function",
+      "source": "/* Compile only. These arrays total 2^64 - 64 bytes. */\nextern void use_arrays(char *, char *, char *, char *);\nextern void observe(int, int);\nextern int hash(int, int);\nint frame_limit(int n, int x, int d)\n{\n    char a[4611686018427387888UL], b[4611686018427387888UL];\n    char c[4611686018427387888UL], e[4611686018427387888UL];\n    int sum = 0;\n    use_arrays(a, b, c, e);\n    while (n > 0) {\n        observe(x, d);\n        sum += hash(0x12634921, x);\n        --n;\n    }\n    return x + sum;\n}\n",
+      "source_sha256": "e2c0542d50de78ea3d6bc8424efe54c347e35024af531305527d16bfeba01748",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/hoist-constant-stack-limit",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-dltl",
+        "-dmach",
+        "-fno-inline",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "c85c14ab864a8bec5661eaaf38dd1ba2292d75b680000d57e5722cf886b14b94",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "0ba3d50b6df1e56952e2d53445b4392e43dd33de3ebdbb36fd3e533f169971c4",
+          "mach_sha256": "244eaea40a48e8881cfaaa8bfd83029298df6e087381baaf4c2294d078d0d3e8"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function frame_limit: Too many spilled variables, stack size exceeded\n1 error detected.",
+          "flags": "hoist-constant",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "hoist-constant",
+              "event": "changed-functions",
+              "count": 1
+            }
+          ],
+          "ltl_dump": true,
+          "mach_dump": false,
+          "ltl_sha256": "49ba8d5e618c6a7ade68df0b20250bae24aab0e000bf43f36cefba2a8d7f4d70"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "hoist-constant",
+          "automatic_fallback": true,
+          "output_sha256": "c85c14ab864a8bec5661eaaf38dd1ba2292d75b680000d57e5722cf886b14b94",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "0ba3d50b6df1e56952e2d53445b4392e43dd33de3ebdbb36fd3e533f169971c4",
+          "mach_sha256": "244eaea40a48e8881cfaaa8bfd83029298df6e087381baaf4c2294d078d0d3e8"
+        }
+      }
+    },
+    "strength-reduce-stack-limit": {
+      "stage": "Stacking.transf_function",
+      "source": "/* Compile only. The induction cache adds values live across observe. */\nextern void use_arrays(char *, char *, char *, char *);\nextern void observe(unsigned, unsigned);\nunsigned strength_limit(unsigned n, unsigned step)\n{\n    char a[4611686018427387888UL], b[4611686018427387888UL];\n    char c[4611686018427387888UL], e[4611686018427387888UL];\n    unsigned sum = 0;\n    use_arrays(a, b, c, e);\n    for (unsigned i = 0; i < n; ++i) {\n        observe(i, step);\n        sum ^= i * step;\n    }\n    return sum;\n}\n",
+      "source_sha256": "4ef243f2b09de03ded1981a6511665d8ad8c53b1c8cb274d82f7e4af31262837",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/strength-reduce-stack-limit",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-dltl",
+        "-dmach",
+        "-fno-inline",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "3c793bc94de1a969b1f807ba43844d84cee0492565e2f0812c8887074287c577",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "66eed5e6e77cd2292034e586971a5e79d8b479fa7f15e24b51fff3047ff02553",
+          "mach_sha256": "961990b1373de2de8ee99ed3b787a5b52367894cd5b577c07e2603c8e8b73b82"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function strength_limit: Too many spilled variables, stack size exceeded\n1 error detected.",
+          "flags": "strength-reduce",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "strength-reduce",
+              "event": "changed-functions",
+              "count": 1
+            }
+          ],
+          "ltl_dump": true,
+          "mach_dump": false,
+          "ltl_sha256": "56ba50dcdbc0f9ca50a6e3b8e2633916f5ec8e7871d039e7c3c1c668c0a43160"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "strength-reduce",
+          "automatic_fallback": true,
+          "output_sha256": "3c793bc94de1a969b1f807ba43844d84cee0492565e2f0812c8887074287c577",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "66eed5e6e77cd2292034e586971a5e79d8b479fa7f15e24b51fff3047ff02553",
+          "mach_sha256": "961990b1373de2de8ee99ed3b787a5b52367894cd5b577c07e2603c8e8b73b82"
+        }
+      }
+    },
+    "loop-tile-stack-limit": {
+      "stage": "Stacking.transf_function",
+      "source": "/* Compile only. Tiling adds a counter live across observe. */\nextern void use_arrays(char *, char *, char *, char *);\nextern void observe(unsigned, unsigned);\nunsigned tile_limit(unsigned n, unsigned x)\n{\n    char a[4611686018427387888UL], b[4611686018427387888UL];\n    char c[4611686018427387888UL], d[4611686018427387888UL];\n    unsigned sum = 0;\n    use_arrays(a, b, c, d);\n    for (unsigned i = 0; i < n; ++i) {\n        observe(i, x);\n        sum ^= x;\n    }\n    return sum;\n}\n",
+      "source_sha256": "9c4901aa1a497a96fe138592798ac85ab70e8e855c4e5ae3a88fc525c51532d1",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/loop-tile-stack-limit",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-dltl",
+        "-dmach",
+        "-fno-inline",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "c22e0a5b41ed36b471c746011c4cb5b28d56cd0be088ee4d88018f161df920cd",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "fd4c2218135c69b37adec3ad8e1329eb468d97ec1418444a13cb1b052442b9d2",
+          "mach_sha256": "b774bf3888a56a533dfe044fece9c448cc7fcdf3b7c7c9486f8563115cbeb701"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function tile_limit: Too many spilled variables, stack size exceeded\n1 error detected.",
+          "flags": "loop-tile",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "loop-tile",
+              "event": "changed-functions",
+              "count": 1
+            }
+          ],
+          "ltl_dump": true,
+          "mach_dump": false,
+          "ltl_sha256": "a2f10c0ffa56a4653e0e7742d43177b7677ffc9cc37c3ab0e5cd17a63730c713"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "loop-tile",
+          "automatic_fallback": true,
+          "output_sha256": "c22e0a5b41ed36b471c746011c4cb5b28d56cd0be088ee4d88018f161df920cd",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "fd4c2218135c69b37adec3ad8e1329eb468d97ec1418444a13cb1b052442b9d2",
+          "mach_sha256": "b774bf3888a56a533dfe044fece9c448cc7fcdf3b7c7c9486f8563115cbeb701"
+        }
+      }
+    },
+    "small-inline-stack-limit": {
+      "stage": "Inlining.transf_function",
+      "source": "/* Compile only. Each frame fits before leaf inlining. */\nextern void use_arrays(char *, char *, char *);\nint leaf(unsigned n)\n{\n    volatile char a[4611686018427387903UL];\n    return a[n] = 1;\n}\nint frame(unsigned n)\n{\n    char a[4611686018427387903UL], b[4611686018427387903UL];\n    char c[4611686018427387903UL];\n    use_arrays(a, b, c);\n    return leaf(n) + 1;\n}\n",
+      "source_sha256": "3d20528639d2d79979833c4f2f3735d524996686959721e8dcbf07606ff91eef",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/small-inline-stack-limit",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-dltl",
+        "-dmach",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "4b0705fadd00175293173791131383b8de5ca49047d6b5ec30797bfcd68575ec",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "27884e1c16a738a09fe28490fae836196f4107c64517ed66458776978db7546f",
+          "mach_sha256": "7d6b5c04179b261c62eec1e0b03952dd40bc3a4615dc61f4c370350023746dd0"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function frame: Inlining: stack too big\n1 error detected.",
+          "flags": "small-inline",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "small-inline",
+              "event": "selected",
+              "count": 1
+            }
+          ],
+          "ltl_dump": false,
+          "mach_dump": false
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "small-inline",
+          "automatic_fallback": true,
+          "output_sha256": "4b0705fadd00175293173791131383b8de5ca49047d6b5ec30797bfcd68575ec",
+          "ltl_dump": true,
+          "mach_dump": true,
+          "ltl_sha256": "27884e1c16a738a09fe28490fae836196f4107c64517ed66458776978db7546f",
+          "mach_sha256": "7d6b5c04179b261c62eec1e0b03952dd40bc3a4615dc61f4c370350023746dd0"
+        }
+      }
+    },
+    "packed-builtin-declaration": {
+      "stage": "C2C.convertProgram",
+      "source": "extern unsigned long long __builtin_cc_neon_add_u32x2(\n    unsigned long long, unsigned long long);\nunsigned long long call_external(void)\n{\n    return __builtin_cc_neon_add_u32x2(0, 0);\n}\n",
+      "source_sha256": "182dc3d2ee6ea74bf258101f09811dc6464b050f8a738287629687cf0b5aca0c",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/packed-builtin-declaration",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "compcert_config": "/Users/axel2/Downloads/compcert-fast/compcert.ini",
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "output_sha256": "9984a32bab17db9de559bc891c312a4363a53f3df8bef6f793f80dd0365b95e7"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c:1: error: explicit declaration of experimental builtin '__builtin_cc_neon_add_u32x2'\n1 error detected.",
+          "flags": "neon-packed",
+          "automatic_fallback": false,
+          "optimization_events": [
+            {
+              "pass": "neon-packed",
+              "event": "enabled",
+              "count": 1
+            }
+          ]
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "neon-packed",
+          "automatic_fallback": true,
+          "output_sha256": "9984a32bab17db9de559bc891c312a4363a53f3df8bef6f793f80dd0365b95e7"
+        }
+      }
+    }
+  },
+  "mixed_link": {
+    "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/mixed-link",
+    "source_sha256": {
+      "worker.c": "6d6bea79778dc571642326daa2c3882da2f5916efb9674656b697c108d67890c",
+      "packed.c": "c36b3e685337abe724d9371b3afa7832f71d6fa5f8da239edd6dcbb300aad023",
+      "callee.c": "e69ae8ac63ec5f89b00a3df143470e21e49cc4f2e98083791e93ab2d0ebfd4d5",
+      "main.c": "a235e7fde2f6a93eb19407d9a3f2a2d0f50593bedaade062b9aea64c00b61438"
+    },
+    "fallback_inputs": [
+      "packed-builtin-declaration fallback object",
+      "callee.o"
+    ],
+    "commands": {
+      "worker_assembly": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-S",
+        "worker.c",
+        "-o",
+        "worker.s"
+      ],
+      "worker": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "worker.c",
+        "-o",
+        "worker.o"
+      ],
+      "packed_assembly": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-S",
+        "-drtl",
+        "packed.c",
+        "-o",
+        "packed.s"
+      ],
+      "packed": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "packed.c",
+        "-o",
+        "packed.o"
+      ],
+      "callee": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "callee.c",
+        "-o",
+        "callee.o"
+      ],
+      "main": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "main.c",
+        "-o",
+        "main.o"
+      ],
+      "link": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "main.o",
+        "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/packed-builtin-declaration/fallback-output.o",
+        "worker.o",
+        "packed.o",
+        "callee.o",
+        "-o",
+        "mixed"
+      ],
+      "execute": [
+        "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/mixed-link/mixed"
+      ]
+    },
+    "outcomes": {
+      "worker_assembly": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "memory-neon,neon-packed",
+        "automatic_fallback": false
+      },
+      "worker": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "memory-neon,neon-packed",
+        "automatic_fallback": false
+      },
+      "packed_assembly": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "neon-packed",
+        "automatic_fallback": false
+      },
+      "packed": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "neon-packed",
+        "automatic_fallback": false
+      },
+      "callee": {
+        "exit": 0,
+        "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+        "flags": "neon-packed",
+        "automatic_fallback": true
+      },
+      "main": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "",
+        "automatic_fallback": false
+      },
+      "link": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "",
+        "automatic_fallback": false
+      },
+      "execute": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "",
+        "automatic_fallback": false
+      }
+    },
+    "optimized_worker_neon": true,
+    "packed_intrinsic_lowered": true,
+    "ordinary_symbol_and_local_shadow_preserved": true
+  },
+  "injected_assembler_failure": {
+    "stage": "native assembler",
+    "injected": true,
+    "source_sha256": {
+      "worker.c": "6d6bea79778dc571642326daa2c3882da2f5916efb9674656b697c108d67890c"
+    },
+    "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/injected-assembler",
+    "compcert_config": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/injected-assembler/compcert.ini",
+    "command": [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-c",
+      "worker.c",
+      "-o",
+      "worker.o"
+    ],
+    "outcomes": {
+      "reference": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "",
+        "automatic_fallback": false,
+        "assembler_attempts": [
+          "accept"
+        ],
+        "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+      },
+      "strict": {
+        "exit": 2,
+        "diagnostic": "injected assembler rejection of optimized attempt\nccomp: error: assembler command failed with exit code 1 (use -v to see invocation)\n\n1 error detected.",
+        "flags": "memory-neon",
+        "automatic_fallback": false,
+        "assembler_attempts": [
+          "reject"
+        ]
+      },
+      "fallback": {
+        "exit": 0,
+        "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+        "flags": "memory-neon",
+        "automatic_fallback": true,
+        "assembler_attempts": [
+          "reject",
+          "accept"
+        ],
+        "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+      }
+    }
+  },
+  "aliased_output": {
+    "explicit": {
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "worker.c",
+        "-o",
+        "worker.c"
+      ],
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "assembler_attempts": [
+            "accept"
+          ],
+          "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: input and output alias; compiling with experiments disabled.",
+          "flags": "memory-neon",
+          "automatic_fallback": true,
+          "assembler_attempts": [
+            "accept"
+          ],
+          "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+        }
+      }
+    },
+    "default_hardlink": {
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "worker.c"
+      ],
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "assembler_attempts": [
+            "accept"
+          ],
+          "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: input and output alias; compiling with experiments disabled.",
+          "flags": "memory-neon",
+          "automatic_fallback": true,
+          "assembler_attempts": [
+            "accept"
+          ],
+          "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+        }
+      }
+    }
+  },
+  "stream_inputs": {
+    "source_fifo": {
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "worker.c",
+        "-o",
+        "stream.o"
+      ],
+      "outcome": {
+        "exit": 0,
+        "diagnostic": "CompCert: input is not a regular file; compiling with experiments disabled.",
+        "flags": "memory-neon",
+        "automatic_fallback": true,
+        "assembler_attempts": [
+          "accept"
+        ],
+        "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+      }
+    },
+    "response_fifo": {
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "@compile.rsp"
+      ],
+      "outcome": {
+        "exit": 0,
+        "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+        "flags": "memory-neon",
+        "automatic_fallback": true,
+        "assembler_attempts": [
+          "reject",
+          "accept"
+        ],
+        "output_sha256": "2b0023729a1afaeefc65dc851f98cff60931031f5fecf79b441c3da29fd491ad"
+      }
+    }
+  },
+  "injected_linker_failure": {
+    "stage": "native linker",
+    "injected": true,
+    "source_sha256": {
+      "worker.c": "6d6bea79778dc571642326daa2c3882da2f5916efb9674656b697c108d67890c",
+      "main.c": "502f2b4345731df45be25237c03f1d311260b27dafa5f472cad85dbaaa2b06ec"
+    },
+    "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/injected-linker",
+    "compcert_config": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/injected-linker/compcert.ini",
+    "command": [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "worker.c",
+      "main.c",
+      "-o",
+      "linked"
+    ],
+    "outcomes": {
+      "reference": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "",
+        "automatic_fallback": false,
+        "linker_attempts": [
+          "accept"
+        ],
+        "output_sha256": "62c9de2ce37fbbc28fcbcc4bfbdf99e5a5e5ea173b9109a4ab77b70996764666",
+        "execution_exit": 0
+      },
+      "strict": {
+        "exit": 2,
+        "diagnostic": "injected linker rejection of optimized attempt\nccomp: error: linker command failed with exit code 1 (use -v to see invocation)\n\n1 error detected.",
+        "flags": "memory-neon",
+        "automatic_fallback": false,
+        "linker_attempts": [
+          "reject"
+        ]
+      },
+      "fallback": {
+        "exit": 0,
+        "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+        "flags": "memory-neon",
+        "automatic_fallback": true,
+        "linker_attempts": [
+          "reject",
+          "accept"
+        ],
+        "output_sha256": "62c9de2ce37fbbc28fcbcc4bfbdf99e5a5e5ea173b9109a4ab77b70996764666",
+        "execution_exit": 0
+      }
+    }
+  },
+  "trace_paths": {
+    "command": [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-S",
+      "worker.c",
+      "-o",
+      "worker.s"
+    ],
+    "outcomes": {
+      "valid": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "memory-neon",
+        "automatic_fallback": true,
+        "output_sha256": "0652cf9fdc147f3775cadf9405fe4ebb6d74fdf2507b636f99acf1e3c1c111c4"
+      },
+      "invalid_destination": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "memory-neon",
+        "automatic_fallback": true,
+        "output_sha256": "0652cf9fdc147f3775cadf9405fe4ebb6d74fdf2507b636f99acf1e3c1c111c4"
+      },
+      "aliases_input": {
+        "exit": 0,
+        "diagnostic": "CompCert: input and output alias; compiling with experiments disabled.",
+        "flags": "memory-neon",
+        "automatic_fallback": true
+      }
+    },
+    "startup_events": [
+      {
+        "pass": "memory-neon",
+        "event": "enabled",
+        "count": 1
+      }
+    ]
+  },
+  "transitive_trace_input": {
+    "command": [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "-S",
+      "worker.c",
+      "-o",
+      "worker.s"
+    ],
+    "outcomes": {
+      "reference": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "",
+        "automatic_fallback": false,
+        "output_sha256": "8ef8aa8ad268fa9c5099690ffe825a7599e9dd3837b557d3648b501c5f9e164e"
+      },
+      "strict": {
+        "exit": 2,
+        "diagnostic": "./trace.h:2:1: syntax error before '{'.\nAt this point, one of the following is expected:\n  a function definition; or\n  a declaration; or\n  a pragma; or\n  the end of the file.\nFatal error; compilation aborted.\n1 error detected.",
+        "flags": "memory-neon",
+        "automatic_fallback": false
+      },
+      "fallback": {
+        "exit": 0,
+        "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+        "flags": "memory-neon",
+        "automatic_fallback": true,
+        "output_sha256": "8ef8aa8ad268fa9c5099690ffe825a7599e9dd3837b557d3648b501c5f9e164e"
+      }
+    }
+  },
+  "large_response_file": {
+    "command": [
+      "/Users/axel2/Downloads/compcert-fast/ccomp",
+      "-stdlib",
+      "/Users/axel2/Downloads/compcert-fast/runtime",
+      "@compile.rsp"
+    ],
+    "response_bytes": 1300023,
+    "outcomes": {
+      "reference": {
+        "exit": 0,
+        "diagnostic": "",
+        "flags": "",
+        "automatic_fallback": false,
+        "output_sha256": "0cbd0427e474cb508a88b1575b09b01d2841bc992bb76ab0447bb5e9997a8293"
+      },
+      "fallback": {
+        "exit": 0,
+        "diagnostic": "CompCert: cannot capture experimental diagnostics; compiling with experiments disabled.",
+        "flags": "small-inline",
+        "automatic_fallback": true,
+        "output_sha256": "0cbd0427e474cb508a88b1575b09b01d2841bc992bb76ab0447bb5e9997a8293"
+      }
+    }
+  },
+  "transitive_dump_inputs": {
+    "overwritten_include": {
+      "stage": "Stacking.transf_function",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/overwritten_include",
+      "source_sha256": "5c75e9248563092d7d53157fe3979f737eeee0f1503c99f8b427d0380dad7792",
+      "header_seed": "#define UNUSED_HEADER 1\n",
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-drtl",
+        "-fno-inline",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "dump_sha256": "fdf93fa4e323cb7a2b10c684799df9747ce76651580800017d6796fa88d6aacd",
+          "output_sha256": "eeef552ce456685b9a6142d0a6eab31f1a1a1526d1e0b0136295bc246c394589"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function frame_limit: Too many spilled variables, stack size exceeded\n1 error detected.",
+          "flags": "licm-preheader",
+          "automatic_fallback": false,
+          "dump_sha256": "fdf93fa4e323cb7a2b10c684799df9747ce76651580800017d6796fa88d6aacd"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "licm-preheader",
+          "automatic_fallback": true,
+          "dump_sha256": "fdf93fa4e323cb7a2b10c684799df9747ce76651580800017d6796fa88d6aacd",
+          "output_sha256": "eeef552ce456685b9a6142d0a6eab31f1a1a1526d1e0b0136295bc246c394589"
+        }
+      }
+    },
+    "new_include": {
+      "stage": "Stacking.transf_function",
+      "working_directory": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/compilation-compatibility/check-44buyy3v/new_include",
+      "source_sha256": "4781d2c5bd0fe9f115d0db0e1870b52e05bcaeb821af82b1591c924c943fe491",
+      "header_seed": null,
+      "command": [
+        "/Users/axel2/Downloads/compcert-fast/ccomp",
+        "-stdlib",
+        "/Users/axel2/Downloads/compcert-fast/runtime",
+        "-c",
+        "-drtl",
+        "-fno-inline",
+        "-O2",
+        "input.c",
+        "-o",
+        "output.o"
+      ],
+      "outcomes": {
+        "reference": {
+          "exit": 0,
+          "diagnostic": "",
+          "flags": "",
+          "automatic_fallback": false,
+          "dump_sha256": "fdf93fa4e323cb7a2b10c684799df9747ce76651580800017d6796fa88d6aacd",
+          "output_sha256": "eeef552ce456685b9a6142d0a6eab31f1a1a1526d1e0b0136295bc246c394589"
+        },
+        "strict": {
+          "exit": 2,
+          "diagnostic": "input.c: error: In function frame_limit: Too many spilled variables, stack size exceeded\n1 error detected.",
+          "flags": "licm-preheader",
+          "automatic_fallback": false,
+          "dump_sha256": "fdf93fa4e323cb7a2b10c684799df9747ce76651580800017d6796fa88d6aacd"
+        },
+        "fallback": {
+          "exit": 0,
+          "diagnostic": "CompCert: experimental compilation failed; retrying with experiments disabled.",
+          "flags": "licm-preheader",
+          "automatic_fallback": true,
+          "dump_sha256": "fdf93fa4e323cb7a2b10c684799df9747ce76651580800017d6796fa88d6aacd",
+          "output_sha256": "eeef552ce456685b9a6142d0a6eab31f1a1a1526d1e0b0136295bc246c394589"
+        }
+      }
+    }
+  },
+  "inventory": {
+    "checked_optimizations": 24,
+    "sha256": "d4f4424d029c3e87db35d7eb57495526004b6201021040dd7a84e2620c1f9595"
+  },
+  "source_sha256": {
+    "perf/check_compilation_compatibility.py": "fb664f1f25c4869b39370146a490810b6fc93acee279fa8049c8b15be6253aba",
+    "perf/compilation-compatibility.json": "d4f4424d029c3e87db35d7eb57495526004b6201021040dd7a84e2620c1f9595"
+  },
+  "compiler_sha256": "a4ba8da8a044366526289174e710c378b2a79b9b1e4a1c656f83f6a5407d9cca"
+}
