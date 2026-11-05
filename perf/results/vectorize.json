@@ -504,7 +504,7 @@
     "backend/LowerLongproof.v": "babf252543229cf7abf4b6e09ae14771be8075d018aba539949ba33a154d70c0",
     "perf/test_vectorize.ml": "8b65f22f1f9c65e6a3df7d2c19cd9c1a4a1b367634fe296e26e3d03856273007",
     "perf/check_vectorize.py": "8c62638d25150a39c9b8d4e25f002065bc9d706fbabd53e9804c7077d474e36a",
-    "perf/experiment-profiles.json": "fbf87a18f09355ab784ff0e05ccfc5e799aeb585af8444dcfaa453805facc602"
+    "perf/experiment-profiles.json": "3a23439fd346055f823b43afad1d465f81eb5decad7cfc0d62326927b03bef34"
   },
-  "compiler_sha256": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2"
+  "compiler_sha256": "69c154d045105958092882b0bec3712a32337f35c4790cf5741150e3505d95d5"
 }

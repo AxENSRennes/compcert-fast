@@ -104,8 +104,8 @@
     "default": {
       "flags": "",
       "correctness_pass": true,
-      "stdout_sha256": "1c0d705f94dd6281f8fab52e0f9c1dbf3dcbb8e9a01d23e930728c936ce3ef49",
-      "assembly_sha256": "60bf15cb4b9622465a940ab7fa53c1363aa2a77bc8d0853306604bdfaf43b331",
+      "stdout_sha256": "17c272325ae6b49ff4778e36eb639e36eeac13b88d6c3e013f24d6f5a83254f6",
+      "assembly_sha256": "17dda739864d0cda826fcb45c2c3ade3c195151e0e7a3d8447d819b79b5d8e68",
       "functions": {
         "add_global8": {
           "rtl0_packed_add_calls": 0,
@@ -128,6 +128,36 @@
           "integer64_stores_nonstack": 0
         },
         "add_page": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_zero": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_even": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_page": {
           "rtl0_packed_add_calls": 0,
           "neon_add_2s": 0,
           "neon_add_4s": 0,
@@ -196,14 +226,44 @@
           "vector_stores": 0,
           "integer64_loads_nonstack": 0,
           "integer64_stores_nonstack": 0
+        },
+        "add_guard_weak": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_odd": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_different": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
         }
       }
     },
     "enabled": {
       "flags": "memory-neon",
       "correctness_pass": true,
-      "stdout_sha256": "1c0d705f94dd6281f8fab52e0f9c1dbf3dcbb8e9a01d23e930728c936ce3ef49",
-      "assembly_sha256": "10ebb9009c43bf142eafdf1745857f54abde29e81020ffba7e148f3e7cc5b429",
+      "stdout_sha256": "17c272325ae6b49ff4778e36eb639e36eeac13b88d6c3e013f24d6f5a83254f6",
+      "assembly_sha256": "967c187487a30bf97f7dc842770f155c4e5e67cb9a091891ecfba78587efc727",
       "functions": {
         "add_global8": {
           "rtl0_packed_add_calls": 1,
@@ -248,6 +308,99 @@
           "vector_loads": 0,
           "vector_stores": 0,
           "integer64_loads_nonstack": 9,
+          "integer64_stores_nonstack": 3
+        },
+        "add_guard_zero": {
+          "rtl0_packed_add_calls": 2,
+          "pointer_guard_symbol": "global8",
+          "pointer_guard_byte_offset": 0,
+          "aligned_arm": {
+            "pair_load": "int64",
+            "pair_store": "int64",
+            "packed_dataflow": true,
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "fallback_arm": {
+            "pair_loads": [
+              "int32",
+              "int32"
+            ],
+            "pair_store_lanes": [
+              "low",
+              "high"
+            ],
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "neon_add_2s": 6,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 4,
+          "integer64_stores_nonstack": 3
+        },
+        "add_guard_even": {
+          "rtl0_packed_add_calls": 2,
+          "pointer_guard_symbol": "shifted",
+          "pointer_guard_byte_offset": 8,
+          "aligned_arm": {
+            "pair_load": "int64",
+            "pair_store": "int64",
+            "packed_dataflow": true,
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "fallback_arm": {
+            "pair_loads": [
+              "int32",
+              "int32"
+            ],
+            "pair_store_lanes": [
+              "low",
+              "high"
+            ],
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "neon_add_2s": 6,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 3,
+          "integer64_stores_nonstack": 3
+        },
+        "add_guard_page": {
+          "rtl0_packed_add_calls": 2,
+          "pointer_guard_symbol": "page_array",
+          "pointer_guard_byte_offset": 8,
+          "aligned_arm": {
+            "pair_load": "int64",
+            "pair_store": "int64",
+            "packed_dataflow": true,
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "fallback_arm": {
+            "pair_loads": [
+              "int32",
+              "int32"
+            ],
+            "pair_store_lanes": [
+              "low",
+              "high"
+            ],
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "neon_add_2s": 6,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 4,
           "integer64_stores_nonstack": 3
         },
         "add_pointer": {
@@ -313,14 +466,44 @@
           "vector_stores": 0,
           "integer64_loads_nonstack": 0,
           "integer64_stores_nonstack": 0
+        },
+        "add_guard_weak": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_odd": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_different": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
         }
       }
     },
     "memory-loops": {
       "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d,memory-neon",
       "correctness_pass": true,
-      "stdout_sha256": "1c0d705f94dd6281f8fab52e0f9c1dbf3dcbb8e9a01d23e930728c936ce3ef49",
-      "assembly_sha256": "e66bf421d582a8a51f61601955389db58d155efb3661277af9ea552072491038",
+      "stdout_sha256": "17c272325ae6b49ff4778e36eb639e36eeac13b88d6c3e013f24d6f5a83254f6",
+      "assembly_sha256": "2d605a8d28d6fcb611cce2f78d3bdab9c5d39d7184591aa306436da0e57cd150",
       "functions": {
         "add_global8": {
           "rtl0_packed_add_calls": 1,
@@ -365,6 +548,99 @@
           "vector_loads": 0,
           "vector_stores": 0,
           "integer64_loads_nonstack": 27,
+          "integer64_stores_nonstack": 9
+        },
+        "add_guard_zero": {
+          "rtl0_packed_add_calls": 2,
+          "pointer_guard_symbol": "global8",
+          "pointer_guard_byte_offset": 0,
+          "aligned_arm": {
+            "pair_load": "int64",
+            "pair_store": "int64",
+            "packed_dataflow": true,
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "fallback_arm": {
+            "pair_loads": [
+              "int32",
+              "int32"
+            ],
+            "pair_store_lanes": [
+              "low",
+              "high"
+            ],
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "neon_add_2s": 18,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 10,
+          "integer64_stores_nonstack": 9
+        },
+        "add_guard_even": {
+          "rtl0_packed_add_calls": 2,
+          "pointer_guard_symbol": "shifted",
+          "pointer_guard_byte_offset": 8,
+          "aligned_arm": {
+            "pair_load": "int64",
+            "pair_store": "int64",
+            "packed_dataflow": true,
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "fallback_arm": {
+            "pair_loads": [
+              "int32",
+              "int32"
+            ],
+            "pair_store_lanes": [
+              "low",
+              "high"
+            ],
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "neon_add_2s": 18,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 9,
+          "integer64_stores_nonstack": 9
+        },
+        "add_guard_page": {
+          "rtl0_packed_add_calls": 2,
+          "pointer_guard_symbol": "page_array",
+          "pointer_guard_byte_offset": 8,
+          "aligned_arm": {
+            "pair_load": "int64",
+            "pair_store": "int64",
+            "packed_dataflow": true,
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "fallback_arm": {
+            "pair_loads": [
+              "int32",
+              "int32"
+            ],
+            "pair_store_lanes": [
+              "low",
+              "high"
+            ],
+            "tail_load": "int32",
+            "tail_store": "int32"
+          },
+          "neon_add_2s": 18,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 10,
           "integer64_stores_nonstack": 9
         },
         "add_pointer": {
@@ -430,6 +706,36 @@
           "vector_stores": 0,
           "integer64_loads_nonstack": 0,
           "integer64_stores_nonstack": 0
+        },
+        "add_guard_weak": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_odd": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 0,
+          "integer64_stores_nonstack": 0
+        },
+        "add_guard_different": {
+          "rtl0_packed_add_calls": 0,
+          "neon_add_2s": 0,
+          "neon_add_4s": 0,
+          "neon_xor": 0,
+          "vector_loads": 0,
+          "vector_stores": 0,
+          "integer64_loads_nonstack": 1,
+          "integer64_stores_nonstack": 0
         }
       }
     }
@@ -461,12 +767,39 @@
       "vector_stores": 3,
       "integer64_loads_nonstack": 1,
       "integer64_stores_nonstack": 0
+    },
+    "add_guard_zero": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 10,
+      "neon_xor": 0,
+      "vector_loads": 6,
+      "vector_stores": 6,
+      "integer64_loads_nonstack": 1,
+      "integer64_stores_nonstack": 0
+    },
+    "add_guard_even": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 0,
+      "neon_xor": 10,
+      "vector_loads": 6,
+      "vector_stores": 6,
+      "integer64_loads_nonstack": 0,
+      "integer64_stores_nonstack": 0
+    },
+    "add_guard_page": {
+      "neon_add_2s": 0,
+      "neon_add_4s": 10,
+      "neon_xor": 0,
+      "vector_loads": 6,
+      "vector_stores": 6,
+      "integer64_loads_nonstack": 1,
+      "integer64_stores_nonstack": 0
     }
   },
-  "regular_cases": 1440,
-  "aligned_guard_cases": 4,
-  "unaligned_guard_cases": 18,
-  "negative_rtl_controls": 5,
+  "regular_cases": 2880,
+  "aligned_guard_cases": 8,
+  "unaligned_guard_cases": 36,
+  "negative_rtl_controls": 8,
   "trusted_baseline_commit": "9222fcdceac9b6ae0d5375853423eaa83578bf76",
   "trusted_source_sha256": {
     "aarch64/Asm.v": "950ac8349bb188a216a8f7330f9aaed684c17a251b18376468e79fa8a9e13df9",
@@ -485,23 +818,23 @@
     "cfrontend/Cop.v": "adac91162faf39ef65202b6d45a6c95326a293fd4dad481dd2c232abf9369805"
   },
   "source_sha256": {
-    "cfrontend/ArrayPair.v": "d0ed9e6d45ba5f34ed12fb131922cf7b159ccc2387b7be47f6badadf97a0fddd",
-    "cfrontend/ArrayPairBase.v": "1423fc2a3cbc16562ee0c97d1194f12e9203f39d79ceb0ea716655fb8e8c5153",
-    "cfrontend/ArrayPairLocal.v": "b613e963e9984b158309c65812c6fc3bdd722d6baf9e8b38bad4fcb9a16392ea",
+    "cfrontend/ArrayPair.v": "d877d29e66be131062d1c73074f180fd8a38d9341fbb3dffd6f74cbb216799e5",
+    "cfrontend/ArrayPairBase.v": "3ce35aa192a40c62730f52b69008162f8dbdee3b7a17632eb92d1ca3ed9ab4e1",
+    "cfrontend/ArrayPairLocal.v": "37f9a1678baddea75d88136720753f94e5188b3d3b41638b02150d570d8ee023",
     "cfrontend/ArrayPairLocalFacts.v": "79ce2bcd74a2c789e04ace6505a755566d459a301c786e1b3e1720169ec55586",
     "cfrontend/ArrayPairLocalSource.v": "14e0a276736273b48b5b9559105d5ab8c1933eb89706c6789e6b68d7c35e1290",
-    "cfrontend/ArrayPairMatch.v": "c2f306063b11679ce4aedf2d12b187d3e738d06854730220dc4d821d17af6cc9",
-    "cfrontend/ArrayPairProgram.v": "9e79f3da6ac37a7d7f81d4b81161ff47ca96e2eda8c49f2cf6a8fa2b74fb8b5d",
+    "cfrontend/ArrayPairMatch.v": "dbebb4baaaa60ba2c8df84223bdc91f4fe10b1cb9fae15c503a9cf294a38da08",
+    "cfrontend/ArrayPairProgram.v": "f9b99fed93e25865b86239efd03be872efccc42d193b9aafc8ce05051d151119",
     "cfrontend/ArrayPairReplay.v": "10c8ffd2d9a24189b2a650643a530e64d94aefbfd30a9a8a4c5820876ef82978",
-    "cfrontend/ArrayPairTarget.v": "cb810d5827968cdec6f15b62aa2f420f80b981157db197b00d42d58d8c6ae201",
-    "cfrontend/ArrayPairTurn.v": "b5dd90d2db8eae9e47eca5dc22d7c54b35186a9b3ecc02bbc65f618e5c9ed68b",
+    "cfrontend/ArrayPairTarget.v": "554a081173ecc4903767f947a69853efbb615158d3507b56f06fba83bed11eb3",
+    "cfrontend/ArrayPairTurn.v": "852ac5039270b086fb066ccb3fb593db740880e8c684f8ccefb9969826b420ba",
     "cfrontend/ArrayPairWide.v": "c8831e2cee64cb07970636fd5f3d448f27dcc8107e7b0a0fb90c79e96da8581c",
-    "perf/check_arraypair_wide.py": "0d2a75a39f5e5a62887a0b7d6822d0fecb2b2b1675d73be64a6e8adde48af7cb",
+    "perf/check_arraypair_wide.py": "5882ede066cd3b9eb632ecdc45505d2bb2a97e4a3d065eaada312157c22290ba",
     "perf/check_arraypair.py": "88f027e31a8a7425d0ad82ac72d7221a974bf365bfd16c8eaf692f738e65c4bd",
-    "perf/experiment-profiles.json": "fbf87a18f09355ab784ff0e05ccfc5e799aeb585af8444dcfaa453805facc602",
+    "perf/experiment-profiles.json": "3a23439fd346055f823b43afad1d465f81eb5decad7cfc0d62326927b03bef34",
     "driver/Compiler.v": "94b0986c8ea97e9710fde48effeecd858dc3e8aa64a56d0a01c8b1aa03a7cbde",
     "compcert.ini": "6c34c08ea1c2be9f30cf2ab47392ab35d543027b33988a0e05cd7aecc7ae666c",
-    "ccomp": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2"
+    "ccomp": "69c154d045105958092882b0bec3712a32337f35c4790cf5741150e3505d95d5"
   },
-  "clang_assembly_sha256": "6fd0d86a162cdef81779e47cfbb5706d1bdd20eb79eb34b6750a4ca52d300d24"
+  "clang_assembly_sha256": "8d1ba5b618bd8ca60e8a33c034d0bf4497d5d207d165080ab8a33c97a70678d4"
 }

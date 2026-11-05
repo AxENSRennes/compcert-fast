@@ -1121,9 +1121,9 @@
       "test"
     ]
   ],
-  "compiler_sha256": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2",
+  "compiler_sha256": "69c154d045105958092882b0bec3712a32337f35c4790cf5741150e3505d95d5",
   "source_sha256": {
     "perf/check_native_profiles.py": "d6342f9c300818be32f3eea794f35fc4e09ed224159ec83e96ddb3ee7d3a0cbb",
-    "perf/experiment-profiles.json": "fbf87a18f09355ab784ff0e05ccfc5e799aeb585af8444dcfaa453805facc602"
+    "perf/experiment-profiles.json": "3a23439fd346055f823b43afad1d465f81eb5decad7cfc0d62326927b03bef34"
   }
 }

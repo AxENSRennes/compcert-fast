@@ -3123,9 +3123,9 @@
   ],
   "source_sha256": {
     "perf/check_experiments.py": "b197b79d38044bb60326abe415df2e7053ff219c475faefbe0ce38318c8849de",
-    "perf/experiment-profiles.json": "fbf87a18f09355ab784ff0e05ccfc5e799aeb585af8444dcfaa453805facc602"
+    "perf/experiment-profiles.json": "3a23439fd346055f823b43afad1d465f81eb5decad7cfc0d62326927b03bef34"
   },
-  "compiler_sha256": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2",
+  "compiler_sha256": "69c154d045105958092882b0bec3712a32337f35c4790cf5741150e3505d95d5",
   "frozen_suite": {
     "scalar2": {
       "correctness_pass": true,

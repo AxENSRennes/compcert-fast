@@ -731,7 +731,7 @@
     "whole-program transformation uses the tested production function"
   ],
   "check_count": 115,
-  "compiler_sha256": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2",
+  "compiler_sha256": "69c154d045105958092882b0bec3712a32337f35c4790cf5741150e3505d95d5",
   "source_sha256": {
     "backend/MemoryNeon.v": "f879e0fd24d74182fb80144d00762cbc1ef911ee95b22cfd7291eb1b4fe81885",
     "backend/MemoryNeonproof.v": "8eacf5ddd0a215f1b0ec9d6c89fa72cae971267e24e2f7e378a2217a96cb96b1",
@@ -740,7 +740,7 @@
     "backend/MemoryNeonBounds.v": "cddb5d77cde094cfd1a838a61714c1b330405e235ace511f8ee668170f9a979a",
     "perf/test_memoryneon.ml": "67db3aa100c08e529e3cf3dd7bf9ae0197556caae5c302dd3eba26871aaf06eb",
     "perf/check_memoryneon.py": "092203a115a1464dd2b2d3f90c94074d045043de713547f8bbeef4d0749f07ce",
-    "perf/experiment-profiles.json": "fbf87a18f09355ab784ff0e05ccfc5e799aeb585af8444dcfaa453805facc602"
+    "perf/experiment-profiles.json": "3a23439fd346055f823b43afad1d465f81eb5decad7cfc0d62326927b03bef34"
   },
   "production_extraction_sha256": {
     "driver/Configuration.cmi": "e183d5d2079c35274908596bd657fbdc10b99c96635cc4a45135a806d9e07b16",

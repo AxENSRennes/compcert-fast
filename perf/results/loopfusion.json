@@ -484,7 +484,7 @@
     "lib/Responsefile.mli": "b275fd7c3b4b3b7c5ca3b97143ba2da5691a02a5fa7e783ccef3bf42ea43b61b",
     "lib/Responsefile.o": "c8116da31a3cff3874b4a2def9e4e00f5413d24cda5a63b42f86e901a40d2e19"
   },
-  "compiler_sha256": "37acb2dfe98ebf5702b3dd56979e81a38b1ba347be147648b56b4ba5f82c05c2",
+  "compiler_sha256": "69c154d045105958092882b0bec3712a32337f35c4790cf5741150e3505d95d5",
   "checks": [
     "bound0/sharedfalse candidate changes CFG",
     "production validator accepts actual fusion",
