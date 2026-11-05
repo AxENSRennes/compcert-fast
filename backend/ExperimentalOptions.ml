@@ -24,7 +24,9 @@ let flags =
     List.sort_uniq String.compare items
   end
 
-let enabled name = List.mem name flags
+let enabled name =
+  (* Internal trace label for the local path of the public memory-neon option. *)
+  List.mem (if name="pointer-neon" then "memory-neon" else name) flags
 
 let memoryneon_enabled () = enabled "memory-neon"
 

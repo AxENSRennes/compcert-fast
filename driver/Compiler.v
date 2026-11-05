@@ -48,6 +48,7 @@ Require LoopFusion.
 Require LoopTile2D.
 Require MemVector.
 Require MemoryNeon.
+Require PointerNeon.
 Require LoopInterchange.
 Require LoopTile.
 Require Vectorize.
@@ -89,6 +90,7 @@ Require LoopFusionproof.
 Require LoopTile2Dproof.
 Require MemVectorproof.
 Require MemoryNeonproof.
+Require PointerNeonproof.
 Require LoopInterchangeproof.
 Require LoopTileproof.
 Require Vectorizeproof.
@@ -175,6 +177,10 @@ Definition transf_rtl_program (f: RTL.program) : res Asm.program :=
   @@@ partial_if Compopts.optim_redundancy (time "Redundancy elimination" Deadcode.transf_program)
    @@ print (print_RTL 7)
    @@ print (print_RTL 50)
+   @@ total_if Compopts.experimental_memoryneon (time "Guarded pointer NEON" PointerNeon.transf_program)
+   @@ print (print_RTL 78)
+   @@ total_if Compopts.experimental_memoryneon (time "Pointer NEON packing lowering" LowerLong.transf_program)
+   @@ print (print_RTL 79)
    @@ total_if Compopts.experimental_memoryneon (time "NEON peeling renumber" Renumber.transf_program)
    @@ total_if Compopts.experimental_memoryneon (time "NEON two-iteration peeling" PeelTwo.transf_program)
   @@@ partial_if Compopts.experimental_memoryneon (time "NEON peeled cleanup" ExtraCleanup.transf_program)
@@ -349,6 +355,8 @@ Definition CompCert's_passes :=
   ::: mkpass (match_if Compopts.optim_constprop Renumberproof.match_prog)
   ::: mkpass (match_if Compopts.optim_CSE CSEproof.match_prog)
   ::: mkpass (match_if Compopts.optim_redundancy Deadcodeproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memoryneon PointerNeonproof.match_prog)
+  ::: mkpass (match_if Compopts.experimental_memoryneon LowerLongproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_memoryneon Renumberproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_memoryneon PeelTwoproof.match_prog)
   ::: mkpass (match_if Compopts.experimental_memoryneon ExtraCleanupproof.match_prog)
@@ -424,7 +432,9 @@ Proof.
   set (p11 := total_if optim_constprop Renumber.transf_program p10) in *.
   destruct (partial_if optim_CSE CSE.transf_program p11) as [p12|e] eqn:P12; cbn [apply_total apply_partial] in T; try discriminate.
   destruct (partial_if optim_redundancy Deadcode.transf_program p12) as [p13|e] eqn:P13; cbn [apply_total apply_partial] in T; try discriminate.
-  set (p13neN := total_if experimental_memoryneon Renumber.transf_program p13) in *.
+  set (p13ptr := total_if experimental_memoryneon PointerNeon.transf_program p13) in *.
+  set (p13ptrL := total_if experimental_memoryneon LowerLong.transf_program p13ptr) in *.
+  set (p13neN := total_if experimental_memoryneon Renumber.transf_program p13ptrL) in *.
   set (p13neP := total_if experimental_memoryneon PeelTwo.transf_program p13neN) in *.
   destruct (partial_if experimental_memoryneon ExtraCleanup.transf_program p13neP)
     as [p13neC|e] eqn:P13neC; cbn [apply_total apply_partial] in T; try discriminate.
@@ -479,6 +489,8 @@ Proof.
   exists p11; split. apply total_if_match. apply Renumberproof.transf_program_match.
   exists p12; split. eapply partial_if_match; eauto. apply CSEproof.transf_program_match.
   exists p13; split. eapply partial_if_match; eauto. apply Deadcodeproof.transf_program_match.
+  exists p13ptr; split. apply total_if_match. apply PointerNeonproof.transf_program_match.
+  exists p13ptrL; split. apply total_if_match. apply LowerLongproof.transf_program_match.
   exists p13neN; split. apply total_if_match. apply Renumberproof.transf_program_match.
   exists p13neP; split. apply total_if_match. apply PeelTwoproof.transf_program_match.
   exists p13neC; split. eapply partial_if_match; eauto. apply ExtraCleanupproof.transf_program_match.
@@ -567,7 +579,7 @@ Ltac DestructM :=
       destruct H as (p & M & MM)
   end.
   repeat DestructM. subst tp.
-  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p51)).
+  assert (F: forward_simulation (Cstrategy.semantics p) (Asm.semantics p53)).
   {
   eapply compose_forward_simulations.
     eapply SimplExprproof.transl_program_correct; eassumption.
@@ -594,6 +606,10 @@ Ltac DestructM :=
     eapply match_if_simulation. eassumption. exact CSEproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact Deadcodeproof.transf_program_correct; eassumption.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact PointerNeonproof.transf_program_correct.
+  eapply compose_forward_simulations.
+    eapply match_if_simulation. eassumption. exact LowerLongproof.transf_program_correct.
   eapply compose_forward_simulations.
     eapply match_if_simulation. eassumption. exact Renumberproof.transf_program_correct.
   eapply compose_forward_simulations.

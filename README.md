@@ -77,7 +77,7 @@ Coq kernel.
 
 ### Default-disabled experiments
 
-This branch is `experiment/neon-memory`; it has not been promoted to `fast`.
+This branch is `experiment/pointer-neon`; it has not been promoted to `fast`.
 No speed improvement is claimed. The full option list, combined profiles and
 precise limits are in `perf/experiment-profiles.json`. For example:
 
@@ -159,17 +159,23 @@ The experiments currently implement:
   check surrounding cells and overlapping copies, and reject unsupported
   unrelated values, volatile accesses and arbitrary pointer bases. This is
   scalar memory widening across iterations, not general memory SIMD.
-* `memory-neon` recognizes a canonical, fixed two-iteration uint32 memory
-  loop whose existing signed comparison establishes that both input lanes
-  are integers. It uses the existing peeling/cleanup passes before other experiments, then emits
-  a 64-bit load, the existing packed uint32x2 NEON addition builtin, and a
-  64-bit store. The source guard is retained; no speculative wide access is
-  introduced on its false path. The initial shape is a void function without
-  parameters or stack storage, a global array at offsets zero/four, and the
-  canonical RTL layout produced by `guarded_pair` in the correctness fixture.
-  It is deliberately conservative: other layouts, unguarded loops, volatile
-  memory, arbitrary pointer bases and dynamic bounds remain unchanged.
-  The source needs no intrinsic or manually packed 64-bit C value.
+* `memory-neon` now validates a local signed guard followed by two adjacent
+  uint32 add-immediate operations. It packs their independent inputs, uses
+  the existing packed uint32x2 NEON addition builtin and extracts both results.
+  Its simulation covers arbitrary function signatures, parameters, registers,
+  node labels, calls and loop counts. Ordinary C tests cover variable-length
+  indexed and pointer-increment loops, source scalar tails, aliased output
+  pointers, live result registers and pointers aligned only on four bytes.
+  Every original load/store and its order is retained, including volatile
+  accesses around the pure arithmetic window. No eight-byte alignment,
+  no-alias or no-wrap assumption is added. One pair is selected per function
+  with at most 512 RTL nodes, checked unique predecessors and conservative
+  register constraints. Packing is lowered immediately by `LowerLong`.
+  The signed guard and pair-shaped source loop must already exist; this pass
+  does not automatically strip-mine arbitrary scalar loops or synthesize a
+  scalar remainder. No intrinsic or manually packed C value is required.
+  The previous canonical fixed global-loop path with wide load/store remains
+  available after the local pass and its preparation.
 * `loop-fusion` proposes interleaving two adjacent pure counted loops, with
   shared or separate counters. A reusable proved symbolic validator checks
   both whole functions: only total, memory-independent operations and known
@@ -238,7 +244,7 @@ NEON inside both ordinary C functions and ordinary C loops; source intrinsics
 are not required. This is correlated-lane SLP, not general vector loads/stores
 or vectorization across loop iterations.
 
-The separate `memory-neon` pass handles two independent memory lanes under
+The fixed-global `MemoryNeon` path handles two independent memory lanes under
 the source's existing signed guard. Four exact byte-level lemmas establish
 wide reads/writes from explicit integer and alignment witnesses. The whole
 function simulation delays target execution while the finite source region
@@ -251,6 +257,17 @@ above. Tests require actual NEON arithmetic plus 64-bit memory operations,
 compare independent random/boundary lanes and sentinel bytes, and compare
 ordinary C outputs with clang. There is no general alias analysis, arbitrary
 trip-count vectorization or scalar-remainder construction in this pass.
+
+`PointerNeon` supplies the local path under the same `memory-neon` option.
+Its ready/intermediate-state simulation handles the guarded arithmetic window
+inside arbitrary surrounding control flow, so the proof needs no fixed trip
+count or whole-function template. The source guard proves both values are
+integers; the target restores every original live register before the
+following memory instructions. Scalar 32-bit memory accesses keep their
+original addresses and order, allowing four-byte-aligned pointer inputs and
+aliasing without widening memory accesses. Existing loop controls and odd
+scalar tails stay intact. Its tests check source, transformed and lowered
+execution, memory access order, memory bytes, live registers and fault paths.
 
 Alias-dependent memory LICM, general nested-region invariant motion,
 fusion/interchange/tiling of dynamic or memory-dependent nests, general
