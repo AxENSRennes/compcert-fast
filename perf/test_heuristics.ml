@@ -110,6 +110,7 @@ let check_allocator () =
   fingerprint candidate
 
 let () =
+  ExperimentalOptions.start_trace ();
   check_graphs ();
   check_costs ();
   check_layout ();
