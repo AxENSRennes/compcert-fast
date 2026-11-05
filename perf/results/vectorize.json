@@ -491,7 +491,7 @@
       "correctness_pass": true
     },
     "memory-loops": {
-      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d",
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d,memory-neon",
       "options": [],
       "neon_emitted": true,
       "correctness_pass": true
@@ -504,7 +504,7 @@
     "backend/LowerLongproof.v": "babf252543229cf7abf4b6e09ae14771be8075d018aba539949ba33a154d70c0",
     "perf/test_vectorize.ml": "8b65f22f1f9c65e6a3df7d2c19cd9c1a4a1b367634fe296e26e3d03856273007",
     "perf/check_vectorize.py": "8c62638d25150a39c9b8d4e25f002065bc9d706fbabd53e9804c7077d474e36a",
-    "perf/experiment-profiles.json": "0c53b96afaedcbdc3b5769a39fcea1db02c3f0034dcc64116e5087760f15f3f1"
+    "perf/experiment-profiles.json": "c2582bc0b349d9383ca2f0d7ae9f742e8623c4ecb114ad9d11ff36c09297b16b"
   },
-  "compiler_sha256": "9529c09eb37e4bb206d6c7e7ff69b35c4c6aac11fba91be19fac32787d962842"
+  "compiler_sha256": "0abfb516a34de865863bcf91f06317dc4d6bfc5fdefbd4c9d97e3b99257e2861"
 }

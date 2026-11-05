@@ -65,6 +65,7 @@ Compopts.experimental_scalar : unit -> bool
 Compopts.experimental_preheader : unit -> bool
 Compopts.experimental_peel : unit -> bool
 Compopts.experimental_memvector : unit -> bool
+Compopts.experimental_memoryneon : unit -> bool
 Compopts.experimental_loadforward : unit -> bool
 Compopts.experimental_licm : unit -> bool
 Compopts.experimental_interchange : unit -> bool
@@ -147,6 +148,7 @@ Compopts.experimental_scalar : unit -> bool
 Compopts.experimental_preheader : unit -> bool
 Compopts.experimental_peel : unit -> bool
 Compopts.experimental_memvector : unit -> bool
+Compopts.experimental_memoryneon : unit -> bool
 Compopts.experimental_loadforward : unit -> bool
 Compopts.experimental_licm : unit -> bool
 Compopts.experimental_interchange : unit -> bool

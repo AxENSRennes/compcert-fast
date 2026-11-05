@@ -823,7 +823,7 @@
       "success": true
     },
     "memory-loops": {
-      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d",
+      "flags": "small-inline,loop-spill,trace-layout,arm64-combine,hoist-constant,schedule-pure,load-forward,store-elim,loop-unswitch,rtl-unroll2,memory-cleanup,auto-neon,licm-pure,strength-reduce,loop-peel,licm-preheader,memory-vector,loop-fusion,loop-interchange,loop-tile,loop-tile2d,memory-neon",
       "passed": 152,
       "skipped": 2,
       "interpreter_agreements": 1,
@@ -1121,9 +1121,9 @@
       "test"
     ]
   ],
-  "compiler_sha256": "9529c09eb37e4bb206d6c7e7ff69b35c4c6aac11fba91be19fac32787d962842",
+  "compiler_sha256": "0abfb516a34de865863bcf91f06317dc4d6bfc5fdefbd4c9d97e3b99257e2861",
   "source_sha256": {
     "perf/check_native_profiles.py": "d6342f9c300818be32f3eea794f35fc4e09ed224159ec83e96ddb3ee7d3a0cbb",
-    "perf/experiment-profiles.json": "0c53b96afaedcbdc3b5769a39fcea1db02c3f0034dcc64116e5087760f15f3f1"
+    "perf/experiment-profiles.json": "c2582bc0b349d9383ca2f0d7ae9f742e8623c4ecb114ad9d11ff36c09297b16b"
   }
 }
