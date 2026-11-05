@@ -73,7 +73,16 @@ Definition pair_flag (p: plan) (i n: int) : bool :=
   let rem := match layout p with Indexed _ => Int.sub n i | _ => n end in
   negb (Int.ltu rem (Int.repr 2)).
 
-(** The index is even whenever an aligned array loop can take a turn.
+Definition base_ready (p: plan) (le: temp_env) : Prop :=
+  pointer_wide p = true -> forall b ofs,
+  le!(pointer p) = Some (Vptr b ofs) -> (8 | Ptrofs.unsigned ofs).
+
+Lemma base_ready_set_other:
+  forall p le id v, id <> pointer p ->
+  (base_ready p (PTree.set id v le) <-> base_ready p le).
+Proof. intros. unfold base_ready. rewrite PTree.gso by congruence. reflexivity. Qed.
+
+(** The base is aligned and the index is even whenever a wide loop can take a turn.
     After a scalar tail the loop is exhausted, so its odd index is harmless. *)
 Definition wide_ready (p: plan) (le: temp_env) : Prop :=
   forall i n,
@@ -81,7 +90,7 @@ Definition wide_ready (p: plan) (le: temp_env) : Prop :=
     le!(bound p) = Some (Vint n) ->
     index_value p le i ->
     loop_flag p i n = true ->
-    (2 | Int.unsigned i).
+    (2 | Int.unsigned i) /\ base_ready p le.
 
 Lemma wide_ready_narrow:
   forall p le, wide p = false -> wide_ready p le.
@@ -90,16 +99,17 @@ Proof. intros p le NARROW i n WIDE; congruence. Qed.
 Lemma wide_indexed:
   forall p, wide p = true -> exists id, layout p = Indexed id.
 Proof.
-  intros p WIDE. unfold wide, array_anchor in WIDE.
+  intros p WIDE. unfold wide in WIDE.
   destruct (layout p); try discriminate. eauto.
 Qed.
 
 Lemma wide_ready_init:
   forall p le id,
   layout p = Indexed id ->
+  base_ready p (PTree.set id (Vint Int.zero) le) ->
   wide_ready p (PTree.set id (Vint Int.zero) le).
 Proof.
-  intros p le id L i n _ _ IDX _.
+  intros p le id L BASE i n _ _ IDX _. split; [|exact BASE].
   unfold index_value in IDX. rewrite L, PTree.gss in IDX.
   injection IDX as <-. rewrite Int.unsigned_zero. apply Z.divide_0_r.
 Qed.

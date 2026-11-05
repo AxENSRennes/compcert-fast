@@ -176,9 +176,14 @@ The experiments currently implement:
   the offset within the block from the even index and proves that a single
   `Mint64` load and store produce the
   same result as the two scalar iterations. An odd final element still uses
-  a 32-bit load and store. The pointer-parameter path retains 32-bit memory
-  accesses. Tests check the widened load and store through the NEON result,
-  aligned page boundaries, and four-byte-only alignment on the pointer path.
+  a 32-bit load and store. For pointer parameters, a retained source test
+  `p == aligned_array` or `p == aligned_array + constant` supplies the
+  alignment witness on its true branch. The constant must be a nonnegative,
+  in-bounds even index. Both arms must contain the same supported indexed
+  loop using a shared index variable. The false branch pairs with separate
+  32-bit accesses, as does the ordinary unguarded pointer form.
+  Tests check the widened load and store through the NEON result, alignment
+  at page boundaries, and four-byte-only alignment on the fallback path.
 * `AutoPair`, under `memory-neon`, forms pairs automatically from the scalar
   step-one loop `while(n){x=p[0];y=p[1];if((int)x<(int)y)p[0]=x+K;++p;--n;}`.
   It dispatches two iterations to one packed NEON addition and retains the

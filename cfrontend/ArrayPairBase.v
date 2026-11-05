@@ -33,23 +33,30 @@ Lemma pointer_value_narrow : forall ge e p le b ofs,
 Proof. intros; unfold pointer_value; now rewrite H. Qed.
 
 Lemma pointer_value_anchor_zero : forall ge e p le b ofs,
-  wide p = true -> pointer_value ge e p le b ofs -> ofs = Ptrofs.zero.
-Proof. intros; unfold wide, pointer_value in *; destruct (array_anchor p) as [[len al]|]; intuition discriminate. Qed.
+  anchored p = true -> pointer_value ge e p le b ofs -> ofs = Ptrofs.zero.
+Proof. intros; unfold anchored, pointer_value in *; destruct (array_anchor p) as [[len al]|]; intuition discriminate. Qed.
+
+Lemma array_binding_eval : forall ge e le m id len al b,
+  array_binding ge e id (array_type len al) b ->
+  eval_expr ge e le m (Evar id (array_type len al)) (Vptr b Ptrofs.zero).
+Proof.
+  intros ge e le m id len al b BIND. unfold array_binding in BIND.
+  eapply eval_Elvalue with (bf := Full).
+  - destruct (e!id) as [[b' ty]|] eqn:E.
+    + inv BIND. apply eval_Evar_local; exact E.
+    + apply eval_Evar_global; assumption.
+  - apply deref_loc_reference; reflexivity.
+Qed.
 
 Lemma pointer_value_eval : forall ge e p le b ofs m,
   pointer_value ge e p le b ofs -> eval_expr ge e le m (pointer_expr p) (Vptr b ofs).
 Proof.
   intros ge e p le b ofs m PTR. unfold pointer_value, pointer_expr in *.
   destruct (array_anchor p) as [[len al]|]; [|now constructor].
-  destruct PTR as [-> BIND]. unfold array_binding in BIND.
-  eapply eval_Elvalue with (bf := Full).
-  - destruct (e!(pointer p)) as [[b' ty]|] eqn:E.
-    + inv BIND. apply eval_Evar_local; exact E.
-    + apply eval_Evar_global; assumption.
-  - apply deref_loc_reference; reflexivity.
+  destruct PTR as [-> BIND]. now apply array_binding_eval.
 Qed.
 
-Local Lemma array_expr_inv : forall ge e le m id len al v,
+Lemma array_expr_inv : forall ge e le m id len al v,
   eval_expr ge e le m (Evar id (array_type len al)) v ->
   exists b, v = Vptr b Ptrofs.zero /\ array_binding ge e id (array_type len al) b.
 Proof.

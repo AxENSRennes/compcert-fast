@@ -36,46 +36,79 @@ Proof.
     split_checks; f_equal; eauto using same_expr_sound.
 Qed.
 
-Lemma matches_sound : forall f p, matches f p = true -> f = source_template p.
+Lemma matches_sound : forall f p body, matches f p body = true ->
+  f = with_body (source_template p) body.
 Proof.
-  intros [ret cc params vars temps body] p H.
+  intros [ret cc params vars temps old] p body H.
   unfold matches in H. cbn [fn_return fn_callconv fn_params fn_vars fn_temps fn_body] in H.
-  split_checks. unfold source_template. f_equal; auto using same_stmt_sound.
+  split_checks. unfold with_body, source_template. simpl. f_equal; auto using same_stmt_sound.
+Qed.
+
+Lemma distinct_sound : forall p, distinct p = true -> well_formed p.
+Proof.
+  intros p CHECK. unfold distinct in CHECK.
+  apply Bool.andb_true_iff in CHECK as [D REST].
+  split. destruct (peq (pointer p) (bound p)); simpl in D; discriminate || assumption.
+  destruct (layout p); auto.
+  destruct (peq index (pointer p)), (peq index (bound p)); simpl in REST;
+    try discriminate; auto.
 Qed.
 
 Lemma checked_sound : forall f p p', checked f p = Some p' ->
-  f = source_template p' /\ well_formed p'.
+  f = source_template p' /\ well_formed p' /\ pointer_wide p' = pointer_wide p.
 Proof.
   intros f p p'. unfold checked.
-  destruct (peq (pointer p) (bound p)); try discriminate.
-  assert (W: forall b, (match layout p with
-            | Indexed i => peq i (pointer p) || peq i (bound p)
-            | _ => false end) = b -> b = false -> well_formed p).
-  { intros b E ->. split; auto. destruct (layout p); auto.
-    destruct (peq index (pointer p)), (peq index (bound p)); simpl in E;
-      try discriminate; auto. }
-  destruct (match layout p with
-            | Indexed i => peq i (pointer p) || peq i (bound p)
-            | _ => false end) eqn:E; try discriminate.
-  destruct (matches f p) eqn:M; try discriminate. intros H; inv H.
-  split. now apply matches_sound. eauto.
+  destruct (distinct p && matches f p (source_body p)) eqn:C; try discriminate.
+  intros H. inv H. apply Bool.andb_true_iff in C as [D M].
+  split; [now apply matches_sound in M|]. split; auto using distinct_sound.
 Qed.
 
-Lemma selected_sound : forall f p, selected f = Some p ->
-  f = source_template p /\ well_formed p.
+Lemma selected_plain_sound : forall f p, selected_plain f = Some p ->
+  f = source_template p /\ well_formed p /\ pointer_wide p = false.
 Proof.
-  intros f p. unfold selected.
+  intros f p. unfold selected_plain.
   destruct (fn_params f) as [|[ptr t] [|[n t'] [|a rest]]]; try discriminate.
   - destruct (find_increment (fn_body f)) as [[k sign]|]; try discriminate.
     destruct (fn_temps f) as [|[i ti] [|a rest]]; try discriminate.
     destruct (find_array (fn_body f)) as [[base ty]|]; try discriminate.
-    apply checked_sound.
+    intros C; apply checked_sound in C; exact C.
   - destruct (find_increment (fn_body f)) as [[k sign]|]; try discriminate.
     destruct (fn_temps f) as [|[i ti] [|a rest]]; try discriminate.
-    + destruct (checked f (Plan ptr n WhilePointer k sign None)) eqn:H.
-      * intros E; inv E. eapply checked_sound; eauto.
-      * apply checked_sound.
-    + apply checked_sound.
+    + destruct (checked f (Plan ptr n WhilePointer k sign None false)) eqn:H.
+      * intros E; inv E. apply checked_sound in H; exact H.
+      * intros C; apply checked_sound in C; exact C.
+    + intros C; apply checked_sound in C; exact C.
+Qed.
+
+Lemma selected_guarded_sound : forall f p g, selected_guarded f = Some (p, g) ->
+  f = source_function p (Some g) /\ well_formed p /\
+  pointer_wide p = false /\ valid_guard g = true.
+Proof.
+  intros f p g. unfold selected_guarded.
+  destruct (fn_params f) as [|[ptr pt] [|[n nt] [|x xs]]]; try discriminate.
+  destruct (fn_temps f) as [|[i it] [|x xs]]; try discriminate.
+  destruct (fn_body f); try discriminate.
+  destruct s1; try discriminate. destruct s2; try discriminate.
+  destruct (find_guard e) as [test|]; try discriminate.
+  destruct (find_increment s2_1) as [[k sign]|]; try discriminate.
+  set (q := Plan ptr n (Indexed i) k sign None false).
+  destruct (valid_guard test && distinct q && matches f q (guarded_source q test))
+    eqn:C; try discriminate.
+  intros H; inv H. apply Bool.andb_true_iff in C as [C M].
+  apply Bool.andb_true_iff in C as [V D].
+  split; [exact (matches_sound _ _ _ M)|].
+  split; [now apply distinct_sound|]. split; [reflexivity|exact V].
+Qed.
+
+Lemma selected_sound : forall f p g, selected f = Some (p, g) ->
+  f = source_function p g /\ well_formed p /\ pointer_wide p = false /\
+  match g with Some test => valid_guard test = true | None => True end.
+Proof.
+  intros f p g. unfold selected.
+  destruct (selected_guarded f) as [[q test]|] eqn:G.
+  - intros H; inv H. eapply selected_guarded_sound; eauto.
+  - destruct (selected_plain f) as [q|] eqn:S; try discriminate.
+    intros H; inv H. apply selected_plain_sound in S as [-> [WF NARROW]]. auto.
 Qed.
 
 Lemma scratch_pointer : forall p, scratch p <> pointer p.
@@ -105,6 +138,6 @@ Lemma metadata_preserved : forall f,
   fn_params (transf_function f) = fn_params f /\
   fn_vars (transf_function f) = fn_vars f.
 Proof.
-  intros f. unfold transf_function. destruct (selected f) eqn:S; auto.
-  apply selected_sound in S as [-> _]. repeat split.
+  intros f. unfold transf_function. destruct (selected f) as [[p g]|] eqn:S; auto.
+  apply selected_sound in S as [-> _]. destruct g; repeat split.
 Qed.

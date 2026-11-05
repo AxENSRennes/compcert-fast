@@ -505,6 +505,7 @@ Qed.
 
 Local Lemma wide_ready_next_pair:
   forall p le b ofs i n,
+  well_formed p ->
   wide_ready p le ->
   le!(bound p) = Some (Vint n) ->
   index_value p le i ->
@@ -512,19 +513,38 @@ Local Lemma wide_ready_next_pair:
   pair_flag p i n = true ->
   wide_ready p (advanced_env p le b ofs i n 2).
 Proof.
-  intros p le b ofs i n READY COUNT IDX GO BOTH j n'
+  intros p le b ofs i n WF READY COUNT IDX GO BOTH j n'
     WIDE _ IDX' _.
   destruct (wide_indexed p WIDE) as [id L].
-  destruct (READY i n WIDE COUNT IDX GO) as [q EVEN].
-  unfold index_value, advanced_env in IDX'.
-  rewrite L, PTree.gss in IDX'. injection IDX' as <-.
-  pose proof (proj1 (pair_flag_spec p i n GO) BOTH) as TWO.
-  unfold remaining in TWO. rewrite L in TWO.
-  pose proof (Int.unsigned_range_2 i).
-  pose proof (Int.unsigned_range_2 n).
-  unfold Int.add. change (Int.unsigned (Int.repr 2)) with 2.
-  rewrite Int.unsigned_repr by lia.
-  exists (q + 1). lia.
+  destruct (READY i n WIDE COUNT IDX GO) as [[q EVEN] BASE].
+  split.
+  - unfold index_value, advanced_env in IDX'.
+    rewrite L, PTree.gss in IDX'. injection IDX' as <-.
+    pose proof (proj1 (pair_flag_spec p i n GO) BOTH) as TWO.
+    unfold remaining in TWO. rewrite L in TWO.
+    pose proof (Int.unsigned_range_2 i).
+    pose proof (Int.unsigned_range_2 n).
+    unfold Int.add. change (Int.unsigned (Int.repr 2)) with 2.
+    rewrite Int.unsigned_repr by lia.
+    exists (q + 1). lia.
+  - destruct WF as [_ FRESH]. rewrite L in FRESH.
+    unfold advanced_env. rewrite L, base_ready_set_other by tauto. exact BASE.
+Qed.
+
+Local Lemma aligned_base:
+  forall ge p e le b ofs,
+  wide p = true -> base_ready p le -> pointer_value ge e p le b ofs ->
+  (8 | Ptrofs.unsigned ofs).
+Proof.
+  intros ge p e le b ofs WIDE READY PTR.
+  destruct (anchored p) eqn:ANCHOR.
+  - rewrite (pointer_value_anchor_zero ge e p le b ofs ANCHOR PTR), Ptrofs.unsigned_zero.
+    apply Z.divide_0_r.
+  - destruct (wide_indexed p WIDE) as [id L].
+    unfold wide in WIDE. rewrite L, ANCHOR in WIDE. cbn in WIDE.
+    assert (NO_ARRAY: array_anchor p = None).
+    { unfold anchored in ANCHOR. destruct (array_anchor p) as [[len al]|]; congruence. }
+    apply (READY WIDE b ofs). now apply (pointer_value_narrow ge e p le b ofs NO_ARRAY).
 Qed.
 
 Local Lemma wide_lane_alignment:
@@ -539,18 +559,24 @@ Local Lemma wide_lane_alignment:
 Proof.
   intros ge p e le b ofs i n READY WIDE PTR COUNT IDX GO.
   destruct (wide_indexed p WIDE) as [id L].
-  pose proof (pointer_value_anchor_zero ge e p le b ofs WIDE PTR) as ZERO.
-  subst ofs. unfold lane_offset. rewrite L, Ptrofs.add_zero_l.
+  destruct (READY i n WIDE COUNT IDX GO) as [[q EVEN] BASE].
+  destruct (aligned_base ge p e le b ofs WIDE BASE PTR) as [r ALIGN].
+  unfold lane_offset. rewrite L, Ptrofs.add_unsigned.
   unfold Ptrofs.mul, Ptrofs.of_intu, Ptrofs.of_int.
   change (Ptrofs.unsigned (Ptrofs.repr 4)) with 4.
   pose proof (Int.unsigned_range_2 i) as RANGE.
   change Int.max_unsigned with 4294967295 in RANGE.
   rewrite (Ptrofs.unsigned_repr (Int.unsigned i)) by
     (change Ptrofs.max_unsigned with 18446744073709551615; lia).
-  rewrite Ptrofs.unsigned_repr by
+  rewrite (Ptrofs.unsigned_repr (4 * Int.unsigned i)) by
     (change Ptrofs.max_unsigned with 18446744073709551615; lia).
-  destruct (READY i n WIDE COUNT IDX GO) as [q EVEN].
-  exists q. lia.
+  rewrite Ptrofs.unsigned_repr_eq.
+  apply Z.mod_divide; [lia|].
+  pose proof Ptrofs.modulus_pos.
+  rewrite <- (Zmod_div_mod 8 Ptrofs.modulus) by
+    (try lia; exists (Ptrofs.modulus / 8); reflexivity).
+  apply Z.mod_divide; [lia|].
+  exists (r + q). lia.
 Qed.
 
 Section TARGET.

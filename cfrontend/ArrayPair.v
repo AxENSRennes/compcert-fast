@@ -25,14 +25,18 @@ Record plan := Plan {
   layout: traversal;
   increment: int;
   increment_signedness: signedness;
-  anchor: option (Z * N)
+  anchor: option (Z * N);
+  pointer_wide: bool
 }.
 
 Definition array_anchor (p: plan) : option (Z * N) :=
   match layout p with Indexed _ => anchor p | _ => None end.
 
-Definition wide (p: plan) : bool :=
+Definition anchored (p: plan) : bool :=
   match array_anchor p with Some _ => true | None => false end.
+
+Definition wide (p: plan) : bool :=
+  match layout p with Indexed _ => anchored p || pointer_wide p | _ => false end.
 
 Definition scratch (p: plan) : ident :=
   Pos.succ (Pos.max (pointer p) (Pos.max (bound p)
@@ -146,7 +150,7 @@ Definition target_loop (p: plan) := Sloop
 Definition target_body (p: plan) := with_init p (target_loop p).
 
 Definition parameters (p: plan) :=
-  if wide p then (bound p, tuint) :: nil
+  if anchored p then (bound p, tuint) :: nil
   else (pointer p, tuint_ptr) :: (bound p, tuint) :: nil.
 Definition scalar_temps (p: plan) := match layout p with Indexed i => (i, tuint) :: nil | _ => nil end.
 Definition source_template (p: plan) :=
@@ -184,12 +188,12 @@ Fixpoint same_stmt (s t: statement) : bool :=
 Definition binding_eq (a b: ident * type) : {a = b} + {a <> b}.
 Proof. decide equality; auto using peq, type_eq. Defined.
 
-Definition matches (f: function) (p: plan) : bool :=
+Definition matches (f: function) (p: plan) (body: statement) : bool :=
   type_eq (fn_return f) Tvoid && calling_convention_eq (fn_callconv f) cc_default &&
   list_eq_dec binding_eq (fn_params f) (parameters p) &&
   list_eq_dec binding_eq (fn_vars f) nil &&
   list_eq_dec binding_eq (fn_temps f) (scalar_temps p) &&
-  same_stmt (fn_body f) (source_body p).
+  same_stmt (fn_body f) body.
 
 Fixpoint find_increment (s: statement) : option (int * signedness) :=
   match s with
@@ -199,10 +203,15 @@ Fixpoint find_increment (s: statement) : option (int * signedness) :=
   | _ => None
   end.
 
+Definition distinct (p: plan) : bool :=
+  negb (peq (pointer p) (bound p)) &&
+  match layout p with
+  | Indexed i => negb (peq i (pointer p) || peq i (bound p))
+  | _ => true
+  end.
+
 Definition checked (f: function) (p: plan) : option plan :=
-  if peq (pointer p) (bound p) then None else
-  if match layout p with Indexed i => peq i (pointer p) || peq i (bound p) | _ => false end
-  then None else if matches f p then Some p else None.
+  if distinct p && matches f p (source_body p) then Some p else None.
 
 (** A named, explicitly aligned array supplies an offset-zero base. The
     recognizer checks its full type and the loop starting at index zero. *)
@@ -220,27 +229,116 @@ Fixpoint find_array (s: statement) : option (ident * (Z * N)) :=
   | _ => None
   end.
 
-Definition selected (f: function) : option plan :=
+Definition selected_plain (f: function) : option plan :=
   match fn_params f, find_increment (fn_body f) with
   | (ptr, _) :: (n, _) :: nil, Some (k, sign) =>
       match fn_temps f with
-      | nil => match checked f (Plan ptr n WhilePointer k sign None) with
+      | nil => match checked f (Plan ptr n WhilePointer k sign None false) with
                | Some p => Some p
-               | None => checked f (Plan ptr n ForPointer k sign None)
+               | None => checked f (Plan ptr n ForPointer k sign None false)
                end
-      | (i, _) :: nil => checked f (Plan ptr n (Indexed i) k sign None)
+      | (i, _) :: nil => checked f (Plan ptr n (Indexed i) k sign None false)
       | _ => None
       end
   | (n, _) :: nil, Some (k, sign) =>
       match fn_temps f, find_array (fn_body f) with
-      | (i, _) :: nil, Some (base, ty) => checked f (Plan base n (Indexed i) k sign (Some ty))
+      | (i, _) :: nil, Some (base, ty) => checked f (Plan base n (Indexed i) k sign (Some ty) false)
       | _, _ => None
       end
   | _, _ => None
   end.
 
+(** A source equality witnesses that a parameter denotes an aligned element
+    of a named array. Retain that test and both loop arms. *)
+Record alignment_guard := AlignmentGuard {
+  guard_array: ident;
+  guard_length: Z;
+  guard_alignment: N;
+  guard_offset: option (int * signedness)
+}.
+
+Definition guard_address (g: alignment_guard) : expr :=
+  let base := Evar (guard_array g) (array_type (guard_length g) (guard_alignment g)) in
+  match guard_offset g with
+  | None => base
+  | Some (k, sign) => Ebinop Oadd base (Econst_int k (Tint I32 sign noattr)) tuint_ptr
+  end.
+
+Definition guard_test (p: plan) (g: alignment_guard) : expr :=
+  Ebinop Oeq (Etempvar (pointer p) tuint_ptr) (guard_address g) tint.
+
+Definition aligned_pointer_plan (p: plan) : plan :=
+  Plan (pointer p) (bound p) (layout p) (increment p) (increment_signedness p) (anchor p) true.
+
+Definition guarded_source (p: plan) (g: alignment_guard) : statement :=
+  with_skip (Sifthenelse (guard_test p g) (source_body p) (source_body p)).
+
+Definition guarded_target (p: plan) (g: alignment_guard) : statement :=
+  with_skip (Sifthenelse (guard_test p g) (target_body (aligned_pointer_plan p)) (target_body p)).
+
+Definition offset_index (o: option (int * signedness)) : Z :=
+  match o with
+  | None => 0
+  | Some (k, Signed) => Int.signed k
+  | Some (k, Unsigned) => Int.unsigned k
+  end.
+
+Definition valid_guard (g: alignment_guard) : bool :=
+  let i := offset_index (guard_offset g) in
+  N.leb 3 (guard_alignment g) && Z.leb 0 i && Z.ltb i (guard_length g) && Z.even i.
+
+Definition guard_base (base: expr) (off: option (int * signedness)) : option alignment_guard :=
+  match base with
+  | Evar id (Tarray _ len (mk_attr _ (Some al))) => Some (AlignmentGuard id len al off)
+  | _ => None
+  end.
+
+Definition find_guard (a: expr) : option alignment_guard :=
+  match a with
+  | Ebinop Oeq _ rhs _ =>
+      match rhs with
+      | Ebinop Oadd base (Econst_int k (Tint I32 sign _)) _ => guard_base base (Some (k, sign))
+      | _ => guard_base rhs None
+      end
+  | _ => None
+  end.
+
+Definition selected_guarded (f: function) : option (plan * alignment_guard) :=
+  match fn_params f, fn_temps f, fn_body f with
+  | (ptr, _) :: (n, _) :: nil, (i, _) :: nil, Ssequence Sskip (Sifthenelse a yes _) =>
+      match find_guard a, find_increment yes with
+      | Some g, Some (k, sign) =>
+          let p := Plan ptr n (Indexed i) k sign None false in
+          if valid_guard g && distinct p && matches f p (guarded_source p g)
+          then Some (p, g) else None
+      | _, _ => None
+      end
+  | _, _, _ => None
+  end.
+
+Definition selected (f: function) : option (plan * option alignment_guard) :=
+  match selected_guarded f with
+  | Some (p, g) => Some (p, Some g)
+  | None => option_map (fun p => (p, None)) (selected_plain f)
+  end.
+
+Definition with_body (f: function) (s: statement) : function :=
+  mkfunction (fn_return f) (fn_callconv f) (fn_params f) (fn_vars f) (fn_temps f) s.
+
+Definition source_function (p: plan) (g: option alignment_guard) : function :=
+  match g with
+  | None => source_template p
+  | Some test => with_body (source_template p) (guarded_source p test)
+  end.
+
+Definition target_function (p: plan) (g: option alignment_guard) : function :=
+  match g with
+  | None => target_template p
+  | Some test => with_body (target_template p) (guarded_target p test)
+  end.
+
 Definition transf_function (f: function) : function :=
-  match selected f with Some p => target_template p | None => f end.
+  match selected f with Some (p, g) => target_function p g | None => f end.
 Definition transf_fundef (fd: Clight.fundef) : Clight.fundef :=
   match fd with Internal f => Internal (transf_function f) | _ => fd end.
 
