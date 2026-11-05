@@ -1,10 +1,10 @@
 {
-  "date_utc": "2026-11-05T00:20:34.371915+00:00",
+  "date_utc": "2026-11-05T00:57:15.194813+00:00",
   "jobs": 4,
   "success": true,
   "stage": "complete",
   "coq": "The Coq Proof Assistant, version 8.20.1\ncompiled with OCaml 4.14.4",
-  "revision": "35a5b49a98aa4816db6c6cdafd6ec56819cac537",
+  "revision": "e87a1a9ca5dd969e2216963d783bc41c1e6188de",
   "formal_source_sha256": {
     "LICENSE": "40e8151cb26269a4e051309a958714191a706b5dfc7aaec00a61137cb338a648",
     "MenhirLib/Alphabet.v": "407536dd86312af3c6eecde819c615262164f97a1591adff52ab897fbdfe8f3b",
@@ -155,7 +155,7 @@
     "common/Unityping.v": "8fc4acdacb27ee1a1deee04b49541bdc822fa38e1f9bc794efe53b3a3a3fcafd",
     "common/Values.v": "da172d4ac0ae9524c545a8bb0ef3b3253e2d4fb49e5919b4dee2cbd38333fddc",
     "cparser/Cabs.v": "7a787e1a43cf9b7a4a04b101199a52ad06b893740ca630221294c9111a8be7ee",
-    "driver/Compiler.v": "ddb4cfc9e3bd70305bddc2af723ca486ce036ebbd381dac2309297a40e08cac5",
+    "driver/Compiler.v": "89547c5856009021b75045f084e526014205aefb2bdbb0096c42931005217b1d",
     "driver/Complements.v": "c391479109db38059e6904173e43eaa78a799f8eb7497d62a2d8d8e85c468bc1",
     "driver/Compopts.v": "59eae41f0d882474482812dd0692c15fc45a1cd0c2dd1be600c222a9fe9e37a1",
     "export/Clightdefs.v": "32cddfea5383e946d11b7e89ecbc675f1489f2765f388cf4de4a767636487c37",
@@ -277,7 +277,7 @@
     "x86/extractionMachdep.v": "e14aa4a306603c5211c136e1047e208bce7dbf4d82d9c6b34e3c6ec448ca40ef",
     "x86_32/Archi.v": "acd8dd9d1f39db34bb47718cf6cff797f73da2db87a9c33f8668ca4594f52c84",
     "x86_64/Archi.v": "d695b51ad6f25448c9ea4257cf6045f7d3356bcbdd1f213daea76258227c76e4",
-    "Makefile": "b5f629c4cfa1c95e7f6c1ab7e7998fd29249601a7b9153ee286475ea7556e96e",
+    "Makefile": "efee514fc8b28f881e83b2a38d680f9dd65ae14f2ed4166e28a075b70aae2538",
     "aarch64/Asmexpand.ml": "77b214aa226bcccd582bd52c5f17cd2df3909324fc39a039fd1a6d53680e954e",
     "aarch64/CBuiltins.ml": "636bb314cee0df692219db7da6c8fcded152c832bb802942b888b3d927def4c3",
     "aarch64/Neon.v": "2e996b9e335b20a89667138ef8fa7089a5faf273d5243fe9ef28a70b08c3e3ea",
@@ -313,6 +313,9 @@
     "backend/MemoryNeonproof.v": "8eacf5ddd0a215f1b0ec9d6c89fa72cae971267e24e2f7e378a2217a96cb96b1",
     "backend/PeelTwo.v": "021db6f2ddf58b08776ef7ca8caba21fafba979c5a23cd11d4568d6c6fa14322",
     "backend/PeelTwoproof.v": "e45756cc7e4d0efb0bdb52f5793feeabcd3edf21d16acb3f333f8e477382ce3e",
+    "backend/PointerNeon.v": "7c6d3d1711c3ec4c9d15511dbc2a1e4d6af05d73b896a334ee96ee4f6cf28622",
+    "backend/PointerNeonFacts.v": "66dfe5c3870ae09077db276c168908d279d4af604b7f4b03c945b61df292ccec",
+    "backend/PointerNeonproof.v": "2f0e8a59179c75db1292895f9b8ec309cdbca1ddb4042dab4ae4fea08862ff54",
     "backend/PreheaderLICM.v": "ebea1b43927d4f41d5478ec6edb66ef4710ecf61e582d425acd5ad7cccf025c8",
     "backend/PreheaderLICMproof.v": "f920aa39874de4b78318779f9a1ef070036cf1ec30fbb695c920f0873e8e1aa8",
     "backend/PrintRTL.ml": "98e5093db8eab321d950838b1a88cd962d1ef898e71dc48134854d83f1122552",
@@ -328,8 +331,8 @@
     "backend/Vectorizeproof.v": "20d4af8ae7d45b930abc89c3d8c5e2dd622ee5b7bb60c506de197a1516722326",
     "perf/neon/Extract.v": "57671dac176b52fd47b7200ea177e9370ddae02de05068060df606ee5d962a8d"
   },
-  "full_proof_seconds": 109.22905779100256,
-  "kernel_check_seconds": 47.931942290990264,
+  "full_proof_seconds": 147.86391800000274,
+  "kernel_check_seconds": 56.880750917000114,
   "principal_assumptions_unchanged": false,
   "original_principal_assumptions_preserved": true,
   "new_computational_options": [
@@ -355,7 +358,7 @@
     "Compopts.experimental_unswitch",
     "Compopts.experimental_vectorize"
   ],
-  "incremental_proof_seconds": 1.7479291250056121,
+  "incremental_proof_seconds": 3.088963208007044,
   "incremental_source": "driver/Compiler.v",
   "incremental_method": "mtime-only edit; rebuild Compiler and dependents, unchanged contents",
   "incremental_recompiled_sources": [

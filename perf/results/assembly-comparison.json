@@ -98,7 +98,7 @@
         "/Users/axel2/Downloads/compcert-fast/runtime"
       ],
       "compiler_path": "/Users/axel2/Downloads/compcert-fast/ccomp",
-      "compiler_sha256": "0abfb516a34de865863bcf91f06317dc4d6bfc5fdefbd4c9d97e3b99257e2861",
+      "compiler_sha256": "8f3890a059da955ad71e375bae215499e2804ba1310739b9e669b0a547d33e41",
       "assembly_path": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/assembly-comparison/compcert-default.s",
       "assembly_sha256": "f3e3485b3bf9a570534047fb1e015cfec29eb098cbc4e04ddaae52ca6bc356c3",
       "parsed_functions": [
@@ -123,7 +123,7 @@
         "/Users/axel2/Downloads/compcert-fast/runtime"
       ],
       "compiler_path": "/Users/axel2/Downloads/compcert-fast/ccomp",
-      "compiler_sha256": "0abfb516a34de865863bcf91f06317dc4d6bfc5fdefbd4c9d97e3b99257e2861",
+      "compiler_sha256": "8f3890a059da955ad71e375bae215499e2804ba1310739b9e669b0a547d33e41",
       "assembly_path": "/Users/axel2/Downloads/compcert-fast/perf/artifacts/assembly-comparison/compcert-loops4.s",
       "assembly_sha256": "44c02b593de47eece9ef3aa84b38d1f681198b9bf3f1b39351b0c647f2682601",
       "parsed_functions": [
@@ -6317,7 +6317,7 @@
   "source_sha256": {
     "perf/compare_assembly.py": "f70c08096b1ad5ad742825c2b0930bba33c75f1fcfe7b4a7944e208f4842c058",
     "perf/check_loop_optimizations.py": "7d851f055c9eae8c25cb92a8714093eb7fe62bd12b89fcf824c628cbae1c5991",
-    "perf/experiment-profiles.json": "c2582bc0b349d9383ca2f0d7ae9f742e8623c4ecb114ad9d11ff36c09297b16b"
+    "perf/experiment-profiles.json": "cc6528bd906ab8891df6a05ec37ef49aa45d6984dd5b212de64674036e0b277b"
   },
   "configuration_sha256": {
     "Makefile.config": "00719db298c2f484b63a25c2c19db5f0c088a50aceb5097f939036ff71bc93e6",
