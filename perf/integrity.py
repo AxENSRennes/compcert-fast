@@ -19,6 +19,7 @@ NEW_FORMAL = {"backend/AutoPairCounter.v", "backend/AutoPairMemory.v", "backend/
               "cfrontend/ArrayPairBase.v", "cfrontend/ArrayPairWide.v",
               "cfrontend/ArrayPairReplay.v", "cfrontend/ArrayPairTarget.v", "cfrontend/ArrayPairLocalFacts.v",
               "cfrontend/ArrayPairLocalSource.v", "cfrontend/ArrayPairLocal.v", "cfrontend/ArrayPairProgram.v",
+              "cfrontend/ArrayPairContext.v", "cfrontend/ArrayPairCallproof.v",
               "backend/PointerNeonFacts.v", "backend/PointerNeon.v", "backend/PointerNeonproof.v",
               "backend/MemoryLaneFacts.v", "backend/MemoryNeon.v", "backend/MemoryNeonBounds.v", "backend/MemoryNeonReplay.v", "backend/MemoryNeonproof.v",
               "backend/LoopTile2D.v", "backend/LoopTile2Dproof.v","backend/PeelTwo.v","backend/PeelTwoproof.v","backend/MemVector.v","backend/MemVectorproof.v","backend/LoopFusion.v","backend/LoopFusionproof.v","backend/LoopInterchange.v","backend/LoopInterchangeproof.v","backend/LoopTile.v","backend/LoopTileproof.v",

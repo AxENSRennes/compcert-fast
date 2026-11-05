@@ -184,6 +184,13 @@ The experiments currently implement:
   32-bit accesses, as does the ordinary unguarded pointer form.
   Tests check the widened load and store through the NEON result, alignment
   at page boundaries, and four-byte-only alignment on the fallback path.
+  A direct forwarding wrapper such as `void add(unsigned n) { worker(a + 2, n); }`
+  can also use the wide loop. The checker verifies that `worker` is a
+  private definition in the same compilation unit with a supported indexed
+  loop, and that the passed address names an aligned array at a checked
+  even offset. The specialization belongs to `memory-neon` and runs before
+  RTL inlining. Other callers still invoke the shared worker with its
+  separate 32-bit accesses.
 * `AutoPair`, under `memory-neon`, forms pairs automatically from the scalar
   step-one loop `while(n){x=p[0];y=p[1];if((int)x<(int)y)p[0]=x+K;++p;--n;}`.
   It dispatches two iterations to one packed NEON addition and retains the

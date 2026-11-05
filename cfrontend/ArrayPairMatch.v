@@ -8,7 +8,7 @@
 (*                                                                     *)
 (* *********************************************************************)
 
-Require Import Coqlib Maps AST Integers Ctypes Cop Clight ArrayPair.
+Require Import Coqlib Maps AST Linking Integers Ctypes Cop Clight ArrayPair.
 
 Definition well_formed (p: plan) : Prop :=
   pointer p <> bound p /\
@@ -33,7 +33,12 @@ Qed.
 Lemma same_stmt_sound : forall s t, same_stmt s t = true -> s = t.
 Proof.
   induction s; intros rhs; destruct rhs; cbn [same_stmt]; intros H; try discriminate;
-    split_checks; f_equal; eauto using same_expr_sound.
+    try solve [split_checks; f_equal; eauto using same_expr_sound].
+  all: repeat match type of H with
+  | context [match ?x with _ => _ end] => destruct x; try discriminate
+  end.
+  all: split_checks; repeat f_equal; auto using same_expr_sound.
+
 Qed.
 
 Lemma matches_sound : forall f p body, matches f p body = true ->
@@ -133,11 +138,60 @@ Proof.
 Qed.
 
 Lemma metadata_preserved : forall f,
-  fn_return (transf_function f) = fn_return f /\
-  fn_callconv (transf_function f) = fn_callconv f /\
-  fn_params (transf_function f) = fn_params f /\
-  fn_vars (transf_function f) = fn_vars f.
+  fn_return (local_transf_function f) = fn_return f /\
+  fn_callconv (local_transf_function f) = fn_callconv f /\
+  fn_params (local_transf_function f) = fn_params f /\
+  fn_vars (local_transf_function f) = fn_vars f.
 Proof.
-  intros f. unfold transf_function. destruct (selected f) as [[p g]|] eqn:S; auto.
+  intros f. unfold local_transf_function. destruct (selected f) as [[p g]|] eqn:S; auto.
   apply selected_sound in S as [-> _]. destruct g; repeat split.
+Qed.
+
+Lemma caller_matches_sound : forall f c, caller_matches f c = true ->
+  f = caller_source c.
+Proof.
+  intros [ret cc params vars temps body] c CHECK.
+  unfold caller_matches in CHECK.
+  cbn [fn_return fn_callconv fn_params fn_vars fn_temps fn_body] in CHECK.
+  split_checks. unfold caller_source. f_equal; auto using same_stmt_sound.
+Qed.
+
+Lemma worker_plan_sound : forall cu id p, worker_plan cu id = Some p ->
+  (AST.prog_defmap cu)!id = Some (Gfun (Internal (source_template p))) /\
+  well_formed p /\ pointer_wide p = false /\ array_anchor p = None /\
+  exists i, layout p = Indexed i.
+Proof.
+  intros cu id p. unfold worker_plan.
+  destruct (in_dec peq id (prog_public cu)); try discriminate.
+  destruct ((AST.prog_defmap cu)!id) as [[fd|var]|] eqn:LOOKUP; try discriminate.
+  destruct fd as [f|]; try discriminate.
+  destruct (selected_plain f) as [q|] eqn:SELECT; try discriminate.
+  destruct (layout q) eqn:LAYOUT; try discriminate.
+  destruct (array_anchor q) eqn:ARRAY; try discriminate.
+  intros EQ. inv EQ.
+  apply selected_plain_sound in SELECT as [-> [WF NARROW]].
+  split; [reflexivity|]. split; [exact WF|]. eauto.
+Qed.
+
+Lemma selected_call_sound : forall cu f c, selected_call cu f = Some c ->
+  f = caller_source c /\ valid_guard (call_address c) = true /\
+  (AST.prog_defmap cu)!(call_worker c) =
+    Some (Gfun (Internal (source_template (call_loop c)))) /\
+  well_formed (call_loop c) /\ pointer_wide (call_loop c) = false /\
+  array_anchor (call_loop c) = None /\ exists i, layout (call_loop c) = Indexed i.
+Proof.
+  intros cu f c. unfold selected_call.
+  destruct (fn_params f) as [|[n nt] [|x xs]]; try discriminate.
+  destruct (fn_body f); try discriminate.
+  destruct s1; try discriminate. destruct s2; try discriminate.
+  destruct o; try discriminate. destruct e; try discriminate.
+  destruct l as [|addr [|count [|x xs]]]; try discriminate.
+  destruct (worker_plan cu i) as [p|] eqn:WORKER; try discriminate.
+  destruct (find_aligned_address addr) as [g|]; try discriminate.
+  set (q := CallPlan i p n g).
+  destruct (valid_guard g && caller_matches f q) eqn:CHECK; try discriminate.
+  intros EQ. inv EQ.
+  apply Bool.andb_true_iff in CHECK as [VALID TEMPLATE].
+  split; [now apply caller_matches_sound|].
+  split; [exact VALID|now apply worker_plan_sound].
 Qed.

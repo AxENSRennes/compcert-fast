@@ -10,62 +10,11 @@
 
 Require Import Coqlib Maps AST Linking Integers Values Memory Events Globalenvs Smallstep.
 Require Import Ctypes Cop Clight ArrayPair ArrayPairMatch.
-Require Import ArrayPairBase ArrayPairTarget ArrayPairLocal.
+Require Import ArrayPairBase ArrayPairTarget ArrayPairLocal ArrayPairContext ArrayPairCallproof.
 Require ArrayPairTurn.
 
-Definition match_prog (p tp: Clight.program) : Prop :=
-  Linking.match_program (fun _ f tf => tf = transf_fundef f) eq p tp /\
-  prog_types tp = prog_types p.
-
-Lemma transf_program_match : forall p, match_prog p (transf_program p).
-Proof.
-  intros. split; [apply match_transform_program | reflexivity].
-Qed.
-
-Global Instance TransfArrayPairLink : TransfLink match_prog.
-Proof.
-  red; intros. eapply Ctypes.link_match_program; eauto.
-  intros f1 tf1 f2 tf2 f LINK -> ->.
-  Local Transparent Linker_fundef.
-  change (link_fundef f1 f2 = Some f) in LINK.
-  change (exists tf, link_fundef (transf_fundef f1) (transf_fundef f2) = Some tf /\
-    tf = transf_fundef f).
-  destruct f1, f2; simpl in *; try discriminate;
-    repeat match goal with H: context [match ?x with _ => _ end] |- _ =>
-      destruct x; try discriminate end;
-    inv LINK; eauto.
-Qed.
-
-(** Selected functions contain no calls. Consequently every suspended
-    caller runs its original body and the continuations can be shared. *)
-Fixpoint original_callers (k: cont) : Prop :=
-  match k with
-  | Kstop => True
-  | Kseq _ k | Kloop1 _ _ k | Kloop2 _ _ k | Kswitch k => original_callers k
-  | Kcall _ f _ _ k => selected f = None /\ original_callers k
-  end.
-
-Lemma original_callers_call_cont : forall k,
-  original_callers k -> original_callers (call_cont k).
-Proof. induction k; simpl; auto. Qed.
-
-Scheme stmt_mut := Induction for statement Sort Prop
-  with lbl_stmt_mut := Induction for labeled_statements Sort Prop.
-Combined Scheme stmt_lbl_mut from stmt_mut, lbl_stmt_mut.
-
-Lemma find_label_callers : forall lbl,
-  (forall s k s' k', find_label lbl s k = Some (s', k') ->
-    original_callers k -> original_callers k') /\
-  (forall ls k s' k', find_label_ls lbl ls k = Some (s', k') ->
-    original_callers k -> original_callers k').
-Proof.
-  intros lbl. apply stmt_lbl_mut; simpl; intros; try discriminate;
-    repeat match goal with
-    | H: context [match ?x with _ => _ end] |- _ =>
-        destruct x eqn:?; try discriminate
-    | H: context [if ?x then _ else _] |- _ => destruct x eqn:?
-    end; try match goal with H: Some _ = Some _ |- _ => inv H end; eauto.
-Qed.
+Definition match_prog := ArrayPairContext.match_prog.
+Definition transf_program_match := ArrayPairContext.transf_program_match.
 
 Lemma bind_extra_temp : forall params args le le' id v,
   ~In id (var_names params) ->
@@ -228,23 +177,18 @@ Proof.
 Qed.
 
 Lemma symbols_preserved : forall id, Genv.find_symbol tge id = Genv.find_symbol ge id.
-Proof. exact (Genv.find_symbol_transf (proj1 MATCH)). Qed.
+Proof. exact (Genv.find_symbol_match (proj1 MATCH)). Qed.
 
 Lemma senv_preserved : Senv.equiv ge tge.
-Proof. exact (Genv.senv_transf (proj1 MATCH)). Qed.
+Proof. exact (Genv.senv_match (proj1 MATCH)). Qed.
 
-Lemma find_funct_translated : forall v fd, Genv.find_funct ge v = Some fd ->
-  Genv.find_funct tge v = Some (transf_fundef fd).
-Proof. exact (Genv.find_funct_transf (proj1 MATCH)). Qed.
-
-Lemma find_funct_ptr_translated : forall b fd, Genv.find_funct_ptr ge b = Some fd ->
-  Genv.find_funct_ptr tge b = Some (transf_fundef fd).
-Proof. exact (Genv.find_funct_ptr_transf (proj1 MATCH)). Qed.
-
-Lemma type_preserved : forall fd, type_of_fundef (transf_fundef fd) = type_of_fundef fd.
+Lemma type_preserved : forall cu fd, type_of_fundef (transf_fundef cu fd) = type_of_fundef fd.
 Proof.
-  destruct fd; simpl; auto. unfold type_of_function.
-  destruct (metadata_preserved f) as [RET [CC [PARAM VAR]]]. now rewrite RET, CC, PARAM.
+  intros cu [f|]; simpl; auto. unfold transf_function.
+  destruct (selected_call cu f) as [c|] eqn:SELECT.
+  - apply selected_call_sound in SELECT as [-> _]. reflexivity.
+  - unfold type_of_function.
+    destruct (metadata_preserved f) as [RET [CC [PARAM VAR]]]. now rewrite RET, CC, PARAM.
 Qed.
 
 Lemma eval_preserved : forall e le m,
@@ -279,30 +223,31 @@ Proof. intros. inv H. constructor; eauto using alloc_preserved. Qed.
 
 Inductive ordinary_match : state -> state -> Prop :=
   | match_normal : forall f s k e le m,
-      selected f = None -> original_callers k ->
       ordinary_match (State f s k e le m) (State f s k e le m)
-  | match_call : forall fd args k m,
-      original_callers k -> is_call_cont k ->
-      ordinary_match (Callstate fd args k m) (Callstate (transf_fundef fd) args k m)
+  | match_call : forall cu fd args k m,
+      linkorder cu prog -> is_call_cont k ->
+      ordinary_match (Callstate fd args k m) (Callstate (transf_fundef cu fd) args k m)
   | match_return : forall v k m,
-      original_callers k -> ordinary_match (Returnstate v k m) (Returnstate v k m).
+      ordinary_match (Returnstate v k m) (Returnstate v k m).
 
-Local Hint Resolve exprlist_preserved original_callers_call_cont : core.
+Local Hint Resolve exprlist_preserved : core.
 Local Hint Extern 2 (eval_expr tge _ _ _ _ _) => eapply (proj1 (eval_preserved _ _ _)) : core.
 Local Hint Extern 2 (eval_lvalue tge _ _ _ _ _ _ _) => eapply (proj2 (eval_preserved _ _ _)) : core.
 
 Lemma step_normal : forall f s k e le m t after,
   step2 ge (State f s k e le m) t after ->
-  selected f = None -> original_callers k ->
   exists ta, step2 tge (State f s k e le m) t ta /\ ordinary_match after ta.
 Proof.
-  intros until after. intros STEP SELECT STACK. inv STEP;
-    try solve [eexists; split; [econstructor; eauto | constructor; simpl in *; auto]].
+  intros until after. intros STEP. inv STEP;
+    try solve [eexists; split; [econstructor; eauto | constructor]].
   - eexists; split.
     + eapply step_assign; eauto. rewrite comp_env_preserved; eauto.
     + constructor; auto.
-  - eexists; split.
-    + eapply step_call with (fd := transf_fundef fd); eauto using find_funct_translated.
+  - match goal with H: Genv.find_funct _ _ = Some _ |- _ =>
+      destruct (find_funct_translated _ _ MATCH _ _ H) as [cu [tf [FIND [-> LINK]]]]
+    end.
+    eexists; split.
+    + eapply step_call with (fd := transf_fundef cu fd); eauto.
       rewrite type_preserved; auto.
     + constructor; simpl; auto.
   - eexists; split.
@@ -317,106 +262,154 @@ Proof.
   - eexists; split.
     + eapply step_skip_call; eauto. rewrite blocks_preserved; eauto.
     + constructor; auto.
-  - eexists; split.
-    + eapply step_goto; eauto.
-    + constructor; auto. eapply (proj1 (find_label_callers lbl)); eauto.
 Qed.
 
 Lemma initial_simulation : forall s,
   initial_state prog s -> exists ts, initial_state tprog ts /\ ordinary_match s ts.
 Proof.
   intros s INIT. inv INIT.
-  exists (Callstate (transf_fundef f) nil Kstop m0). split.
+  match goal with H: Genv.find_funct_ptr _ _ = Some _ |- _ =>
+    destruct (find_funct_ptr_translated _ _ MATCH _ _ H) as [cu [tf [FIND [-> LINK]]]]
+  end.
+  exists (Callstate (transf_fundef cu f) nil Kstop m0). split.
   - eapply initial_state_intro with (b := b).
-    + eapply (Genv.init_mem_transf (proj1 MATCH)); eauto.
+    + eapply (Genv.init_mem_match (proj1 MATCH)); eauto.
     + rewrite symbols_preserved.
-      exact (eq_trans (f_equal (Genv.find_symbol ge) (match_program_main (proj1 MATCH))) H0).
-    + eapply find_funct_ptr_translated; eauto.
+      exact (eq_trans (f_equal (Genv.find_symbol ge) (match_program_gen_main _ _ _ _ _ (proj1 MATCH))) H0).
+    + exact FIND.
     + rewrite type_preserved; eauto.
-  - constructor; exact I.
+  - constructor; simpl; auto.
 Qed.
 
 Definition source_test p g := Sifthenelse (guard_test p g) (source_body p) (source_body p).
 Definition target_test p g := Sifthenelse (guard_test p g)
   (target_body (aligned_pointer_plan p)) (target_body p).
 
-Inductive guard_cursor (p: plan) (g: alignment_guard) (k: cont)
+Inductive entry_cursor (src dst: statement) (k: cont)
     : statement -> cont -> statement -> cont -> Prop :=
-  | guard_start: guard_cursor p g k (guarded_source p g) k (guarded_target p g) k
-  | guard_skip: guard_cursor p g k
-      Sskip (Kseq (source_test p g) k) Sskip (Kseq (target_test p g) k)
-  | guard_branch: guard_cursor p g k (source_test p g) k (target_test p g) k.
+  | entry_start: entry_cursor src dst k (with_skip src) k (with_skip dst) k
+  | entry_skip: entry_cursor src dst k Sskip (Kseq src k) Sskip (Kseq dst k)
+  | entry_body: entry_cursor src dst k src k dst k.
+
+Definition worker_cont (c: call_plan) (n: val) (k: cont) :=
+  Kcall None (caller_source c) empty_env (caller_env c n) k.
+
+Inductive return_context : cont -> cont -> Prop :=
+  | return_shared: forall k, is_call_cont k -> return_context k k
+  | return_inlined: forall c n k, is_call_cont k -> return_context (worker_cont c n k) k.
+
+Record call_witness (c: call_plan) : Prop := {
+  call_well_formed: well_formed (call_loop c);
+  call_is_pointer: array_anchor (call_loop c) = None;
+  call_is_aligned: valid_guard (call_address c) = true;
+  call_local_worker: exists cu, linkorder cu prog /\
+    (AST.prog_defmap cu)!(call_worker c) =
+      Some (Gfun (Internal (source_template (call_loop c))))
+}.
 
 Inductive match_states : nat -> state -> state -> Prop :=
   | match_ordinary : forall s ts, ordinary_match s ts -> match_states O s ts
-  | match_selected : forall p sf tf k rank s ts,
-      well_formed p -> original_callers k -> is_call_cont k ->
-      local_match ge tge p sf tf k k rank s ts -> match_states rank s ts
+  | match_selected : forall p sf tf k tk rank s ts,
+      well_formed p -> return_context k tk ->
+      local_match ge tge p sf tf k tk rank s ts -> match_states rank s ts
   | match_guarded : forall p g k s sk ts tk e le,
       well_formed p -> pointer_wide p = false -> valid_guard g = true ->
-      original_callers k -> is_call_cont k ->
-      guard_cursor p g k s sk ts tk ->
+      is_call_cont k ->
+      entry_cursor (source_test p g) (target_test p g) k s sk ts tk ->
       forall m, match_states O
         (State (source_function p (Some g)) s sk e le m)
-        (State (target_function p (Some g)) ts tk e (PTree.set (scratch p) Vundef le) m).
+        (State (target_function p (Some g)) ts tk e (PTree.set (scratch p) Vundef le) m)
+  | match_caller: forall c k s sk ts tk n m,
+      call_witness c -> is_call_cont k ->
+      entry_cursor (caller_call c) (caller_setup c) k s sk ts tk ->
+      match_states 1%nat
+        (State (caller_source c) s sk empty_env (caller_env c n) m)
+        (State (caller_target c) ts tk empty_env (target_caller_env c n) m)
+  | match_worker_entry: forall c k n ptr m,
+      well_formed (call_loop c) -> array_anchor (call_loop c) = None -> is_call_cont k ->
+      eval_expr tge empty_env (target_caller_env c n) m (guard_address (call_address c)) ptr ->
+      base_ready (aligned_pointer_plan (call_loop c)) (worker_env (call_loop c) ptr n) ->
+      match_states O
+        (Callstate (Internal (source_template (call_loop c))) (ptr :: n :: nil) (worker_cont c n k) m)
+        (State (caller_target c) (caller_setup c) k empty_env (target_caller_env c n) m)
+  | match_worker_return: forall c k n m,
+      is_call_cont k ->
+      match_states 2%nat (Returnstate Vundef (worker_cont c n k) m) (Returnstate Vundef k m)
+  | match_caller_return: forall c k n m,
+      is_call_cont k ->
+      match_states 1%nat (State (caller_source c) Sskip k empty_env (caller_env c n) m)
+        (Returnstate Vundef k m).
 
 Lemma ordinary_step : forall s t after ts,
   step2 ge s t after -> ordinary_match s ts ->
   exists rank ta, plus step2 tge ts t ta /\ match_states rank after ta.
 Proof.
   intros s t after ts STEP MATCHED. inv MATCHED.
-  - destruct (step_normal _ _ _ _ _ _ _ _ STEP H H0) as [ta [ST MA]].
+  - destruct (step_normal _ _ _ _ _ _ _ _ STEP) as [ta [ST MA]].
     exists O, ta; split. now apply plus_one. now constructor.
   - inv STEP.
-    + destruct (selected f) as [[p g]|] eqn:SELECT.
-      * destruct (selected_sound _ _ _ SELECT) as [-> [WF [NARROW VALID]]].
-        assert (ENTER: step2 tge (Callstate (transf_fundef (Internal (source_function p g))) args k m)
-          E0 (State (target_function p g) (fn_body (target_function p g)) k
-              e (PTree.set (scratch p) Vundef le) m1)).
-        { cbn [transf_fundef]. unfold transf_function. rewrite SELECT.
-          apply step_internal_function. eapply entry_selected; eauto. }
-        destruct g as [test|].
-        -- exists O. eexists. split; [apply plus_one; exact ENTER|].
-           eapply match_guarded; eauto. constructor.
-        -- assert (BASE: base_ready p le) by (unfold base_ready; congruence).
-           destruct (local_init ge tge p (source_template p) (target_template p) k e le Vundef m1 BASE)
-             as [rank LM].
-           exists rank. eexists. split; [apply plus_one; exact ENTER|].
-           eapply match_selected; eauto.
-      * exists O, (State f (fn_body f) k e le m1). split.
-        -- cbn [transf_fundef]. unfold transf_function. rewrite SELECT.
-           apply plus_one. apply step_internal_function. eapply entry_preserved; eauto.
-        -- constructor. constructor; auto.
+    + destruct (selected_call cu f) as [c|] eqn:SELECT_CALL.
+      * destruct (selected_call_sound _ _ _ SELECT_CALL)
+          as [-> [ALIGN [WORKER [WF [NARROW [NOARRAY [i INDEX]]]]]]].
+        match goal with ENTRY: function_entry2 _ (caller_source c) _ _ _ _ _ |- _ =>
+          apply caller_entry_inv in ENTRY as [-> [-> [n [-> ->]]]]
+        end.
+        exists 1%nat. eexists. split.
+        -- apply plus_one. cbn [transf_fundef]. unfold transf_function. rewrite SELECT_CALL.
+           apply step_internal_function. eapply caller_entry_target; eauto.
+        -- eapply match_caller; eauto.
+           ++ constructor; eauto.
+           ++ apply entry_start.
+      * destruct (selected f) as [[p g]|] eqn:SELECT.
+        -- destruct (selected_sound _ _ _ SELECT) as [-> [WF [NARROW VALID]]].
+           assert (ENTER: step2 tge
+             (Callstate (transf_fundef cu (Internal (source_function p g))) args k m)
+             E0 (State (target_function p g) (fn_body (target_function p g)) k
+                 e (PTree.set (scratch p) Vundef le) m1)).
+           { cbn [transf_fundef]. unfold transf_function, local_transf_function.
+             rewrite SELECT_CALL, SELECT.
+             apply step_internal_function. eapply entry_selected; eauto. }
+           destruct g as [test|].
+           ++ exists O. eexists. split; [apply plus_one; exact ENTER|].
+              eapply match_guarded; eauto. constructor.
+           ++ assert (BASE: base_ready p le) by (unfold base_ready; congruence).
+              destruct (local_init ge tge p (source_template p) (target_template p)
+                k k e le Vundef m1 BASE) as [rank LM].
+              exists rank. eexists. split; [apply plus_one; exact ENTER|].
+              eapply match_selected; eauto using return_shared.
+        -- exists O, (State f (fn_body f) k e le m1). split.
+           ++ cbn [transf_fundef]. unfold transf_function, local_transf_function.
+              rewrite SELECT_CALL, SELECT.
+              apply plus_one. apply step_internal_function. eapply entry_preserved; eauto.
+           ++ constructor. constructor.
     + exists O, (Returnstate vres k m'). split.
       * apply plus_one. eapply step_external_function.
         eapply external_call_symbols_preserved; eauto. apply senv_preserved.
-      * constructor. constructor; auto.
-  - inv STEP. simpl in H. destruct H as [SELECT STACK].
+      * constructor. constructor.
+  - inv STEP.
     exists O, (State f Sskip k0 e (set_opttemp optid v le) m). split.
     + apply plus_one. constructor.
-    + constructor. constructor; auto.
+    + constructor. constructor.
 Qed.
 
 Local Lemma guarded_step : forall p g k s sk ts tk e le m t after,
   well_formed p -> pointer_wide p = false -> valid_guard g = true ->
-  original_callers k -> is_call_cont k -> guard_cursor p g k s sk ts tk ->
+  is_call_cont k -> entry_cursor (source_test p g) (target_test p g) k s sk ts tk ->
   step2 ge (State (source_function p (Some g)) s sk e le m) t after ->
   exists rank ta,
     plus step2 tge (State (target_function p (Some g)) ts tk e
       (PTree.set (scratch p) Vundef le) m) t ta /\ match_states rank after ta.
 Proof.
-  intros p g k s sk ts tk e le m t after WF NARROW VALID CALLERS CALL CURSOR STEP.
+  intros p g k s sk ts tk e le m t after WF NARROW VALID CALL CURSOR STEP.
   destruct CURSOR.
-  - unfold guarded_source, with_skip in STEP. inv STEP; cbn [is_call_cont] in *; try contradiction.
+  - unfold with_skip in STEP. inv STEP; cbn [is_call_cont] in *; try contradiction.
     exists O. eexists. split.
     + apply plus_one. apply step_seq.
-    + eapply match_guarded; eauto. apply guard_skip.
-
-
+    + eapply match_guarded; eauto. apply entry_skip.
   - inv STEP; cbn [is_call_cont] in *; try contradiction.
     exists O. eexists. split.
     + apply plus_one. apply step_skip_seq.
-    + eapply match_guarded; eauto. apply guard_branch.
+    + eapply match_guarded; eauto. apply entry_body.
   - unfold source_test in STEP. inv STEP; cbn [is_call_cont] in *; try contradiction.
     match goal with
     | EV: eval_expr _ _ _ _ (guard_test p g) ?v,
@@ -433,14 +426,74 @@ Proof.
     end.
     + destruct (local_init ge tge (aligned_pointer_plan p)
         (source_function p (Some g)) (target_function p (Some g))
-        k e le Vundef m (READY eq_refl)) as [rank LM].
+        k k e le Vundef m (READY eq_refl)) as [rank LM].
       exists rank. eexists. split; [apply plus_one; exact NEXT|].
-      eapply match_selected with (p := aligned_pointer_plan p) (k := k); eauto.
+      eapply match_selected with (p := aligned_pointer_plan p) (k := k) (tk := k); eauto using return_shared.
     + assert (BASE: base_ready p le) by (unfold base_ready; congruence).
       destruct (local_init ge tge p (source_function p (Some g)) (target_function p (Some g))
-        k e le Vundef m BASE) as [rank LM].
+        k k e le Vundef m BASE) as [rank LM].
       exists rank. eexists. split; [apply plus_one; exact NEXT|].
-      eapply match_selected with (p := p) (k := k); eauto.
+      eapply match_selected with (p := p) (k := k) (tk := k); eauto using return_shared.
+Qed.
+
+Local Lemma caller_step : forall c k s sk ts tk n m t after,
+  call_witness c -> is_call_cont k ->
+  entry_cursor (caller_call c) (caller_setup c) k s sk ts tk ->
+  step2 ge (State (caller_source c) s sk empty_env (caller_env c n) m) t after ->
+  let target := State (caller_target c) ts tk empty_env (target_caller_env c n) m in
+  exists rank ta,
+    (plus step2 tge target t ta \/ (star step2 tge target t ta /\ (rank < 1)%nat)) /\
+    match_states rank after ta.
+Proof.
+  intros c k s sk ts tk n m t after WITNESS CALL CURSOR STEP. cbn zeta.
+  destruct CURSOR.
+  - unfold with_skip in STEP. inv STEP; cbn [is_call_cont] in *; try contradiction.
+    exists 1%nat. eexists. split.
+    + left. apply plus_one. apply step_seq.
+    + eapply match_caller; eauto. apply entry_skip.
+  - inv STEP; cbn [is_call_cont] in *; try contradiction.
+    exists 1%nat. eexists. split.
+    + left. apply plus_one. apply step_skip_seq.
+    + eapply match_caller; eauto. apply entry_body.
+  - destruct WITNESS as [WF NOARRAY VALID [cu [LINK WORKER]]].
+    assert (ADDRESS: forall v,
+      eval_expr ge empty_env (caller_env c n) m (guard_address (call_address c)) v ->
+      exists b ofs, v = Vptr b ofs).
+    { intros v EV. destruct (guard_address_replay _ _ _ _ _ _ VALID EV) as (b & ofs & EQ & _).
+      eauto. }
+    destruct (caller_call_inv cu prog c _ m k t after n LINK WORKER NOARRAY
+      (caller_env_count c n) ADDRESS STEP) as [-> (b & ofs & EVAL & ->)].
+    destruct (guard_address_replay _ _ _ _ _ _ VALID EVAL)
+      as (blk & off & EQ & ALIGN & REPLAY). inv EQ.
+    exists O, (State (caller_target c) (caller_setup c) k empty_env (target_caller_env c n) m).
+    split; [right; split; [apply star_refl|lia]|].
+    unfold worker_cont. apply match_worker_entry; auto.
+    unfold base_ready. cbn [aligned_pointer_plan pointer].
+    intros _ other delta PTR. rewrite worker_env_pointer in PTR by exact WF. inv PTR.
+    exact ALIGN.
+Qed.
+
+Local Lemma worker_entry_step : forall c k n ptr m t after,
+  well_formed (call_loop c) -> array_anchor (call_loop c) = None -> is_call_cont k ->
+  eval_expr tge empty_env (target_caller_env c n) m (guard_address (call_address c)) ptr ->
+  base_ready (aligned_pointer_plan (call_loop c)) (worker_env (call_loop c) ptr n) ->
+  step2 ge (Callstate (Internal (source_template (call_loop c))) (ptr :: n :: nil)
+    (worker_cont c n k) m) t after ->
+  exists rank ta,
+    plus step2 tge
+      (State (caller_target c) (caller_setup c) k empty_env (target_caller_env c n) m) t ta /\
+    match_states rank after ta.
+Proof.
+  intros c k n ptr m t after WF NOARRAY CALL EVAL BASE STEP. inv STEP.
+  match goal with ENTRY: function_entry2 _ (source_template (call_loop c)) _ _ _ _ _ |- _ =>
+    apply (worker_entry_inv _ _ _ _ _ _ _ _ NOARRAY) in ENTRY as [-> [-> ->]]
+  end.
+  destruct (local_init ge tge (aligned_pointer_plan (call_loop c))
+    (source_template (call_loop c)) (caller_target c) (worker_cont c n k) k
+    empty_env (worker_env (call_loop c) ptr n) Vundef m BASE) as [rank LOOP].
+  exists rank. eexists. split.
+  - exact (caller_setup_exec tge c k m ptr n WF EVAL).
+  - eapply match_selected with (p := aligned_pointer_plan (call_loop c)); eauto using return_inlined.
 Qed.
 
 Lemma steps_simulate : forall rank s t after ts,
@@ -452,17 +505,38 @@ Proof.
   intros rank s t after ts STEP M. inv M.
   - destruct (ordinary_step _ _ _ _ STEP H) as [rank [ta [ST MA]]].
     exists rank, ta. auto.
-  - destruct (local_step ge tprog _ _ _ _ _ _ _ _ _ blocks_preserved symbols_preserved H H1 H2 STEP) as [j [ta [ST MA]]].
-    assert (SIM: plus step2 tge ts t ta \/ (star step2 tge ts t ta /\ (j < rank)%nat)).
-    { destruct ST as [PLUS|[-> [-> LT]]]; auto using star_refl. }
-    destruct MA as [LOOP|[v [m [-> ->]]]].
-    + exists j, ta. split; auto. eapply match_selected; eauto.
-    + exists O, (Returnstate v k m). split.
-      * destruct SIM as [PLUS|[STAR LT]]; auto. right. split; auto; lia.
-      * constructor. constructor; auto.
-  - destruct (guarded_step _ _ _ _ _ _ _ _ _ _ _ _ H H0 H1 H2 H3 H4 STEP)
+  - assert (CALLS: is_call_cont k /\ is_call_cont tk) by (inv H0; simpl; auto).
+    destruct CALLS as [CALL TCALL].
+    destruct (local_step ge tprog p sf tf k tk rank s t after ts
+      blocks_preserved symbols_preserved H CALL TCALL H1 STEP) as [j [ta [ST MA]]].
+    destruct MA as [LOOP|[m [-> ->]]].
+    + exists j, ta. split.
+      * destruct ST as [PLUS|[-> [-> LT]]]; auto using star_refl.
+      * eapply match_selected; eauto.
+    + destruct ST as [PLUS|[_ [EQ _]]]; [|rewrite <- EQ in H1; inv H1].
+      inv H0.
+      * exists O, (Returnstate Vundef tk m). split; [now left|].
+        constructor. constructor.
+      * exists 2%nat, (Returnstate Vundef tk m). split; [now left|].
+        now constructor.
+  - destruct (guarded_step _ _ _ _ _ _ _ _ _ _ _ _ H H0 H1 H2 H3 STEP)
       as [j [ta [ST MA]]].
     exists j, ta. auto.
+  - eapply caller_step; eauto.
+  - destruct (worker_entry_step _ _ _ _ _ _ _ H H0 H1 H2 H3 STEP)
+      as [j [ta [ST MA]]].
+    exists j, ta. auto.
+  - unfold worker_cont in STEP. inv STEP.
+    exists 1%nat, (Returnstate Vundef k m). split.
+    + right. split; [apply star_refl|lia].
+    + now constructor.
+  - inv STEP; cbn [is_call_cont] in *; try contradiction.
+    match goal with FREE: Mem.free_list _ _ = Some _ |- _ =>
+      cbn [blocks_of_env empty_env PTree.elements Mem.free_list] in FREE; inv FREE
+    end.
+    exists O. eexists. split.
+    + right. split; [apply star_refl|lia].
+    + constructor. constructor.
 Qed.
 
 Lemma program_simulation : forward_simulation (semantics2 prog) (semantics2 tprog).
@@ -473,7 +547,11 @@ Proof.
     exists O, ts; split; auto. now constructor.
   - intros rank s ts r M FINAL. inv M.
     + inv FINAL. inv H. constructor.
-    + inv FINAL. inv H2.
+    + inv FINAL. inv H1.
+    + inv FINAL.
+    + inv FINAL.
+    + inv FINAL.
+    + inv FINAL.
     + inv FINAL.
   - intros. eapply steps_simulate; eauto.
   - exact (proj1 (proj2 senv_preserved)).

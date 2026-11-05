@@ -122,13 +122,13 @@ Inductive local_match (ge tge: genv) (p: plan) (sf tf: function) (k tk: cont)
         (State tf Sskip tk e tle m).
 
 Lemma local_init:
-  forall ge tge p sf tf k e le v m,
+  forall ge tge p sf tf k tk e le v m,
   base_ready p le ->
-  exists rank, local_match ge tge p sf tf k k rank
+  exists rank, local_match ge tge p sf tf k tk rank
     (State sf (source_body p) k e le m)
-    (State tf (target_body p) k e (PTree.set (scratch p) v le) m).
+    (State tf (target_body p) tk e (PTree.set (scratch p) v le) m).
 Proof.
-  intros ge tge p sf tf k e le v m BASE.
+  intros ge tge p sf tf k tk e le v m BASE.
   unfold source_body, target_body, with_init.
   destruct (layout p) eqn:LAYOUT.
   - eexists; eapply local_loop; [exists v; reflexivity| |constructor].
@@ -200,27 +200,28 @@ Lemma prefix_start:
 Proof. intros; red; eauto using finish_single. Qed.
 
 Lemma local_step:
-  forall ge (tprog: Clight.program) p sf tf k rank s t after target,
+  forall ge (tprog: Clight.program) p sf tf k tk rank s t after target,
   (forall e, blocks_of_env (globalenv tprog) e = blocks_of_env ge e) ->
   (forall id, Genv.find_symbol (globalenv tprog) id = Genv.find_symbol ge id) ->
   well_formed p ->
   is_call_cont k ->
-  local_match ge (globalenv tprog) p sf tf k k rank s target ->
+  is_call_cont tk ->
+  local_match ge (globalenv tprog) p sf tf k tk rank s target ->
   step2 ge s t after ->
   exists rank' target',
     (plus step2 (globalenv tprog) target t target' \/
       (t = E0 /\ target' = target /\ (rank' < rank)%nat)) /\
-    (local_match ge (globalenv tprog) p sf tf k k rank' after target' \/
-      exists v m, after = Returnstate v k m /\ target' = Returnstate v k m).
+    (local_match ge (globalenv tprog) p sf tf k tk rank' after target' \/
+      exists m, after = Returnstate Vundef k m /\ target' = Returnstate Vundef tk m).
 Proof.
-  intros ge tprog p sf tf k rank s t after target BLOCKS SYMBOLS WF CALL MATCH STEP.
+  intros ge tprog p sf tf k tk rank s t after target BLOCKS SYMBOLS WF CALL TCALL MATCH STEP.
   destruct MATCH as
     [i e le tle m cur sk tcur tsk LAYOUT INIT BASE AGREE
     |e le0 tle m0 fresh le m AGREE READY HISTORY
     |e le0 tle m0 fresh le1 m1 cur rest le m AGREE READY HISTORY PLAIN PREFIX
     |e le0 tle m0 fresh le1 m1 le2 m2 cur rest le m AGREE READY HISTORY FIRST PLAIN PREFIX
     |e le tle m AGREE].
-  - destruct (local_init_step ge (globalenv tprog) p sf tf i k k e le tle m
+  - destruct (local_init_step ge (globalenv tprog) p sf tf i k tk e le tle m
       cur sk tcur tsk t after LAYOUT INIT WF BASE AGREE STEP)
       as [r [st [RUN NEXT]]].
     exists r, st; split; auto.
@@ -271,7 +272,7 @@ Proof.
         invert_local_step STEP. rewrite <- (source_loop_parts p).
         destruct HISTORY as [|l z PRIOR NOEXIT].
         -- destruct (source_turn_choice _ _ _ _ _ _ _ WF TURN) as [TAIL|NEXT].
-           ++ destruct (target_turn_tail ge tprog SYMBOLS p tf k e le0 tle m0 le m
+           ++ destruct (target_turn_tail ge tprog SYMBOLS p tf tk e le0 tle m0 le m
                 WF AGREE TURN TAIL) as [tle' [RUN [AGR READY']]].
               eexists; eexists; split; [left; exact RUN|].
               left. eapply local_loop; [exact AGR|exact READY'|constructor].
@@ -279,7 +280,7 @@ Proof.
               2: { left. eapply local_loop; [exact AGREE|exact READY|eapply history_one; eauto]. }
               right; repeat split; try reflexivity.
               cbn [history_cost cursor_cost statement_cost]. lia.
-        -- destruct (target_turn_pair ge tprog SYMBOLS p tf k e le0 tle m0 l z le m
+        -- destruct (target_turn_pair ge tprog SYMBOLS p tf tk e le0 tle m0 l z le m
              WF READY AGREE PRIOR TURN) as [tle' [RUN [AGR READY']]].
            eexists; eexists; split; [left; exact RUN|].
            left. eapply local_loop; [exact AGR|exact READY'|constructor].
@@ -295,7 +296,7 @@ Proof.
       right; repeat split; try reflexivity; lia.
   - invert_local_step STEP.
     exists O; eexists; split.
-    + left. apply plus_one. eapply step_skip_call; [exact CALL|].
+    + left. apply plus_one. eapply step_skip_call; [exact TCALL|].
       rewrite BLOCKS. eassumption.
     + right. eauto.
 Qed.

@@ -16,8 +16,14 @@ WIDE = ['add_global8', 'add_static16', 'add_page']
 POINTER = 'add_pointer'
 GUARDED = {'add_guard_zero': ('global8', 0), 'add_guard_even': ('shifted', 8),
            'add_guard_page': ('page_array', 8)}
+SITE_WORKER = 'add_site_worker'
+SITE_WIDE = {'add_site_zero': ('global8', 0), 'add_site_even': ('shifted', 8),
+             'add_site_page': ('page_array', 8)}
+SITE_FALLBACK = {'add_site_odd': SITE_WORKER, 'add_site_weak': SITE_WORKER,
+                 'add_site_dynamic': SITE_WORKER, 'add_site_page_odd': SITE_WORKER,
+                 'add_site_public': POINTER}
 NEGATIVE = ['add_weak', 'add_odd', 'add_shifted', 'add_volatile', 'add_size',
-            'add_guard_weak', 'add_guard_odd', 'add_guard_different']
+            'add_guard_weak', 'add_guard_odd', 'add_guard_different', *SITE_FALLBACK]
 MASK = 0xffffffff
 EDGES = [MASK, 0, 0, MASK, 0x7fffffff, 0x80000000, 1, 0xaaaaaaaa]
 
@@ -45,6 +51,33 @@ void add_page(unsigned n) {
 }
 void add_pointer(uint32_t *p,unsigned n) {
   for(unsigned i=0;i<n;++i) p[i]+=1u;
+}
+static void add_site_worker(uint32_t *p,unsigned n) {
+  for(unsigned i=0;i<n;++i) p[i]+=7u;
+}
+void add_site_zero(unsigned n) {
+  add_site_worker(global8,n);
+}
+void add_site_even(unsigned n) {
+  add_site_worker(shifted+2,n);
+}
+void add_site_odd(unsigned n) {
+  add_site_worker(shifted+1,n);
+}
+void add_site_weak(unsigned n) {
+  add_site_worker(weak,n);
+}
+void add_site_dynamic(uint32_t *p,unsigned n) {
+  add_site_worker(p,n);
+}
+void add_site_page(unsigned n) {
+  add_site_worker(page_array+2,n);
+}
+void add_site_page_odd(unsigned n) {
+  add_site_worker(page_array+1,n);
+}
+void add_site_public(unsigned n) {
+  add_pointer(shifted+2,n);
 }
 void add_guard_zero(uint32_t *p,unsigned n) {
   unsigned i;
@@ -156,6 +189,12 @@ int main(void) {
     RUN_PTR(15,add_guard_odd,shifted,1);
     RUN_PTR(16,add_guard_different,global8,0);
     RUN_PTR(17,add_guard_different,stack,1);
+    RUN(20,add_site_zero,global8);
+    RUN(21,add_site_even,shifted);
+    RUN(22,add_site_odd,shifted);
+    RUN(23,add_site_weak,weak);
+    RUN_PTR(24,add_site_dynamic,stack,1);
+    RUN(25,add_site_public,shifted);
   }
 
   long page=sysconf(_SC_PAGESIZE);
@@ -173,6 +212,9 @@ int main(void) {
     reset(page_array,cells,seed);
     add_guard_page(page_array+2,n);
     dump(18,n,seed,page_array,cells);
+    reset(page_array,cells,seed);
+    add_site_page(n);
+    dump(26,n,seed,page_array,cells);
   }
   for(unsigned n=1;n<18u;n+=2u) for(unsigned seed=0;seed<2u;++seed) {
     uint32_t *p=next-n;
@@ -184,9 +226,16 @@ int main(void) {
     add_guard_page(p,n);
     dump(19,n,seed,p-1,n+1);
   }
+  for(unsigned tail=0;tail<2u;++tail) for(unsigned seed=0;seed<2u;++seed) {
+    unsigned n=cells-1u-tail;
+    reset(page_array,cells,seed);
+    add_site_page_odd(n);
+    dump(27,n,seed,page_array,cells);
+  }
   if(mprotect(next,(size_t)page,PROT_READ|PROT_WRITE)) return 6;
   add_pointer(0,0);
   add_guard_zero(0,0); add_guard_even(0,0); add_guard_page(0,0);
+  add_site_dynamic(0,0);
   puts("zero length accepts null");
   return 0;
 }
@@ -212,15 +261,20 @@ def oracle():
                        (10, 35, 0, n, 1), (11, 37, 1, n, 1),
                        (12, 37, 2, n, 0x80000000),
                        (13, 37, 0, n, 0x80000000), (14, 35, 0, n, 1),
-                       (15, 37, 1, n, 1), (16, 35, 0, n, 1), (17, 37, 1, n, 2)]
+                       (15, 37, 1, n, 1), (16, 35, 0, n, 1), (17, 37, 1, n, 2),
+                       (20, 35, 0, n, 7), (21, 37, 2, n, 7), (22, 37, 1, n, 7),
+                       (23, 35, 0, n, 7), (24, 37, 1, n, 7), (25, 37, 2, n, 1)]
             regular.extend(case(kind, n, seed, *layout) for kind, *layout in layouts)
     cells = os.sysconf('SC_PAGE_SIZE') // 4
     guarded_wide = [line for n in [cells, cells-1] for seed in range(2)
                     for line in (case(8, n, seed, cells, 0, n, 7),
-                                 case(18, n-2, seed, cells, 2, n-2, 7))]
+                                 case(18, n-2, seed, cells, 2, n-2, 7),
+                                 case(26, n-2, seed, cells, 2, n-2, 7))]
     guarded_pointer = [line for n in range(1, 18, 2) for seed in range(2)
                        for line in (case(9, n, seed, n+1, 1, n, 1),
                                     case(19, n, seed, n+1, 1, n, 7))]
+    guarded_pointer.extend(case(27, n, seed, cells, 1, n, 7)
+                           for n in [cells-1, cells-2] for seed in range(2))
     data = '\n'.join([*regular, *guarded_wide, *guarded_pointer,
                       'zero length accepts null', '']).encode()
     return data, len(regular), len(guarded_wide), len(guarded_pointer)
@@ -297,6 +351,19 @@ def check_scalar_tail(tail):
         raise ValueError('Expected one int32 load and store in the scalar cleanup')
 
 
+def narrow_accesses(body):
+    if body.count(PACKED_ADD) != 1 or 'int64[' in body:
+        raise ValueError('Expected only narrow accesses and one NEON add in the fallback')
+    pair, tail = rtl_paths(body)
+    if [match[2] for op in pair if (match := RTL_LOAD.fullmatch(op))] != ['int32', 'int32']:
+        raise ValueError('Expected two int32 loads in the fallback pair')
+    if paired_store_lanes(body) != ['low', 'high']:
+        raise ValueError('Fallback stores lost the packed result')
+    check_scalar_tail(tail)
+    return {'pair_loads': ['int32', 'int32'], 'pair_store_lanes': ['low', 'high'],
+            'tail_load': 'int32', 'tail_store': 'int32'}
+
+
 def guarded_accesses(body, symbol, offset):
     nodes = rtl_nodes(body)
     address = re.compile(r'(x\d+) = "' + re.escape(symbol) + rf'" \+ {offset}')
@@ -343,20 +410,23 @@ def guarded_accesses(body, symbol, offset):
                          if int(match[1]) in reachable)
 
     aligned_body, fallback_body = branch(aligned), branch(fallback)
-    aligned_details = wide_accesses(aligned_body)
-    if fallback_body.count(PACKED_ADD) != 1 or 'int64[' in fallback_body:
-        raise ValueError('Expected only narrow accesses and one NEON add in the fallback')
-    pair, tail = rtl_paths(fallback_body)
-    if [match[2] for op in pair if (match := RTL_LOAD.fullmatch(op))] != ['int32', 'int32']:
-        raise ValueError('Expected two int32 loads in the fallback pair')
-    if paired_store_lanes(fallback_body) != ['low', 'high']:
-        raise ValueError('Fallback stores lost the packed result')
-    check_scalar_tail(tail)
     return {'pointer_guard_symbol': symbol, 'pointer_guard_byte_offset': offset,
-            'aligned_arm': aligned_details,
-            'fallback_arm': {'pair_loads': ['int32', 'int32'],
-                             'pair_store_lanes': ['low', 'high'],
-                             'tail_load': 'int32', 'tail_store': 'int32'}}
+            'aligned_arm': wide_accesses(aligned_body),
+            'fallback_arm': narrow_accesses(fallback_body)}
+
+
+def direct_calls(body):
+    call = re.compile(r'x\d+ = "([^"]+)"\(.*\)')
+    return [match[1] for op, _ in rtl_nodes(body).values() if (match := call.fullmatch(op))]
+
+
+def site_accesses(body, symbol, offset):
+    if direct_calls(body):
+        raise ValueError('Expected the paired loop in the caller')
+    address = re.compile(r'x\d+ = "' + re.escape(symbol) + rf'" \+ {offset}')
+    if not any(address.fullmatch(op) for op, _ in rtl_nodes(body).values()):
+        raise ValueError('Expected the original aligned call argument')
+    return {'call_site_symbol': symbol, 'call_site_byte_offset': offset, **wide_accesses(body)}
 
 
 def static_assembly(assembly):
@@ -414,7 +484,7 @@ def main():
             raise RuntimeError('Clang output differs from the modular arithmetic oracle')
         report['clang_O2_assembly'] = {
             name: static_assembly(assembly_body(clang_asm.read_text(), name))
-            for name in [*WIDE, *GUARDED]}
+            for name in [*WIDE, *GUARDED, *SITE_WIDE]}
 
         catalog = json.loads((ROOT / 'perf/experiment-profiles.json').read_text())
         configs = {'default': '', 'enabled': 'memory-neon',
@@ -438,11 +508,13 @@ def main():
             enabled = 'memory-neon' in flags.split(',')
             functions = {}
             asm_text = asm.read_text()
-            for function in [*WIDE, *GUARDED, POINTER, *NEGATIVE]:
+            for function in [*WIDE, *GUARDED, *SITE_WIDE, POINTER, SITE_WORKER, *NEGATIVE]:
                 body = rtl_body('\n'+rtl, function)
-                wide = enabled and function in WIDE
+                site = enabled and function in SITE_WIDE
+                wide = enabled and (function in WIDE or site)
                 guarded = enabled and function in GUARDED
-                paired = 2 if guarded else int(wide or (enabled and function == POINTER))
+                narrow = enabled and function in (POINTER, SITE_WORKER)
+                paired = 2 if guarded else int(wide or narrow)
                 counts = static_assembly(assembly_body(asm_text, function))
                 if body.count(PACKED_ADD) != paired:
                     raise RuntimeError(profile + ': unexpected packed add count for ' + function)
@@ -451,18 +523,25 @@ def main():
                 if not (wide or guarded) and 'int64[' in body:
                     raise RuntimeError(profile + ': unexpected int64 access in ' + function)
                 detail = {}
+                try:
+                    if site:
+                        detail = site_accesses(body, *SITE_WIDE[function])
+                    elif guarded:
+                        detail = guarded_accesses(body, *GUARDED[function])
+                    elif wide:
+                        detail = wide_accesses(body)
+                    elif narrow:
+                        detail = {'rtl0_paired_store_lanes': narrow_accesses(body)['pair_store_lanes']}
+                    elif function in SITE_FALLBACK or function in SITE_WIDE:
+                        callee = SITE_FALLBACK.get(function, SITE_WORKER)
+                        if direct_calls(body) != [callee]:
+                            raise ValueError('Expected the original direct call to ' + callee)
+                        detail = {'rtl0_retained_call': callee}
+                except ValueError as error:
+                    raise RuntimeError(profile + ': ' + function + ': ' + str(error)) from error
                 if wide or guarded:
-                    try:
-                        detail = (guarded_accesses(body, *GUARDED[function]) if guarded
-                                  else wide_accesses(body))
-                    except ValueError as error:
-                        raise RuntimeError(profile + ': ' + function + ': ' + str(error)) from error
                     if not counts['integer64_loads_nonstack'] or not counts['integer64_stores_nonstack']:
                         raise RuntimeError(profile + ': missing ARM64 wide accesses in ' + function)
-                elif paired:
-                    if paired_store_lanes(body) != ['low', 'high']:
-                        raise RuntimeError(profile + ': scalar stores lost the packed result')
-                    detail = {'rtl0_paired_store_lanes': ['low', 'high']}
                 if profile == 'default':
                     baseline_rtl[function] = body
                 elif function in NEGATIVE and body != baseline_rtl[function]:

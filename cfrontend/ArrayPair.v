@@ -10,7 +10,7 @@
 
 (** Pair adjacent unsigned additions at Clight, where evaluating each
     scalar addition requires an integer operand. *)
-Require Import Coqlib AST Integers Ctypes Cop Clight MemoryNeon.
+Require Import Coqlib Maps AST Linking Integers Ctypes Cop Clight MemoryNeon.
 
 Definition tuint := Tint I32 Unsigned noattr.
 Definition tint := Tint I32 Signed noattr.
@@ -178,6 +178,8 @@ Fixpoint same_stmt (s t: statement) : bool :=
   | Sskip, Sskip | Sbreak, Sbreak => true
   | Sassign l r, Sassign l' r' => same_expr l l' && same_expr r r'
   | Sset id a, Sset id' a' => peq id id' && same_expr a a'
+  | Scall None callee (a :: b :: nil), Scall None callee' (a' :: b' :: nil) =>
+      same_expr callee callee' && same_expr a a' && same_expr b b'
   | Ssequence a b, Ssequence a' b'
   | Sloop a b, Sloop a' b' => same_stmt a a' && same_stmt b b'
   | Sifthenelse c a b, Sifthenelse c' a' b' =>
@@ -293,13 +295,15 @@ Definition guard_base (base: expr) (off: option (int * signedness)) : option ali
   | _ => None
   end.
 
+Definition find_aligned_address (a: expr) : option alignment_guard :=
+  match a with
+  | Ebinop Oadd base (Econst_int k (Tint I32 sign _)) _ => guard_base base (Some (k, sign))
+  | _ => guard_base a None
+  end.
+
 Definition find_guard (a: expr) : option alignment_guard :=
   match a with
-  | Ebinop Oeq _ rhs _ =>
-      match rhs with
-      | Ebinop Oadd base (Econst_int k (Tint I32 sign _)) _ => guard_base base (Some (k, sign))
-      | _ => guard_base rhs None
-      end
+  | Ebinop Oeq _ rhs _ => find_aligned_address rhs
   | _ => None
   end.
 
@@ -337,13 +341,81 @@ Definition target_function (p: plan) (g: option alignment_guard) : function :=
   | Some test => with_body (target_template p) (guarded_target p test)
   end.
 
-Definition transf_function (f: function) : function :=
+Definition local_transf_function (f: function) : function :=
   match selected f with Some (p, g) => target_function p g | None => f end.
-Definition transf_fundef (fd: Clight.fundef) : Clight.fundef :=
-  match fd with Internal f => Internal (transf_function f) | _ => fd end.
+
+Record call_plan := CallPlan {
+  call_worker: ident;
+  call_loop: plan;
+  call_count: ident;
+  call_address: alignment_guard
+}.
+
+Definition caller_call (c: call_plan) : statement :=
+  Scall None (Evar (call_worker c) (type_of_function (source_template (call_loop c))))
+    (guard_address (call_address c) :: Etempvar (call_count c) tuint :: nil).
+
+Definition caller_source (c: call_plan) : function :=
+  mkfunction Tvoid cc_default ((call_count c, tuint) :: nil) nil nil
+    (with_skip (caller_call c)).
+
+Definition caller_setup (c: call_plan) : statement :=
+  let p := call_loop c in
+  Ssequence (Sset (pointer p) (guard_address (call_address c)))
+    (target_body (aligned_pointer_plan p)).
+
+Definition caller_target (c: call_plan) : function :=
+  let p := call_loop c in
+  mkfunction Tvoid cc_default ((bound p, tuint) :: nil) nil
+    ((pointer p, tuint_ptr) :: (scratch p, tulong) :: scalar_temps p)
+    (with_skip (caller_setup c)).
+
+Definition caller_matches (f: function) (c: call_plan) : bool :=
+  type_eq (fn_return f) Tvoid && calling_convention_eq (fn_callconv f) cc_default &&
+  list_eq_dec binding_eq (fn_params f) ((call_count c, tuint) :: nil) &&
+  list_eq_dec binding_eq (fn_vars f) nil &&
+  list_eq_dec binding_eq (fn_temps f) nil &&
+  same_stmt (fn_body f) (fn_body (caller_source c)).
+
+Definition worker_plan (cu: Clight.program) (id: ident) : option plan :=
+  if in_dec peq id (prog_public cu) then None else
+  match (AST.prog_defmap cu)!id with
+  | Some (Gfun (Internal worker)) =>
+      match selected_plain worker with
+      | Some p => match layout p, array_anchor p with
+                  | Indexed _, None => Some p
+                  | _, _ => None
+                  end
+      | None => None
+      end
+  | _ => None
+  end.
+
+(** Inline only an exact forwarding wrapper with a proved aligned argument.
+    Its worker and all other calls to that worker keep their ordinary paths. *)
+Definition selected_call (cu: Clight.program) (f: function) : option call_plan :=
+  match fn_params f, fn_body f with
+  | (n, _) :: nil, Ssequence Sskip (Scall None (Evar id _) (addr :: _ :: nil)) =>
+      match worker_plan cu id, find_aligned_address addr with
+      | Some p, Some g =>
+          let c := CallPlan id p n g in
+          if valid_guard g && caller_matches f c then Some c else None
+      | _, _ => None
+      end
+  | _, _ => None
+  end.
+
+Definition transf_function (cu: Clight.program) (f: function) : function :=
+  match selected_call cu f with
+  | Some c => caller_target c
+  | None => local_transf_function f
+  end.
+
+Definition transf_fundef (cu: Clight.program) (fd: Clight.fundef) : Clight.fundef :=
+  match fd with Internal f => Internal (transf_function cu f) | _ => fd end.
 
 Definition transf_program (p: Clight.program) : Clight.program :=
-  {| prog_defs := AST.prog_defs (AST.transform_program transf_fundef p);
+  {| prog_defs := AST.prog_defs (AST.transform_program (transf_fundef p) p);
      prog_public := prog_public p;
      prog_main := prog_main p;
      prog_types := prog_types p;
